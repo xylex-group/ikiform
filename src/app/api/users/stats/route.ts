@@ -34,11 +34,22 @@ export async function GET() {
 			);
 		}
 
+		const toInitials = (name: string | null): string => {
+			if (!name) return "U";
+			const trimmed = name.trim();
+			if (!trimmed) return "U";
+			const parts = trimmed.split(/\s+/);
+			if (parts.length >= 2) {
+				return (parts[0][0] + parts.at(-1)![0]).toUpperCase();
+			}
+			return trimmed.slice(0, 2).toUpperCase();
+		};
+
 		return NextResponse.json(
 			{
 				count: countResult.count ?? 0,
 				users: (usersResult.data ?? []).map((user) => ({
-					name: user.name || null,
+					initials: toInitials(user.name),
 				})),
 			},
 			{

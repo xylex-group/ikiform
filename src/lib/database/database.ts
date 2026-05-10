@@ -1,5 +1,6 @@
 import type { Database, FormSchema } from "@/lib/database";
 import { ensureDefaultFormSettings } from "@/lib/forms";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/client";
 import { createClient as createServerClient } from "@/utils/supabase/server";
 
@@ -701,7 +702,12 @@ export const formsDbServer = {
 		const supabase = await createServerClient();
 		const { isUUID } = await import("@/lib/utils/slug");
 
-		let query = supabase.from("forms").select("*").eq("is_published", true);
+		let query = supabase
+			.from("forms")
+			.select(
+				"id, title, description, slug, schema, is_published, created_at, updated_at, api_enabled"
+			)
+			.eq("is_published", true);
 
 		if (isUUID(identifier)) {
 			query = query.eq("id", identifier);
@@ -1018,7 +1024,7 @@ export const formsDbServer = {
 	},
 
 	async countFormSubmissions(formId: string) {
-		const supabase = await createServerClient();
+		const supabase = createAdminClient();
 		const { count, error } = await supabase
 			.from("form_submissions")
 			.select("id", { count: "exact", head: true })

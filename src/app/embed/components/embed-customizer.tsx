@@ -28,7 +28,7 @@ export interface EmbedConfig {
 }
 
 interface EmbedCustomizerProps {
-	form: Form;
+	form: Omit<Form, "user_id" | "api_key">;
 	formId: string;
 }
 
