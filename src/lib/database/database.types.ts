@@ -734,6 +734,7 @@ export interface FormSchema {
 			email?: string;
 			subject?: string;
 			message?: string;
+			customLinks?: Array<{ label: string; url: string }>;
 		};
 
 		quiz?: {

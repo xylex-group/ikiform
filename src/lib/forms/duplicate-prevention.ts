@@ -57,11 +57,16 @@ const DEFAULT_SETTINGS: DuplicatePreventionSettings = {
 export async function checkDuplicateSubmission(
 	formId: string,
 	identifier: string,
-	settings: DuplicatePreventionSettings = DEFAULT_SETTINGS
+	settingsInput: Partial<DuplicatePreventionSettings> = DEFAULT_SETTINGS
 ): Promise<DuplicateCheckResult> {
 	if (typeof window !== "undefined") {
 		throw new Error("Duplicate prevention can only be used on the server side");
 	}
+
+	const settings: DuplicatePreventionSettings = {
+		...DEFAULT_SETTINGS,
+		...settingsInput,
+	};
 
 	if (!settings.enabled) {
 		return {
@@ -128,11 +133,16 @@ export async function checkDuplicateSubmission(
 export async function recordSubmission(
 	formId: string,
 	identifier: string,
-	settings: DuplicatePreventionSettings = DEFAULT_SETTINGS
+	settingsInput: Partial<DuplicatePreventionSettings> = DEFAULT_SETTINGS
 ): Promise<void> {
 	if (typeof window !== "undefined") {
 		throw new Error("Duplicate prevention can only be used on the server side");
 	}
+
+	const settings: DuplicatePreventionSettings = {
+		...DEFAULT_SETTINGS,
+		...settingsInput,
+	};
 
 	if (!settings.enabled) {
 		return;

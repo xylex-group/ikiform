@@ -47,7 +47,11 @@ export async function generateMetadata({
 		const ogTitle = metadata.ogTitle || title;
 		const ogDescription = metadata.ogDescription || description;
 		const ogImage = metadata.ogImage;
-		const ogType = metadata.ogType || "website";
+		const ogType = (metadata.ogType || "website") as
+			| "website"
+			| "article"
+			| "profile"
+			| "book";
 
 		const twitterCard = metadata.twitterCard || "summary_large_image";
 		const twitterTitle = metadata.twitterTitle || ogTitle;
