@@ -7,7 +7,8 @@ import { createAthenaAuthClient } from "./auth-client";
  */
 export function createAthenaClient() {
 	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
-	const apiKey = process.env.ATHENA_API_KEY || process.env.NEXT_PUBLIC_ATHENA_API_KEY;
+	const apiKey =
+		process.env.ATHENA_API_KEY || process.env.NEXT_PUBLIC_ATHENA_API_KEY;
 
 	if (!(url && apiKey)) {
 		throw new Error(
@@ -21,11 +22,17 @@ export function createAthenaClient() {
 	});
 
 	const authClient = createAthenaAuthClient();
+	type SignInEmailInput = Parameters<typeof authClient.signIn.email>[0];
+	type SignUpEmailInput = Parameters<typeof authClient.signUp.email>[0];
+	type SignInSocialInput = Parameters<typeof authClient.signIn.social>[0];
+	type ForgetPasswordInput = Parameters<typeof authClient.forgetPassword>[0];
+	type UpdateUserInput = Parameters<typeof authClient.updateUser>[0];
+	type ForgetPasswordOptions = Omit<ForgetPasswordInput, "email">;
 
-		// Composite object preserving the existing Athena runtime call pattern used across the app
+	// Composite object preserving the existing Athena runtime call pattern used across the app
 	return {
-		from: (dbClient as any).from.bind(dbClient),
-		rpc: (dbClient as any).rpc?.bind(dbClient),
+		from: dbClient.from.bind(dbClient),
+		rpc: dbClient.rpc?.bind(dbClient),
 
 		auth: {
 			getUser: async () => {
@@ -42,21 +49,25 @@ export function createAthenaClient() {
 				return {
 					data: {
 						subscription: {
-							unsubscribe: () => {},
+							unsubscribe: () => {
+								// intentional no-op compatibility shim
+							},
 						},
 					},
 				};
 			},
 
 			signOut: () => authClient.signOut(),
-			signInWithPassword: (creds: any) => authClient.signIn.email(creds),
-			signUp: (creds: any) => authClient.signUp.email(creds),
-			signInWithOAuth: (options: any) => authClient.signIn.social(options),
-			resetPasswordForEmail: (email: string, options?: any) =>
+			signInWithPassword: (creds: SignInEmailInput) =>
+				authClient.signIn.email(creds),
+			signUp: (creds: SignUpEmailInput) => authClient.signUp.email(creds),
+			signInWithOAuth: (options: SignInSocialInput) =>
+				authClient.signIn.social(options),
+			resetPasswordForEmail: (email: string, options?: ForgetPasswordOptions) =>
 				authClient.forgetPassword({ email, ...options }),
-			setSession: (session: any) =>
+			setSession: (session: unknown) =>
 				Promise.resolve({ data: { session }, error: null }),
-			updateUser: (data: any) => authClient.updateUser(data),
+			updateUser: (data: UpdateUserInput) => authClient.updateUser(data),
 			exchangeCodeForSession: async () => {
 				const session = await authClient.getSession();
 				return {
