@@ -1,0 +1,54 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultTextColor Black
+skinparam titleFontStyle bold
+skinparam arrowThickness 1.1
+
+title Bundle Boundary Issue (before): shared database surface pulled into client
+
+skinparam component {
+  BackgroundColor #FEE2E2
+  BorderColor #B91C1C
+  FontColor Black
+}
+skinparam rectangle {
+  BackgroundColor #E5E7EB
+  BorderColor #4B5563
+  FontColor Black
+}
+
+rectangle "Next.js Runtime" {
+  component "Client Components\n(form settings, dashboard, analytics)" as Client
+  component "Route Handlers / Pages" as Server
+}
+
+component "Legacy DB module\nsrc/lib/database/database.ts" as DbModule #FCA5A5
+component "Client Athena Factory\nsrc/utils/athena/client.ts" as AthClient
+component "Server Athena Factory\nsrc/utils/athena/server.ts" as AthServer
+component "Admin Athena Factory\nsrc/utils/athena/admin.ts" as AthAdmin
+
+cloud "Athena Gateway\nATHENA_URL" as Gateway
+cloud "Athena Auth\nATHENA_AUTH_URL" as Auth
+
+actor User
+
+User --> Client : browser actions
+User --> Server : page load / API calls
+
+Client --> DbModule : import { formsDb, formsDbServer }\n(shared object)
+Server --> DbModule : import { formsDb, formsDbServer }
+
+DbModule --> AthClient : dynamic import("client")
+DbModule --> AthServer : dynamic import("server")
+DbModule --> AthAdmin : dynamic import("admin")
+
+AthClient --> Gateway : REST query/mutations
+AthServer --> Gateway : REST query/mutations
+AthAdmin --> Gateway : count/admin queries\n(admin key)
+AthServer --> Auth : session reads
+
+note right of DbModule
+  Because `formsDbServer` sits in the same file as client methods,
+  browser bundles include routes to server/admin Athena factories.
+end note
+@enduml

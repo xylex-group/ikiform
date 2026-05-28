@@ -1,0 +1,60 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultTextColor Black
+skinparam titleFontStyle bold
+skinparam arrowThickness 1.1
+
+title Bundle Boundary Fix (after): split DB client surfaces
+
+skinparam component {
+  BackgroundColor #D1FAE5
+  BorderColor #065F46
+  FontColor Black
+}
+skinparam rectangle {
+  BackgroundColor #E5E7EB
+  BorderColor #4B5563
+  FontColor Black
+}
+
+rectangle "Next.js Runtime" {
+  component "Client Components\n(form settings, dashboard, analytics)" as Client
+  component "Route Handlers / Pages" as Server
+  component "Forms DB API Route\n/api/forms/db" as DbApi
+}
+
+component "Client DB module\nsrc/lib/database/database.client.ts" as DbClient #86EFAC
+component "Server DB module\nsrc/lib/database/database.server.ts" as DbServer #93C5FD
+component "Client Athena Factory\nsrc/utils/athena/client.ts" as AthClient
+component "Server Athena Factory\nsrc/utils/athena/server.ts" as AthServer
+component "Admin Athena Factory\nsrc/utils/athena/admin.ts" as AthAdmin
+
+cloud "Athena Gateway\nATHENA_URL" as Gateway
+cloud "Athena Auth\nATHENA_AUTH_URL" as Auth
+
+actor User
+
+User --> Client : browser actions
+User --> Server : page load / API calls
+
+Client --> DbClient : import { formsDb }
+DbClient --> DbApi : POST /api/forms/db actions
+DbApi --> DbServer : proxy for DB writes/reads
+Server --> DbServer : import { formsDbServer }\n(for server-only paths)
+Server --> DbApi : POST /api/forms/db (legacy/admin actions)\noptional reuse
+
+DbApi --> DbServer : dispatch through shared formsDb logic
+DbServer --> AthServer : createAthenaServerClient()
+DbClient --> AthClient : no direct calls in bundle
+DbServer --> AthAdmin : createAthenaAdminClient()
+
+AthClient --> Gateway : client reads/writes
+AthServer --> Gateway : server reads/writes
+AthAdmin --> Gateway : admin counts / privileged ops
+AthServer --> Auth : session reads
+
+note right of DbClient
+  Client entrypoint no longer references server/admin branches,
+  so Node-only Athena internals are excluded from browser bundles.
+end note
+@enduml

@@ -67,7 +67,7 @@ const forms = await typedClient
 
 ## Migration Path
 
-- The legacy `src/lib/database/database.ts` (formsDb / formsDbServer) still works during the transition.
+- The legacy `src/lib/database/database.ts` (formsDb) and `src/lib/database/database.server.ts` (formsDbServer) still work during the transition.
 - New code and refactors should prefer `typedClient` + `fromModel`.
 - After generation, replace the loose `Form` / `FormSubmission` types with generated `RowOf<...>` types.
 

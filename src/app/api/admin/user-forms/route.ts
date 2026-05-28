@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const adminSupabase = createAdminClient();
+		const adminAthena = createAdminClient();
 
-		const { data: forms, error: formsError } = await adminSupabase
+		const { data: forms, error: formsError } = await adminAthena
 			.from("forms")
 			.select("*")
 			.eq("user_id", userId)
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 		let submissionCounts: Record<string, number> = {};
 
 		if (formIds.length > 0) {
-			const { data: submissions, error: submissionsError } = await adminSupabase
+			const { data: submissions, error: submissionsError } = await adminAthena
 				.from("form_submissions")
 				.select("form_id")
 				.in("form_id", formIds);

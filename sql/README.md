@@ -32,7 +32,7 @@ sql/
 
 - Table definitions were reverse-engineered from `src/lib/database/database.types.ts`
 - RLS policies were taken from `src/lib/database/rls-policies.sql`
-- Functions were taken from `src/lib/storage/supabase-setup.sql` and type definitions
+- Functions were derived from current PostgreSQL migration utilities and existing Athena-compatible usage patterns
 - Additional indexes were added based on common query patterns in the codebase
 
 ## Usage
@@ -61,7 +61,7 @@ sql/
 
 ## Important Notes
 
-- Some storage-related RLS policies reference the old `form-files` bucket. These are now legacy since file storage moved to Vercel Blob.
+- Some storage-related references may still reflect historical naming (`form-files`); normalize them during the next storage migration pass if you still keep those buckets in place.
 - The `auth.uid()` function is assumed to be available (provided by Athena Auth context or your Postgres JWT setup).
 - Update `auth.uid()` references if your Athena deployment uses a different claim (e.g. `request.jwt.claims.sub`).
 

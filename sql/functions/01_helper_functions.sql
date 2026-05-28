@@ -11,7 +11,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- File statistics function (from supabase-setup.sql)
+-- File statistics function (Athena/Postgres compatibility migration)
 CREATE OR REPLACE FUNCTION public.get_form_file_stats(form_id_param UUID)
 RETURNS TABLE (
   total_files BIGINT,

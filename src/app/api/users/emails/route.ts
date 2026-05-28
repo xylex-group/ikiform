@@ -14,8 +14,8 @@ export async function GET() {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const adminSupabase = createAdminClient();
-		const { data, error } = await adminSupabase.from("users").select("email");
+		const adminAthena = createAdminClient();
+		const { data, error } = await adminAthena.from("users").select("email");
 		if (error) {
 			return NextResponse.json(
 				{ emails: [], error: error.message },

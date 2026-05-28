@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { formsDbServer } from "@/lib/database";
+import { formsDbServer } from "@/lib/database/database.server";
 import { ensureDefaultRateLimitSettings } from "@/lib/forms/form-defaults";
 import { getPublicFormTitle } from "@/lib/utils/form-utils";
 import PublicFormServerWrapper from "../../forms/[id]/components/public-form-server-wrapper";
@@ -126,3 +126,4 @@ export default async function PublicFormPage({ params }: PublicFormPageProps) {
 		notFound();
 	}
 }
+

@@ -1,7 +1,21 @@
 import type { AppAuthSession } from "@/lib/auth/types";
-import { createAthenaAuthClient } from "@/utils/athena/auth-client";
 
-let authClientPromise: ReturnType<typeof createAthenaAuthClient> | null = null;
+type AuthErrorPayload = string | { message?: string } | null;
+
+type AuthCompatResult<T = unknown> = {
+	ok: boolean;
+	data: T | null;
+	error: AuthErrorPayload | null;
+};
+
+type RawAuthResult<T = unknown> = {
+	ok: boolean;
+	data: T | null;
+	error: AuthErrorPayload;
+	status: number;
+	raw?: unknown;
+	errorDetails?: unknown;
+};
 
 function getBaseUrl() {
 	return (
@@ -13,27 +27,88 @@ function getBaseUrl() {
 	);
 }
 
-const getAuthClient = async () => {
-	if (!authClientPromise) {
-		authClientPromise = createAthenaAuthClient();
+const toAuthError = (error: AuthErrorPayload | unknown): { message: string } | null => {
+	if (!error) {
+		return null;
 	}
-	return authClientPromise;
+
+	if (typeof error === "string") {
+		return { message: error };
+	}
+
+	if (typeof error === "object" && error !== null && "message" in error) {
+		const message = (error as { message?: string }).message;
+		return { message: typeof message === "string" ? message : "Auth error" };
+	}
+
+	return { message: "Auth error" };
 };
 
-type AuthError = { message: string } | string | null;
+const parseAuthResponse = async <T>(
+	response: Response
+): Promise<AuthCompatResult<T>> => {
+	const fallbackStatus = response.status || 500;
+	let payload: RawAuthResult<T> | null = null;
 
-type AuthCompatResult<T = unknown> = {
-	ok: boolean;
-	data: T | null;
-	error: AuthError;
+	try {
+		payload = (await response.json()) as RawAuthResult<T>;
+	} catch {
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		return {
+			ok: false,
+			data: null,
+			error: {
+				message: "Invalid auth response from server.",
+			},
+		};
+	}
+
+	if (payload?.ok) {
+		return {
+			ok: true,
+			data: payload.data,
+			error: null,
+		};
+	}
+
+	return {
+		ok: false,
+		data: payload?.data ?? null,
+		error: toAuthError(payload?.error) ?? {
+			message: "Authentication request failed.",
+		},
+	};
 };
 
-const normalizeSession = (result: any): AuthCompatResult<{ session: AppAuthSession | null }> => {
+const callBrowserAuth = async <T>(
+	action: string,
+	options: {
+		method: "GET" | "POST";
+		payload?: Record<string, unknown>;
+	}
+): Promise<AuthCompatResult<T>> => {
+	const response = await fetch(`/api/auth/${action}`, {
+		method: options.method,
+		credentials: "include",
+		headers: options.payload
+			? {
+					"Content-Type": "application/json",
+				}
+			: undefined,
+		body: options.payload ? JSON.stringify(options.payload) : undefined,
+	});
+
+	return parseAuthResponse<T>(response);
+};
+
+const normalizeSession = (
+	result: AuthCompatResult<AppAuthSession | null>
+): AuthCompatResult<{ session: AppAuthSession | null }> => {
 	if (!result || typeof result.ok !== "boolean") {
 		return {
 			ok: false,
 			data: { session: null },
-			error: "Auth response missing",
+			error: { message: "Auth response missing" },
 		};
 	}
 
@@ -42,67 +117,27 @@ const normalizeSession = (result: any): AuthCompatResult<{ session: AppAuthSessi
 	return {
 		ok: result.ok,
 		data: { session: normalizedData ?? null },
-		error: result.ok
-			? null
-			: result.error
-				? typeof result.error === "string"
-					? result.error
-					: result.error
-				: "Authentication error",
+		error: result.ok ? null : result.error,
 	};
-};
-
-async function getRawSession() {
-	const auth = await getAuthClient();
-	if (typeof auth.getSession === "function") {
-		return auth.getSession();
-	}
-	if (auth.session?.get) {
-		return auth.session.get();
-	}
-	throw new Error("getSession is not available on Athena auth client");
-}
-
-const callPasswordForget = async (auth: any, input: any) => {
-	if (typeof auth.forgetPassword === "function") {
-		return auth.forgetPassword(input);
-	}
-	if (auth.password?.forget) {
-		return auth.password.forget(input);
-	}
-	throw new Error("forgetPassword is not available on Athena auth client");
-};
-
-const callPasswordReset = async (auth: any, input: any) => {
-	if (typeof auth.resetPassword === "function") {
-		return auth.resetPassword(input);
-	}
-	if (auth.password?.reset) {
-		return auth.password.reset(input);
-	}
-	throw new Error("resetPassword is not available on Athena auth client");
-};
-
-const callVerifyEmail = async (auth: any, input: any) => {
-	if (typeof auth.verifyEmail === "function") {
-		return auth.verifyEmail(input);
-	}
-	if (auth.email?.verify) {
-		return auth.email.verify(input);
-	}
-	throw new Error("verifyEmail is not available on Athena auth client");
 };
 
 export const athenaBrowserAuth = {
 	async getSession() {
 		try {
-			const result = await getRawSession();
-			return normalizeSession(result);
+			const result = await callBrowserAuth<AppAuthSession>("session", {
+				method: "GET",
+			});
+			return normalizeSession({ ...result, data: result.data as AppAuthSession | null });
 		} catch (error) {
 			return {
 				ok: false,
 				data: { session: null },
-				error: error instanceof Error ? error.message : "Failed to load session",
+				error: {
+					message:
+						error instanceof Error
+							? error.message
+							: "Failed to load session",
+				},
 			};
 		}
 	},
@@ -111,7 +146,7 @@ export const athenaBrowserAuth = {
 		const sessionResult = await athenaBrowserAuth.getSession();
 		return {
 			data: {
-				user: sessionResult.ok ? sessionResult.data?.session?.user : null,
+				user: sessionResult.ok ? sessionResult.data?.session ?? null : null,
 			},
 			error: sessionResult.error,
 		};
@@ -119,45 +154,30 @@ export const athenaBrowserAuth = {
 
 	getAuthConfig: () => {
 		const baseUrl = getBaseUrl();
-		return {
-			baseUrl,
-		};
+		return { baseUrl };
 	},
 
-	async signOut() {
-		const auth = await getAuthClient();
-		if (typeof auth.signOut !== "function") {
-			return {
-				ok: false,
-				error: "signOut is not available on Athena auth client",
-			};
-		}
-		return auth.signOut();
-	},
+	signOut: async () =>
+		callBrowserAuth("sign-out", {
+			method: "POST",
+		}),
 
 	async signInEmail(credentials: { email: string; password: string }) {
 		return athenaBrowserAuth.signIn.email(credentials);
 	},
 
 	signIn: {
-		email: async (input: {
-			email: string;
-			password: string;
-			rememberMe?: boolean;
-		}) => {
-			const auth = await getAuthClient();
-			return auth.signIn.email(input);
-		},
-		social: async (input: { provider: string; redirectTo: string }) => {
-			const auth = await getAuthClient();
-			if (!auth.signIn || typeof auth.signIn.social !== "function") {
-				return {
-					ok: false,
-					error: "social sign in is not available on Athena auth client",
-				};
-			}
-			return auth.signIn.social(input);
-		},
+		email: async (input: { email: string; password: string; rememberMe?: boolean }) =>
+			callBrowserAuth("sign-in-email", {
+				method: "POST",
+				payload: input,
+			}),
+
+		social: async (input: { provider: string; redirectTo: string }) =>
+			callBrowserAuth("sign-in-social", {
+				method: "POST",
+				payload: input,
+			}),
 	},
 
 	signUp: {
@@ -167,53 +187,37 @@ export const athenaBrowserAuth = {
 			name?: string;
 			full_name?: string;
 			data?: Record<string, unknown>;
-		}) => {
-			const auth = await getAuthClient();
-			return auth.signUp.email(input);
+		}) =>
+			callBrowserAuth("sign-up-email", {
+				method: "POST",
+				payload: input,
+			}),
+	},
+
+	forgetPassword: async (input: { email: string; redirectTo?: string }) =>
+		callBrowserAuth("forget-password", {
+			method: "POST",
+			payload: input,
+		}),
+
+	resetPassword: async (input: { token: string; newPassword: string }) =>
+		callBrowserAuth("reset-password", {
+			method: "POST",
+			payload: input,
+		}),
+
+	verifyEmail: async (input: { token: string; callbackURL?: string }) =>
+		callBrowserAuth("verify-email", {
+			method: "POST",
+			payload: input,
+		}),
+
+	resolveResetPasswordToken: async (_input: { token: string }) => ({
+		ok: false,
+		data: null,
+		error: {
+			message:
+				"Token verification is handled as part of resetPassword in this client wrapper.",
 		},
-	},
-
-	forgetPassword: async (input: { email: string; redirectTo?: string }) => {
-		const auth = await getAuthClient();
-		try {
-			return await callPasswordForget(auth, input);
-		} catch (error) {
-			return {
-				ok: false,
-				error: error instanceof Error ? error.message : "Unable to request reset password",
-			};
-		}
-	},
-
-	resetPassword: async (input: { token: string; newPassword: string }) => {
-		const auth = await getAuthClient();
-		try {
-			return await callPasswordReset(auth, input);
-		} catch (error) {
-			return {
-				ok: false,
-				error: error instanceof Error ? error.message : "Unable to reset password",
-			};
-		}
-	},
-
-	verifyEmail: async (input: { token: string; callbackURL?: string }) => {
-		const auth = await getAuthClient();
-		try {
-			return await callVerifyEmail(auth, input);
-		} catch (error) {
-			return {
-				ok: false,
-				error: error instanceof Error ? error.message : "Unable to verify email",
-			};
-		}
-	},
-
-	resolveResetPasswordToken: async (_input: { token: string }) => {
-		return {
-			ok: false,
-			error: "Token verification is handled as part of resetPassword in this client wrapper.",
-		};
-	},
+	}),
 };
-

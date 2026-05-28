@@ -1,6 +1,5 @@
 import "server-only";
 
-import { createAthenaClient } from "@/utils/athena/client";
 import { createAthenaServerClient } from "@/utils/athena/server";
 
 export function generateApiKey(): string {
@@ -20,7 +19,7 @@ export async function generateFormApiKey(formId: string): Promise<{
 	error?: string;
 }> {
 	try {
-		const athena = createAthenaClient();
+		const athena = await createAthenaServerClient();
 		const {
 			data: { user },
 		} = await athena.auth.getUser();
@@ -58,7 +57,7 @@ export async function revokeFormApiKey(formId: string): Promise<{
 	error?: string;
 }> {
 	try {
-		const athena = createAthenaClient();
+		const athena = await createAthenaServerClient();
 		const {
 			data: { user },
 		} = await athena.auth.getUser();
@@ -97,7 +96,7 @@ export async function toggleFormApiEnabled(
 	error?: string;
 }> {
 	try {
-		const athena = createAthenaClient();
+		const athena = await createAthenaServerClient();
 		const {
 			data: { user },
 		} = await athena.auth.getUser();
