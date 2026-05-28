@@ -17,9 +17,9 @@ import { Separator } from "@/components/ui/separator";
 import type { WebhookConfig } from "../hooks/useWebhookManagement";
 
 interface TestWebhookDialogProps {
-	webhook: WebhookConfig | null;
-	open: boolean;
 	onClose: () => void;
+	open: boolean;
+	webhook: WebhookConfig | null;
 }
 
 export function TestWebhookDialog({
@@ -34,7 +34,9 @@ export function TestWebhookDialog({
 	} | null>(null);
 	const [mode, setMode] = useState<"real" | "success" | "failure">("real");
 
-	if (!webhook) return null;
+	if (!webhook) {
+		return null;
+	}
 
 	const handleTest = async () => {
 		setIsTesting(true);

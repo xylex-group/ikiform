@@ -2,20 +2,22 @@
 
 import { Search, X } from "lucide-react";
 import * as React from "react";
-import { Kbd } from "@/components/ui/kbd";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	Dialog as CommandMenu,
 	DialogClose as CommandMenuClose,
-	DialogContent,
 	DialogDescription as CommandMenuDescription,
 	DialogTitle as CommandMenuTitle,
 	DialogTrigger as CommandMenuTrigger,
+	DialogContent,
 } from "@/components/ui/dialog";
+import { Kbd } from "@/components/ui/kbd";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 const getModifierKey = () => {
-	if (typeof navigator === "undefined") return { key: "Ctrl", symbol: "Ctrl" };
+	if (typeof navigator === "undefined") {
+		return { key: "Ctrl", symbol: "Ctrl" };
+	}
 
 	const isMac =
 		navigator.platform.toUpperCase().indexOf("MAC") >= 0 ||
@@ -25,15 +27,15 @@ const getModifierKey = () => {
 };
 
 interface CommandMenuContextType {
-	value: string;
-	setValue: (value: string) => void;
 	selectedIndex: number;
 	setSelectedIndex: (index: number) => void;
+	setValue: (value: string) => void;
+	value: string;
 }
 
-const CommandMenuContext = React.createContext<CommandMenuContextType | undefined>(
-	undefined
-);
+const CommandMenuContext = React.createContext<
+	CommandMenuContextType | undefined
+>(undefined);
 
 const CommandMenuProvider: React.FC<{
 	children: React.ReactNode;
@@ -41,13 +43,7 @@ const CommandMenuProvider: React.FC<{
 	setValue: (value: string) => void;
 	selectedIndex: number;
 	setSelectedIndex: (index: number) => void;
-}> = ({
-	children,
-	value,
-	setValue,
-	selectedIndex,
-	setSelectedIndex,
-}) => (
+}> = ({ children, value, setValue, selectedIndex, setSelectedIndex }) => (
 	<CommandMenuContext.Provider
 		value={{
 			value,
@@ -130,7 +126,7 @@ const CommandMenuInput = React.forwardRef<
 		const { value, setValue } = useCommandMenu();
 
 		return (
-			<div className="flex items-center border-b border-border px-3 py-0">
+			<div className="flex items-center border-border border-b px-3 py-0">
 				<Search className="mr-3 size-4 shrink-0 text-muted-foreground" />
 				<input
 					className={cn(
@@ -185,7 +181,10 @@ const CommandMenuList = React.forwardRef<
 
 	return (
 		<div className="p-1" ref={ref} {...props}>
-			<ScrollArea className={cn("w-full", className)} style={{ height: maxHeight }}>
+			<ScrollArea
+				className={cn("w-full", className)}
+				style={{ height: maxHeight }}
+			>
 				<div className="flex flex-col gap-1 p-1">{children}</div>
 			</ScrollArea>
 		</div>
@@ -256,7 +255,6 @@ const CommandMenuItem = React.forwardRef<
 
 		return (
 			<button
-				type="button"
 				className={cn(
 					"relative flex cursor-default select-none items-center gap-2 rounded-xl px-2 py-2 text-sm outline-none transition-colors",
 					"hover:bg-accent hover:text-accent-foreground",
@@ -269,6 +267,7 @@ const CommandMenuItem = React.forwardRef<
 				onClick={handleSelect}
 				onMouseEnter={() => setSelectedIndex(index)}
 				ref={ref}
+				type="button"
 				{...props}
 			>
 				{icon && (

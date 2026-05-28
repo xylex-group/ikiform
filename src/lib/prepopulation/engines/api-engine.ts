@@ -124,7 +124,9 @@ export class ApiEngine implements PrepopulationEngine {
 	}
 
 	private extractValue(data: any, jsonPath?: string): any {
-		if (!jsonPath) return data;
+		if (!jsonPath) {
+			return data;
+		}
 
 		try {
 			return this.evaluateJsonPath(data, jsonPath);
@@ -135,7 +137,9 @@ export class ApiEngine implements PrepopulationEngine {
 	}
 
 	private evaluateJsonPath(data: any, path: string): any {
-		if (path === "$") return data;
+		if (path === "$") {
+			return data;
+		}
 
 		if (!path.startsWith("$.")) {
 			throw new Error("JSONPath must start with $.");
@@ -145,7 +149,9 @@ export class ApiEngine implements PrepopulationEngine {
 		let current = data;
 
 		for (const part of pathParts) {
-			if (!current) return null;
+			if (!current) {
+				return null;
+			}
 
 			const arrayMatch = part.match(/^([^[]+)\[(\d+|\*)\]$/);
 			if (arrayMatch) {
@@ -182,7 +188,9 @@ export class ApiEngine implements PrepopulationEngine {
 
 	private getCachedValue(key: string, customTtl?: number): any | null {
 		const cached = ApiEngine.cache.get(key);
-		if (!cached) return null;
+		if (!cached) {
+			return null;
+		}
 
 		const ttl = customTtl || ApiEngine.DEFAULT_CACHE_TTL;
 		if (Date.now() - cached.timestamp > ttl) {

@@ -1,13 +1,11 @@
 "use client";
 
-import type { User } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
 
 interface PremiumStatus {
-	hasPremium: boolean;
-	hasCustomerPortal: boolean;
 	checkingPremium: boolean;
+	hasCustomerPortal: boolean;
+	hasPremium: boolean;
 }
 
 const premiumStatusCache = new Map<
@@ -15,57 +13,38 @@ const premiumStatusCache = new Map<
 	{ hasPremium: boolean; hasCustomerPortal: boolean }
 >();
 
-export function usePremiumStatus(user: User | null): PremiumStatus {
+export function usePremiumStatus(): PremiumStatus {
 	const [hasPremium, setHasPremium] = useState(false);
 	const [hasCustomerPortal, setHasCustomerPortal] = useState(false);
 	const [checkingPremium, setCheckingPremium] = useState(false);
-	const lastCheckedEmail = useRef<string | null>(null);
+	const lastChecked = useRef<string | null>(null);
 
 	useEffect(() => {
 		const checkPremiumStatus = async () => {
-			if (!user?.email) {
-				setHasPremium(false);
-				setHasCustomerPortal(false);
-				setCheckingPremium(false);
-				lastCheckedEmail.current = null;
-				return;
-			}
-
-			if (lastCheckedEmail.current === user.email) {
-				return;
-			}
-
-			const cached = premiumStatusCache.get(user.email);
-			if (cached) {
-				setHasPremium(cached.hasPremium);
-				setHasCustomerPortal(cached.hasCustomerPortal);
-				setCheckingPremium(false);
-				lastCheckedEmail.current = user.email;
-				return;
-			}
-
 			setCheckingPremium(true);
 			try {
-				const supabase = createClient();
-				const { data, error } = await supabase
-					.from("users")
-					.select("has_premium, polar_customer_id")
-					.eq("email", user.email)
-					.single();
+				const res = await fetch("/api/user/premium-status", {
+					credentials: "include",
+				});
 
-				if (!error && data) {
-					const premiumData = {
-						hasPremium: data.has_premium,
-						hasCustomerPortal: !!data.polar_customer_id,
-					};
-					setHasPremium(premiumData.hasPremium);
-					setHasCustomerPortal(premiumData.hasCustomerPortal);
-					premiumStatusCache.set(user.email, premiumData);
-				} else {
+				if (!res.ok) {
 					setHasPremium(false);
 					setHasCustomerPortal(false);
+					return;
 				}
-				lastCheckedEmail.current = user.email;
+
+				const data = await res.json();
+				const premiumData = {
+					hasPremium: !!data.hasPremium,
+					hasCustomerPortal: !!data.hasCustomerPortal,
+				};
+
+				setHasPremium(premiumData.hasPremium);
+				setHasCustomerPortal(premiumData.hasCustomerPortal);
+
+				// Best-effort cache key (we don't expose email here)
+				lastChecked.current = "session";
+				premiumStatusCache.set("session", premiumData);
 			} catch (error) {
 				console.error("Error checking premium status:", error);
 				setHasPremium(false);
@@ -75,8 +54,11 @@ export function usePremiumStatus(user: User | null): PremiumStatus {
 			}
 		};
 
-		checkPremiumStatus();
-	}, [user?.email]);
+		// Only fetch once per mount (or when explicitly cleared)
+		if (lastChecked.current === null) {
+			checkPremiumStatus();
+		}
+	}, []);
 
 	return {
 		hasPremium,
@@ -85,10 +67,6 @@ export function usePremiumStatus(user: User | null): PremiumStatus {
 	};
 }
 
-export function clearPremiumStatusCache(email?: string) {
-	if (email) {
-		premiumStatusCache.delete(email);
-	} else {
-		premiumStatusCache.clear();
-	}
+export function clearPremiumStatusCache() {
+	premiumStatusCache.clear();
 }

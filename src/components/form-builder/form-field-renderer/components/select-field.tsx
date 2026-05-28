@@ -68,7 +68,9 @@ export function SelectField(props: BaseFieldProps) {
 	const getOptions = () => apiOptions ?? field.options ?? [];
 
 	const getPlaceholder = () => {
-		if (isLoading) return "Loading...";
+		if (isLoading) {
+			return "Loading...";
+		}
 		return field.placeholder || "Select an option...";
 	};
 

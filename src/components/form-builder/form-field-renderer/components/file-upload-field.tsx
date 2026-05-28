@@ -19,18 +19,18 @@ import type { BaseFieldProps } from "../types";
 
 interface FileUploadSettings {
 	accept?: string;
+	allowedTypes?: string[];
 	maxFiles?: number;
 	maxSize?: number;
-	allowedTypes?: string[];
 }
 
 interface UploadedFile {
 	id: string;
 	name: string;
+	signedUrl: string;
 	size: number;
 	type: string;
 	url: string;
-	signedUrl: string;
 }
 
 export function FileUploadField(props: BaseFieldProps) {
@@ -40,7 +40,9 @@ export function FileUploadField(props: BaseFieldProps) {
 	const [uploadError, setUploadError] = useState<string | null>(null);
 
 	const getFallbackFormId = () => {
-		if (formId) return formId;
+		if (formId) {
+			return formId;
+		}
 		if (typeof window !== "undefined") {
 			const path = window.location.pathname;
 			const match = path.match(/^\/f\/([^/]+)/);
@@ -72,16 +74,28 @@ export function FileUploadField(props: BaseFieldProps) {
 	const getUploadedFiles = () => (Array.isArray(value) ? value : []);
 
 	const getFileIcon = useCallback((type: string) => {
-		if (type.startsWith("image/")) return ImageIcon;
-		if (type.startsWith("video/")) return Video;
-		if (type.startsWith("audio/")) return Music;
-		if (type.includes("pdf") || type.includes("document")) return FileText;
-		if (type.includes("zip") || type.includes("archive")) return Archive;
+		if (type.startsWith("image/")) {
+			return ImageIcon;
+		}
+		if (type.startsWith("video/")) {
+			return Video;
+		}
+		if (type.startsWith("audio/")) {
+			return Music;
+		}
+		if (type.includes("pdf") || type.includes("document")) {
+			return FileText;
+		}
+		if (type.includes("zip") || type.includes("archive")) {
+			return Archive;
+		}
 		return FileText;
 	}, []);
 
 	const formatFileSize = useCallback((bytes: number): string => {
-		if (!bytes) return "0 Bytes";
+		if (!bytes) {
+			return "0 Bytes";
+		}
 		const k = 1024;
 		const sizes = ["Bytes", "KB", "MB", "GB"];
 		const i = Math.floor(Math.log(bytes) / Math.log(k));

@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/select";
 
 export interface TimePickerProps {
-	value?: string;
-	onChange?: (value: string) => void;
+	className?: string;
 	disabled?: boolean;
 	error?: boolean;
-	className?: string;
+	onChange?: (value: string) => void;
 	showCurrentTimeButton?: boolean;
+	value?: string;
 }
 
 export const TimePicker: React.FC<TimePickerProps> = ({
@@ -31,7 +31,9 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 		const m = now.getMinutes();
 		const ap = h >= 12 ? "PM" : "AM";
 		h = h % 12;
-		if (h === 0) h = 12;
+		if (h === 0) {
+			h = 12;
+		}
 		return {
 			hour: String(h).padStart(2, "0"),
 			minute: String(m).padStart(2, "0"),

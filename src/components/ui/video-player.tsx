@@ -34,11 +34,11 @@ const videoPlayerVariants = cva(
 export interface VideoPlayerProps
 	extends React.VideoHTMLAttributes<HTMLVideoElement>,
 		VariantProps<typeof videoPlayerVariants> {
-	src: string;
-	poster?: string;
-	showControls?: boolean;
 	autoHide?: boolean;
 	className?: string;
+	poster?: string;
+	showControls?: boolean;
+	src: string;
 }
 
 const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
@@ -153,7 +153,9 @@ const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
 
 		React.useEffect(() => {
 			const video = videoRef.current;
-			if (!video) return;
+			if (!video) {
+				return;
+			}
 
 			const handleLoadedMetadata = () => {
 				setDuration(video.duration);
@@ -215,7 +217,9 @@ const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
 
 		React.useEffect(() => {
 			const handleKeyDown = (e: KeyboardEvent) => {
-				if (!containerRef.current?.contains(document.activeElement)) return;
+				if (!containerRef.current?.contains(document.activeElement)) {
+					return;
+				}
 
 				switch (e.key) {
 					case " ":

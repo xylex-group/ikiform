@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from "motion/react";
 import {
 	BarChart3,
 	Code,
@@ -10,6 +9,7 @@ import {
 	Share,
 	Sparkles,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import type React from "react";
 import { Button } from "@/components/ui/button";

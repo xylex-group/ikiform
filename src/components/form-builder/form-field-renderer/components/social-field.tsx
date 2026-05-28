@@ -8,10 +8,10 @@ import type { BaseFieldProps } from "../types";
 import { getBaseClasses } from "../utils";
 
 interface SocialPlatformConfig {
-	platform: string;
+	icon: string;
 	label: string;
 	placeholder: string;
-	icon: string;
+	platform: string;
 }
 
 const AVAILABLE_SOCIAL_PLATFORMS: SocialPlatformConfig[] = [
@@ -154,7 +154,9 @@ export function SocialField({ field, value, onChange, error }: BaseFieldProps) {
 	);
 
 	const renderPreview = () => {
-		if (!shouldShowPreview) return null;
+		if (!shouldShowPreview) {
+			return null;
+		}
 
 		return (
 			<Card className="border-0 bg-muted/30 shadow-none">

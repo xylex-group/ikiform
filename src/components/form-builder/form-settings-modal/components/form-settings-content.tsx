@@ -17,21 +17,21 @@ import { BrandingSection } from "./social-media-section";
 import { WebhooksSettingsSection } from "./webhooks-settings-section";
 
 interface FormSettingsContentProps {
-	section: FormSettingsSection;
-	localSettings: any;
-	updateSettings: any;
-	updateRateLimit: any;
-	updateDuplicatePrevention: any;
-	updateProfanityFilter: any;
-	updateBotProtection: any;
-	updateResponseLimit: any;
-	updatePasswordProtection: any;
-	updateSocialMedia: any;
-	updateNotifications: any;
-	updateApi: any;
 	formId?: string;
-	schema?: any;
+	localSettings: any;
 	onSchemaUpdate?: (updates: Partial<any>) => void;
+	schema?: any;
+	section: FormSettingsSection;
+	updateApi: any;
+	updateBotProtection: any;
+	updateDuplicatePrevention: any;
+	updateNotifications: any;
+	updatePasswordProtection: any;
+	updateProfanityFilter: any;
+	updateRateLimit: any;
+	updateResponseLimit: any;
+	updateSettings: any;
+	updateSocialMedia: any;
 }
 
 export function FormSettingsContent({

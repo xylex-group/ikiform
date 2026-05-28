@@ -75,7 +75,9 @@ export default function PublicFormContent({
 	const borderRadius = schema?.settings?.layout?.borderRadius || "md";
 
 	useEffect(() => {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		const colors = schema.settings?.colors;
 		if (colors?.websiteBackground) {

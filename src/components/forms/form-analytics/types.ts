@@ -5,57 +5,51 @@ export interface FormAnalyticsProps {
 }
 
 export interface ChatMessage {
-	role: "user" | "assistant";
 	content: string;
+	role: "user" | "assistant";
 	timestamp: Date;
 }
 
 export interface ChatInterfaceProps {
+	abortController: AbortController | null;
+	chatInput: string;
+	chatInputRef: React.RefObject<HTMLTextAreaElement | null>;
+	chatLoading: boolean;
 	chatMessages: ChatMessage[];
 	chatStreaming: boolean;
-	streamedContent: string;
-	chatLoading: boolean;
-	messagesEndRef: React.RefObject<HTMLDivElement | null>;
 	chatSuggestions: string[];
-	setChatInput: (value: string) => void;
 	handleChatSend: (e: React.FormEvent) => void;
-	chatInputRef: React.RefObject<HTMLTextAreaElement | null>;
-	chatInput: string;
-	abortController: AbortController | null;
 	handleStopGeneration: () => void;
+	messagesEndRef: React.RefObject<HTMLDivElement | null>;
+	setChatInput: (value: string) => void;
+	streamedContent: string;
 }
 
 export interface FilterState {
-	timeRange: "all" | "today" | "week" | "month";
 	completionRate: "all" | "complete" | "partial" | "empty";
+	timeRange: "all" | "today" | "week" | "month";
 }
 
 export interface FieldAnalytics {
-	label: string;
-	totalResponses: number;
-	completionRate: number;
-	uniqueValues: number;
-	mostCommonValue: string | null;
 	averageLength?: number;
+	completionRate: number;
+	label: string;
+	mostCommonValue: string | null;
+	totalResponses: number;
+	uniqueValues: number;
 }
 
 export interface ConversionFunnelStep {
-	stepName: string;
 	completedCount: number;
 	conversionRate: number;
+	stepName: string;
 }
 
 export interface QuizAnalytics {
-	isQuizForm: boolean;
-	totalQuizSubmissions: number;
-	averageScore: number;
 	averagePercentage: number;
+	averageScore: number;
+	isQuizForm: boolean;
 	passRate: number;
-	topPerformers: Array<{
-		submissionId: string;
-		score: number;
-		percentage: number;
-	}>;
 	questionAnalytics: Array<{
 		fieldId: string;
 		label: string;
@@ -63,35 +57,41 @@ export interface QuizAnalytics {
 		totalAnswers: number;
 		accuracyRate: number;
 	}>;
+	topPerformers: Array<{
+		submissionId: string;
+		score: number;
+		percentage: number;
+	}>;
+	totalQuizSubmissions: number;
 }
 
 export interface AnalyticsData {
-	totalSubmissions: number;
-	completionRate: number;
-	recentSubmissions: FormSubmission[];
-	mostActiveDay: [string, number] | undefined;
-	lastSubmission: FormSubmission | null;
 	avgSubmissionsPerDay: number;
 	bounceRate: number;
-	peakHour: [string, number] | undefined;
-	fieldAnalytics: Record<string, FieldAnalytics>;
-	topFields: [string, FieldAnalytics][];
-	worstFields: [string, FieldAnalytics][];
-	submissionTrends: Record<string, number>;
+	completionRate: number;
 	conversionFunnel: ConversionFunnelStep[] | null;
+	fieldAnalytics: Record<string, FieldAnalytics>;
 	hourlySubmissions: Record<number, number>;
-	totalFields: number;
+	lastSubmission: FormSubmission | null;
+	mostActiveDay: [string, number] | undefined;
+	peakHour: [string, number] | undefined;
 	quizAnalytics: QuizAnalytics;
+	recentSubmissions: FormSubmission[];
+	submissionTrends: Record<string, number>;
+	topFields: [string, FieldAnalytics][];
+	totalFields: number;
+	totalSubmissions: number;
+	worstFields: [string, FieldAnalytics][];
 }
 
 export interface SubmissionDetailsModalProps {
-	submission: FormSubmission | null;
+	form?: Form;
+	formatDate: (dateString: string) => string;
+	getFieldLabel: (fieldId: string) => string;
 	isOpen: boolean;
 	onClose: () => void;
-	getFieldLabel: (fieldId: string) => string;
-	formatDate: (dateString: string) => string;
 	onExport?: (submission: FormSubmission) => void;
-	form?: Form;
+	submission: FormSubmission | null;
 }
 
 export interface OverviewStatsProps {
@@ -103,22 +103,22 @@ export interface AnalyticsCardsProps {
 }
 
 export interface InfoCardsProps {
-	form: Form;
 	data: AnalyticsData;
+	form: Form;
 	formatDate: (dateString: string) => string;
 }
 
 export interface SubmissionsListProps {
 	form: Form;
-	submissions: FormSubmission[];
+	formatDate: (dateString: string) => string;
+	getFieldLabel: (fieldId: string) => string;
 	loading: boolean;
-	refreshing: boolean;
-	onRefresh: () => void;
 	onExportCSV: () => void;
 	onExportJSON: () => void;
+	onRefresh: () => void;
 	onViewSubmission: (submission: FormSubmission) => void;
-	getFieldLabel: (fieldId: string) => string;
-	formatDate: (dateString: string) => string;
+	refreshing: boolean;
+	submissions: FormSubmission[];
 }
 
 export interface FloatingChatButtonProps {
@@ -126,19 +126,19 @@ export interface FloatingChatButtonProps {
 }
 
 export interface ChatModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	isMobile: boolean;
+	abortController: AbortController | null;
+	chatInput: string;
+	chatInputRef: React.RefObject<HTMLTextAreaElement | null>;
+	chatLoading: boolean;
 	chatMessages: ChatMessage[];
 	chatStreaming: boolean;
-	streamedContent: string;
-	chatLoading: boolean;
-	messagesEndRef: React.RefObject<HTMLDivElement | null>;
 	chatSuggestions: string[];
-	setChatInput: (value: string) => void;
 	handleChatSend: (e: React.FormEvent) => void;
-	chatInputRef: React.RefObject<HTMLTextAreaElement | null>;
-	chatInput: string;
-	abortController: AbortController | null;
 	handleStopGeneration: () => void;
+	isMobile: boolean;
+	isOpen: boolean;
+	messagesEndRef: React.RefObject<HTMLDivElement | null>;
+	onClose: () => void;
+	setChatInput: (value: string) => void;
+	streamedContent: string;
 }

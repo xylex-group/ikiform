@@ -26,7 +26,9 @@ export class AIBuilderService {
 
 			while (true) {
 				const { value, done } = await reader.read();
-				if (done) break;
+				if (done) {
+					break;
+				}
 
 				const chunk = new TextDecoder().decode(value);
 				fullText += chunk;

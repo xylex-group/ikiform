@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createClient as createAdminClient } from "@/lib/athena/admin";
 
 export async function GET() {
 	try {
-		const supabase = createAdminClient();
+		const athena = createAdminClient();
 
 		const [countResult, usersResult] = await Promise.all([
-			supabase.from("users").select("*", { count: "exact", head: true }),
-			supabase
+			athena.from("users").select("*", { count: "exact", head: true }),
+			athena
 				.from("users")
 				.select("name")
 				.order("created_at", { ascending: false })
@@ -35,9 +35,13 @@ export async function GET() {
 		}
 
 		const toInitials = (name: string | null): string => {
-			if (!name) return "U";
+			if (!name) {
+				return "U";
+			}
 			const trimmed = name.trim();
-			if (!trimmed) return "U";
+			if (!trimmed) {
+				return "U";
+			}
 			const parts = trimmed.split(/\s+/);
 			if (parts.length >= 2) {
 				return (parts[0][0] + parts.at(-1)![0]).toUpperCase();
@@ -64,3 +68,5 @@ export async function GET() {
 		return NextResponse.json({ count: null, users: [] }, { status: 500 });
 	}
 }
+
+

@@ -411,7 +411,9 @@ function WordManagementSection({
 
 	const addWord = () => {
 		const value = newWord.trim();
-		if (!value) return;
+		if (!value) {
+			return;
+		}
 
 		const wordsToAdd = value
 			.split(",")

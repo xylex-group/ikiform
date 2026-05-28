@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { formsDb, type Form } from "@/lib/database";
+import { type Form, formsDb } from "@/lib/database";
 import {
 	FormSettingsDesktopLayout,
 	FormSettingsMobileLayout,

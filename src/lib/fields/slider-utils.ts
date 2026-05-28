@@ -82,7 +82,8 @@ export function isSliderRangeValue(value: unknown): value is SliderRangeValue {
 
 	const candidate = value as { min?: unknown; max?: unknown };
 	return (
-		toFiniteNumber(candidate.min) !== null && toFiniteNumber(candidate.max) !== null
+		toFiniteNumber(candidate.min) !== null &&
+		toFiniteNumber(candidate.max) !== null
 	);
 }
 
@@ -92,8 +93,14 @@ export function normalizeRangeSliderValue(
 ): SliderRangeValue {
 	const bounds = normalizeSliderBounds(settings);
 	const defaultRange = orderRange(
-		clampToBounds(toFiniteNumber(settings?.defaultRangeMin) ?? bounds.min, bounds),
-		clampToBounds(toFiniteNumber(settings?.defaultRangeMax) ?? bounds.max, bounds)
+		clampToBounds(
+			toFiniteNumber(settings?.defaultRangeMin) ?? bounds.min,
+			bounds
+		),
+		clampToBounds(
+			toFiniteNumber(settings?.defaultRangeMax) ?? bounds.max,
+			bounds
+		)
 	);
 
 	if (isSliderRangeValue(rawValue)) {
@@ -107,7 +114,10 @@ export function normalizeRangeSliderValue(
 		const first = toFiniteNumber(rawValue[0]);
 		const second = toFiniteNumber(rawValue[1]);
 		if (first !== null && second !== null) {
-			return orderRange(clampToBounds(first, bounds), clampToBounds(second, bounds));
+			return orderRange(
+				clampToBounds(first, bounds),
+				clampToBounds(second, bounds)
+			);
 		}
 	}
 
@@ -120,9 +130,7 @@ export function normalizeRangeSliderValue(
 	return defaultRange;
 }
 
-export function normalizeSliderSettings(
-	settings?: FormField["settings"]
-): {
+export function normalizeSliderSettings(settings?: FormField["settings"]): {
 	sliderMode: SliderMode;
 	min: number;
 	max: number;

@@ -36,7 +36,7 @@ function PremiumRequired() {
 
 export default function FormBuilderClient() {
 	const { user, loading } = useAuth();
-	const { hasPremium, checkingPremium: checking } = usePremiumStatus(user);
+	const { hasPremium, checkingPremium: checking } = usePremiumStatus();
 
 	if (loading || checking) {
 		return <FormBuilderSkeleton />;

@@ -2,10 +2,10 @@ import { readdir, readFile } from "fs/promises";
 import { join } from "path";
 
 export interface ChangelogEntry {
-	title: string;
+	content: string;
 	description?: string;
 	release_date: string;
-	content: string;
+	title: string;
 }
 
 export async function getChangelogEntries(): Promise<ChangelogEntry[]> {
@@ -39,8 +39,12 @@ export async function getChangelogEntries(): Promise<ChangelogEntry[]> {
 	return entries.sort((a, b) => {
 		const aDate = a.release_date?.trim();
 		const bDate = b.release_date?.trim();
-		if (!aDate) return -1;
-		if (!bDate) return 1;
+		if (!aDate) {
+			return -1;
+		}
+		if (!bDate) {
+			return 1;
+		}
 		return bDate.localeCompare(aDate);
 	});
 }

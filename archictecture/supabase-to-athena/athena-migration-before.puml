@@ -1,0 +1,61 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultTextColor Black
+skinparam titleFontStyle bold
+skinparam arrowThickness 1.2
+
+title Migration Context: Pre-Refactor Legacy Compatibility
+
+skinparam component {
+  BackgroundColor #EAF2FF
+  BorderColor #1E3A8A
+  FontColor Black
+}
+skinparam cloud {
+  BackgroundColor #F3F4F6
+  BorderColor #4B5563
+  FontColor Black
+}
+skinparam database {
+  BackgroundColor #FFF7ED
+  BorderColor #9A3412
+  FontColor Black
+}
+
+left to right direction
+
+actor User as U
+
+rectangle "Next.js App Layer" as Next {
+  component "Route Handlers\n/src/app/*" as Routes
+  component "Client Components\n(form-settings-modal)" as Client
+  component "Legacy Import Chain\nClient -> src/lib/forms/api-keys.ts" as ClientCompat #FEE2E2
+}
+
+rectangle "Athena Adapters" as AthLayer {
+  component "src/utils/athena/client.ts" as AthClient #DCFCE7
+  component "src/utils/athena/server.ts" as AthServer #DCFCE7
+  component "src/lib/auth/athena-browser-auth.ts" as AuthCompat #FEF3C7
+}
+
+cloud "Athena Gateway\n(process.env.ATHENA_URL)" as Gateway
+cloud "Athena Auth\n(process.env.ATHENA_AUTH_URL)" as AthenaAuth
+
+database "Athena Postgres\npublic schema" as DB
+
+U --> Routes : open UI / API call
+Routes --> AthServer : createAthenaServerClient()
+U --> Client : click API key actions
+Client --> ClientCompat : direct helper import from form builder\n(settings page)
+ClientCompat --> AthClient : createAthenaClient()\n(auth + DB composite client)
+AthClient --> Gateway : reads/writes forms table
+AuthCompat --> AthenaAuth : signIn/signUp/signOut/password/verify
+AthServer --> Gateway : form reads + form submission validation
+Gateway --> DB : SQL execution
+
+note right of ClientCompat
+  Client bundle imports server-oriented DB helper,
+  causing Athena SDK/Node-runtime artifacts and
+  bundle-size / boundary issues.
+end note
+@enduml

@@ -99,9 +99,8 @@ export function LayoutCustomizationSection({
 	const [marginSliderValue, setMarginSliderValue] = useState<number>(() =>
 		getMarginSliderValue(currentMargin)
 	);
-	const [borderRadiusSliderValue, setBorderRadiusSliderValue] = useState<number>(
-		() => getBorderRadiusSliderValue(currentBorderRadius)
-	);
+	const [borderRadiusSliderValue, setBorderRadiusSliderValue] =
+		useState<number>(() => getBorderRadiusSliderValue(currentBorderRadius));
 
 	useEffect(() => {
 		setWidthSliderValue(getWidthSliderValue(currentWidth));

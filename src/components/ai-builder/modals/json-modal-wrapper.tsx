@@ -6,9 +6,9 @@ const JsonModalLazy = lazy(() =>
 );
 
 interface JsonModalWrapperProps {
+	activeForm: FormSchema | undefined;
 	isOpen: boolean;
 	onClose: () => void;
-	activeForm: FormSchema | undefined;
 }
 
 export function JsonModalWrapper({

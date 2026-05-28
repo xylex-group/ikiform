@@ -14,11 +14,11 @@ import {
 import type { EmbedConfig } from "./embed-customizer";
 
 interface EmbedCodeModalProps {
-	isOpen: boolean;
-	onClose: () => void;
 	config: EmbedConfig;
 	embedUrl: string;
 	formId: string;
+	isOpen: boolean;
+	onClose: () => void;
 }
 
 type EmbedMode = "html" | "react" | "nextjs" | "vue" | "wordpress";
@@ -49,7 +49,9 @@ export default function EmbedCodeModal({
 	};
 
 	const generateContainerStyles = () => {
-		if (config.padding === 0) return "";
+		if (config.padding === 0) {
+			return "";
+		}
 		return `padding: ${config.padding}px;`;
 	};
 

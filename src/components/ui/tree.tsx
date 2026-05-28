@@ -1,25 +1,25 @@
 "use client";
 
-import { Slot } from "@/components/ui/slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronRight, File, Folder, FolderOpen } from "lucide-react";
-import { AnimatePresence, LazyMotion, domAnimation, m } from "motion/react";
+import { AnimatePresence, domAnimation, LazyMotion, m } from "motion/react";
 import * as React from "react";
+import { Slot } from "@/components/ui/slot";
 import { cn } from "@/lib/utils";
 
 interface TreeContextType {
-	expandedIds: Set<string>;
-	selectedIds: string[];
-	toggleExpanded: (nodeId: string) => void;
-	handleSelection: (nodeId: string, ctrlKey?: boolean) => void;
-	showLines: boolean;
-	showIcons: boolean;
-	selectable: boolean;
-	multiSelect: boolean;
 	animateExpand: boolean;
+	expandedIds: Set<string>;
+	handleSelection: (nodeId: string, ctrlKey?: boolean) => void;
 	indent: number;
+	multiSelect: boolean;
 	onNodeClick?: (nodeId: string, data?: any) => void;
 	onNodeExpand?: (nodeId: string, expanded: boolean) => void;
+	selectable: boolean;
+	selectedIds: string[];
+	showIcons: boolean;
+	showLines: boolean;
+	toggleExpanded: (nodeId: string) => void;
 }
 
 const TreeContext = React.createContext<TreeContextType | null>(null);
@@ -79,17 +79,17 @@ const treeItemVariants = cva(
 export interface TreeProviderProps
 	extends React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof treeVariants> {
+	animateExpand?: boolean;
 	defaultExpandedIds?: string[];
-	selectedIds?: string[];
-	onSelectionChange?: (selectedIds: string[]) => void;
+	indent?: number;
+	multiSelect?: boolean;
 	onNodeClick?: (nodeId: string, data?: any) => void;
 	onNodeExpand?: (nodeId: string, expanded: boolean) => void;
-	showLines?: boolean;
-	showIcons?: boolean;
+	onSelectionChange?: (selectedIds: string[]) => void;
 	selectable?: boolean;
-	multiSelect?: boolean;
-	animateExpand?: boolean;
-	indent?: number;
+	selectedIds?: string[];
+	showIcons?: boolean;
+	showLines?: boolean;
 }
 
 const TreeProvider = React.forwardRef<HTMLDivElement, TreeProviderProps>(
@@ -138,7 +138,9 @@ const TreeProvider = React.forwardRef<HTMLDivElement, TreeProviderProps>(
 
 		const handleSelection = React.useCallback(
 			(nodeId: string, ctrlKey = false) => {
-				if (!selectable) return;
+				if (!selectable) {
+					return;
+				}
 
 				let newSelection: string[];
 
@@ -163,8 +165,8 @@ const TreeProvider = React.forwardRef<HTMLDivElement, TreeProviderProps>(
 			]
 		);
 
-			const contextValue: TreeContextType = {
-				expandedIds,
+		const contextValue: TreeContextType = {
+			expandedIds,
 			selectedIds: currentSelectedIds,
 			toggleExpanded,
 			handleSelection,
@@ -176,26 +178,26 @@ const TreeProvider = React.forwardRef<HTMLDivElement, TreeProviderProps>(
 			indent,
 			onNodeClick,
 			onNodeExpand,
-			};
-			return (
-				<LazyMotion features={domAnimation}>
-					<TreeContext.Provider value={contextValue}>
-						<m.div
-							animate={{ opacity: 1, y: 0 }}
-							className={cn(treeVariants({ variant, size, className }))}
-							initial={{ opacity: 0, y: 10 }}
-							ref={ref}
-							transition={{ duration: 0.3, ease: "easeOut" }}
-						>
-							<div className="p-2" {...props}>
-								{children}
-							</div>
-						</m.div>
-					</TreeContext.Provider>
-				</LazyMotion>
-			);
-		}
-	);
+		};
+		return (
+			<LazyMotion features={domAnimation}>
+				<TreeContext.Provider value={contextValue}>
+					<m.div
+						animate={{ opacity: 1, y: 0 }}
+						className={cn(treeVariants({ variant, size, className }))}
+						initial={{ opacity: 0, y: 10 }}
+						ref={ref}
+						transition={{ duration: 0.3, ease: "easeOut" }}
+					>
+						<div className="p-2" {...props}>
+							{children}
+						</div>
+					</m.div>
+				</TreeContext.Provider>
+			</LazyMotion>
+		);
+	}
+);
 
 TreeProvider.displayName = "TreeProvider";
 
@@ -224,15 +226,15 @@ Tree.displayName = "Tree";
 export interface TreeItemProps
 	extends React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof treeItemVariants> {
-	nodeId: string;
-	label: string;
-	icon?: React.ReactNode;
-	data?: any;
-	level?: number;
-	isLast?: boolean;
-	parentPath?: boolean[];
-	hasChildren?: boolean;
 	asChild?: boolean;
+	data?: any;
+	hasChildren?: boolean;
+	icon?: React.ReactNode;
+	isLast?: boolean;
+	label: string;
+	level?: number;
+	nodeId: string;
+	parentPath?: boolean[];
 }
 
 const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
@@ -283,7 +285,9 @@ const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
 			);
 
 		const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-			if (hasChildren) toggleExpanded(nodeId);
+			if (hasChildren) {
+				toggleExpanded(nodeId);
+			}
 			handleSelection(nodeId, e.ctrlKey || e.metaKey);
 			onNodeClick?.(nodeId, data);
 			onClick?.(e);

@@ -1,6 +1,6 @@
-import { Slot } from "@/components/ui/slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
+import { Slot } from "@/components/ui/slot";
 
 import { cn } from "@/lib/utils";
 

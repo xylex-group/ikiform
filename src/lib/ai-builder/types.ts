@@ -1,39 +1,39 @@
 export interface ChatMessage {
-	role: "user" | "assistant";
 	content: string;
+	role: "user" | "assistant";
 	schema?: any;
 }
 
 export interface FormSchema {
 	id: string;
-	schema: any;
 	prompt: string;
+	schema: any;
 }
 
 export interface ChatPanelProps {
-	messages: ChatMessage[];
+	handleSend: (e: React.FormEvent<HTMLFormElement>) => void;
+	input: string;
 	isLoading: boolean;
 	isStreaming: boolean;
-	streamedContent: string;
-	streamError: string | null;
-	showSuggestions: boolean;
-	suggestions: { text: string; icon: React.ReactNode }[];
-	setInput: (v: string) => void;
-	input: string;
-	handleSend: (e: React.FormEvent<HTMLFormElement>) => void;
-	setShowSuggestions: (v: boolean) => void;
-	setStreamedContent: (v: string) => void;
-	setStreamError: (v: string | null) => void;
-	streamingRef: React.RefObject<HTMLDivElement | null>;
+	messages: ChatMessage[];
 	messagesEndRef: React.RefObject<HTMLDivElement | null>;
 	mounted: boolean;
+	setInput: (v: string) => void;
+	setShowSuggestions: (v: boolean) => void;
+	setStreamError: (v: string | null) => void;
+	setStreamedContent: (v: string) => void;
+	showSuggestions: boolean;
+	streamError: string | null;
+	streamedContent: string;
+	streamingRef: React.RefObject<HTMLDivElement | null>;
+	suggestions: { text: string; icon: React.ReactNode }[];
 }
 
 export interface PreviewPanelProps {
-	forms: FormSchema[];
-	activeFormId: string | null;
-	setActiveFormId: (id: string) => void;
-	router: any;
-	setShowJsonModal: (v: boolean) => void;
 	activeForm: FormSchema | undefined;
+	activeFormId: string | null;
+	forms: FormSchema[];
+	router: any;
+	setActiveFormId: (id: string) => void;
+	setShowJsonModal: (v: boolean) => void;
 }

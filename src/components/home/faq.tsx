@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/accordion";
 
 interface Faq {
-	question: string;
 	answer: React.ReactNode;
+	question: string;
 }
 
 const faqs = [

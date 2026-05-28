@@ -5,8 +5,8 @@ import EmailLayout from "../components/email-layout";
 
 interface BaseMarkdownEmailProps {
 	heading?: string;
-	previewText?: string;
 	markdown?: string;
+	previewText?: string;
 	primaryCta?: CtaItem;
 	secondaryCtas?: CtaItem[];
 }

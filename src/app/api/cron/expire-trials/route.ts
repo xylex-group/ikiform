@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createClient as createAdminClient } from "@/lib/athena/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +15,12 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const supabase = createAdminClient();
+		const athena = createAdminClient();
 		const now = new Date();
 		const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
 		const thresholdISO = fourteenDaysAgo.toISOString();
 
-		const { data: debugUsers } = await supabase
+		const { data: debugUsers } = await athena
 			.from("users")
 			.select("uid, email, name, has_premium, has_free_trial, created_at")
 			.eq("has_premium", true)
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 		);
 		console.log("14 days ago threshold:", thresholdISO);
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("users")
 			.update({
 				has_premium: false,
@@ -66,3 +66,5 @@ export async function GET(request: NextRequest) {
 		);
 	}
 }
+
+

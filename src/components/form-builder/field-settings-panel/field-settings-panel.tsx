@@ -16,8 +16,8 @@ import { useFieldUpdates } from "./utils";
 
 interface FieldSettingsPanelProps {
 	field: FormField | null;
-	onFieldUpdate: (field: FormField) => void;
 	onClose: () => void;
+	onFieldUpdate: (field: FormField) => void;
 }
 
 export function FieldSettingsPanel({

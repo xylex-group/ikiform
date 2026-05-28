@@ -7,8 +7,8 @@ import type { ChatMessage } from "@/lib/ai-builder/types";
 import { ExpandableJsonBlock } from "./expandable-json-block";
 
 interface ChatMessageItemProps {
-	message: ChatMessage;
 	index: number;
+	message: ChatMessage;
 }
 
 export const ChatMessageItem = memo(function ChatMessageItem({

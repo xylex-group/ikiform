@@ -11,21 +11,21 @@ import { getPublicFormTitle } from "@/lib/utils/form-utils";
 import { DuplicateSubmissionError } from "./duplicate-submission-error";
 
 interface SingleStepFormContentProps {
-	formId: string;
-	schema: FormSchema;
-	fields: FormField[];
-	formData: Record<string, any>;
-	errors: Record<string, string>;
-	submitting: boolean;
-	onFieldValueChange: (fieldId: string, value: any) => void;
-	onSubmit: (e: React.FormEvent) => Promise<void>;
-	fieldVisibility?: Record<string, { visible: boolean; disabled: boolean }>;
-	logicMessages?: string[];
 	duplicateError?: {
 		message: string;
 		timeRemaining?: number;
 		attemptsRemaining?: number;
 	} | null;
+	errors: Record<string, string>;
+	fields: FormField[];
+	fieldVisibility?: Record<string, { visible: boolean; disabled: boolean }>;
+	formData: Record<string, any>;
+	formId: string;
+	logicMessages?: string[];
+	onFieldValueChange: (fieldId: string, value: any) => void;
+	onSubmit: (e: React.FormEvent) => Promise<void>;
+	schema: FormSchema;
+	submitting: boolean;
 }
 
 export const SingleStepFormContent: React.FC<SingleStepFormContentProps> = ({

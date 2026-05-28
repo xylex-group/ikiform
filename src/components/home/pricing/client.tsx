@@ -93,7 +93,7 @@ export default function PricingClient({ products }: PricingClientProps) {
 	const sectionRef = useRef<HTMLElement>(null);
 	const [purchaseLoading, setPurchaseLoading] = useState(false);
 	const { user } = useAuth();
-	usePremiumStatus(user);
+	usePremiumStatus();
 
 	useEffect(() => {
 		setPurchaseLoading(false);
@@ -105,7 +105,9 @@ export default function PricingClient({ products }: PricingClientProps) {
 		return () => clearTimeout(timeout);
 	};
 
-	if (!products || products.length === 0) return null;
+	if (!products || products.length === 0) {
+		return null;
+	}
 
 	function PricingHeader() {
 		return (

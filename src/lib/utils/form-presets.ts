@@ -1,12 +1,12 @@
 import type { LocalSettings } from "@/components/form-builder/form-settings-modal/types";
 
 export interface FormPreset {
+	category: "minimal" | "professional" | "creative" | "elegant" | "modern";
+	description: string;
 	id: string;
 	name: string;
-	description: string;
-	category: "minimal" | "professional" | "creative" | "elegant" | "modern";
-	thumbnail?: string;
 	settings: Partial<LocalSettings>;
+	thumbnail?: string;
 }
 
 export const FORM_PRESETS: FormPreset[] = [

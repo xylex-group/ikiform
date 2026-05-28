@@ -71,7 +71,9 @@ export const FormCreationWizard: React.FC<FormCreationWizardProps> = ({
 	};
 
 	const handleFinish = () => {
-		if (!configuration.type) return;
+		if (!configuration.type) {
+			return;
+		}
 
 		const baseSchema = createDefaultFormSchema({
 			title: configuration.title || "",
@@ -102,8 +104,12 @@ export const FormCreationWizard: React.FC<FormCreationWizardProps> = ({
 	};
 
 	const canContinue = () => {
-		if (currentStep === "type") return !!selectedType;
-		if (currentStep === "configure") return !!configuration.title.trim();
+		if (currentStep === "type") {
+			return !!selectedType;
+		}
+		if (currentStep === "configure") {
+			return !!configuration.title.trim();
+		}
 		return true;
 	};
 

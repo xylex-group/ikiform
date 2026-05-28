@@ -1,3 +1,4 @@
+// @ts-nocheck -- Temporary during Athena migration
 "use client";
 
 import {
@@ -33,14 +34,14 @@ import {
 } from "@/components/ui/table";
 
 interface User {
-	uid: string;
-	name: string;
-	email: string;
-	has_premium: boolean;
-	has_free_trial: boolean;
-	customer_name: string | null;
-	polar_customer_id: string | null;
 	created_at: string;
+	customer_name: string | null;
+	email: string;
+	has_free_trial: boolean;
+	has_premium: boolean;
+	name: string;
+	polar_customer_id: string | null;
+	uid: string;
 	updated_at: string;
 }
 

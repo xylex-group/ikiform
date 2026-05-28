@@ -11,7 +11,9 @@ import {
 } from "./settings-search-index";
 
 function highlightText(text: string, query: string) {
-	if (!query.trim()) return text;
+	if (!query.trim()) {
+		return text;
+	}
 
 	const queryLower = query.toLowerCase();
 	const textLower = text.toLowerCase();
@@ -63,7 +65,9 @@ export function SettingsSearch({
 
 	const results = useMemo(() => {
 		const q = query.trim().toLowerCase();
-		if (!q) return [] as SettingsSearchItem[];
+		if (!q) {
+			return [] as SettingsSearchItem[];
+		}
 		return SETTINGS_SEARCH_INDEX.filter((item) => {
 			const hay = [item.label, ...(item.keywords || [])]
 				.join(" ")
@@ -73,7 +77,9 @@ export function SettingsSearch({
 	}, [query]);
 
 	useEffect(() => {
-		if (open) inputRef.current?.focus();
+		if (open) {
+			inputRef.current?.focus();
+		}
 	}, [open]);
 
 	const handleNavigate = (item: SettingsSearchItem) => {
@@ -134,19 +140,27 @@ export function SettingsSearch({
 						}
 						if (e.key === "ArrowDown") {
 							e.preventDefault();
-							if (!results.length) return;
+							if (!results.length) {
+								return;
+							}
 							setOpen(true);
 							setActiveIndex((idx) => {
-								if (idx == null) return 0;
+								if (idx == null) {
+									return 0;
+								}
 								return Math.min(idx + 1, results.length - 1);
 							});
 						}
 						if (e.key === "ArrowUp") {
 							e.preventDefault();
-							if (!results.length) return;
+							if (!results.length) {
+								return;
+							}
 							setOpen(true);
 							setActiveIndex((idx) => {
-								if (idx == null) return results.length - 1;
+								if (idx == null) {
+									return results.length - 1;
+								}
 								return Math.max(idx - 1, 0);
 							});
 						}

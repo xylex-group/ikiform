@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface SignatureFieldProps {
-	value: string;
-	onChange: (value: string) => void;
 	disabled?: boolean;
+	onChange: (value: string) => void;
+	value: string;
 }
 
 const CANVAS_HEIGHT = 120;

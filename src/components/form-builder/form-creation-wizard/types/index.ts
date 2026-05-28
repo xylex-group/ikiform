@@ -12,18 +12,18 @@ export type FormType = "single" | "multi";
 export type WizardStep = "type" | "configure" | "review";
 
 export interface FormTypeDefinition {
-	id: FormType;
-	title: string;
 	description: string;
-	icon: LucideIcon;
 	features: string[];
+	icon: LucideIcon;
+	id: FormType;
 	preview?: React.ReactNode;
+	title: string;
 }
 
 export interface FormTypeCardProps {
-	type: FormTypeDefinition;
 	isSelected: boolean;
 	onSelect: (typeId: FormType) => void;
+	type: FormTypeDefinition;
 }
 
 export interface FormTypePreviewProps {
@@ -31,9 +31,9 @@ export interface FormTypePreviewProps {
 }
 
 export interface FormConfiguration {
-	title: string;
-	publicTitle?: string;
 	description: string;
+	publicTitle?: string;
+	title: string;
 	type: FormType;
 }
 

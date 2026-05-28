@@ -92,8 +92,8 @@ function PassphraseInputField({
 					<InputGroupButton
 						aria-label={visibilityAriaLabel}
 						onClick={onToggleVisibility}
-						tabIndex={-1}
 						size="icon-xs"
+						tabIndex={-1}
 						variant="ghost"
 					>
 						{isVisible ? (
@@ -243,7 +243,7 @@ export function SecureExportModal({
 					</DialogDescription>
 				</DialogHeader>
 
-				<div className="flex min-h-[430px] max-h-[75vh] flex-col">
+				<div className="flex max-h-[75vh] min-h-[430px] flex-col">
 					<ScrollArea className={`flex-1 ${MODAL_SCROLL_AREA_CLASS}`}>
 						<div className="space-y-4 pr-3">
 							<div className="rounded-lg border bg-muted/30 p-3 text-sm">

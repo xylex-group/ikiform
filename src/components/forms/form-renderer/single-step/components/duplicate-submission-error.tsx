@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { formatTimeRemaining } from "@/lib/forms/duplicate-prevention";
 
 interface DuplicateSubmissionErrorProps {
-	message: string;
-	timeRemaining?: number;
 	attemptsRemaining?: number;
+	message: string;
 	onRetry?: () => void;
+	timeRemaining?: number;
 }
 
 export function DuplicateSubmissionError({

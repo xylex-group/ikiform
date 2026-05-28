@@ -20,15 +20,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface FileWithPreview {
+	file?: File;
 	id: string;
+	lastModified?: number;
+	name: string;
 	preview?: string;
 	progress: number;
-	name: string;
 	size: number;
-	type: string;
-	lastModified?: number;
-	file?: File;
 	status: "uploading" | "completed" | "error";
+	type: string;
 }
 
 const fileUploadVariants = cva(
@@ -96,14 +96,14 @@ export interface FileUploadProps
 	extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
 		VariantProps<typeof fileUploadVariants> {
 	accept?: string;
-	multiple?: boolean;
+	disabled?: boolean;
+	itemVariant?: "default" | "ghost";
 	maxFiles?: number;
 	maxSize?: number;
-	disabled?: boolean;
+	multiple?: boolean;
 	onFilesChange?: (files: FileWithPreview[]) => void;
 	onUpload?: (files: File[]) => Promise<void>;
 	showPreview?: boolean;
-	itemVariant?: "default" | "ghost";
 }
 
 const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
@@ -132,16 +132,28 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
 		const inputRef = React.useRef<HTMLInputElement>(null);
 
 		const getFileIcon = (type: string) => {
-			if (type.startsWith("image/")) return ImageIcon;
-			if (type.startsWith("video/")) return Video;
-			if (type.startsWith("audio/")) return Music;
-			if (type.includes("pdf") || type.includes("document")) return FileText;
-			if (type.includes("zip") || type.includes("archive")) return Archive;
+			if (type.startsWith("image/")) {
+				return ImageIcon;
+			}
+			if (type.startsWith("video/")) {
+				return Video;
+			}
+			if (type.startsWith("audio/")) {
+				return Music;
+			}
+			if (type.includes("pdf") || type.includes("document")) {
+				return FileText;
+			}
+			if (type.includes("zip") || type.includes("archive")) {
+				return Archive;
+			}
 			return FileIcon;
 		};
 
 		const formatFileSize = (bytes: number): string => {
-			if (!bytes) return "0 Bytes";
+			if (!bytes) {
+				return "0 Bytes";
+			}
 			const k = 1024;
 			const sizes = ["Bytes", "KB", "MB", "GB"];
 			const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -156,7 +168,9 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
 		};
 
 		const handleFiles = async (fileList: FileList) => {
-			if (disabled) return;
+			if (disabled) {
+				return;
+			}
 
 			const newFiles = Array.from(fileList)
 				.slice(0, maxFiles - files.length)
@@ -251,17 +265,23 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
 
 		const onDragOver = (e: React.DragEvent) => {
 			e.preventDefault();
-			if (!disabled) setIsDragging(true);
+			if (!disabled) {
+				setIsDragging(true);
+			}
 		};
 
 		const onDragLeave = () => setIsDragging(false);
 
 		const onSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-			if (e.target.files) handleFiles(e.target.files);
+			if (e.target.files) {
+				handleFiles(e.target.files);
+			}
 		};
 
 		const openFileDialog = () => {
-			if (!disabled) inputRef.current?.click();
+			if (!disabled) {
+				inputRef.current?.click();
+			}
 		};
 
 		return (

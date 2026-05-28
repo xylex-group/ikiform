@@ -14,17 +14,17 @@ import EmbedPreview from "./embed-preview";
 import EmbedSettings from "./embed-settings";
 
 export interface EmbedConfig {
-	width: string;
-	height: string;
-	borderRadius: number;
-	padding: number;
-	backgroundColor: string;
-	showBorder: boolean;
-	borderColor: string;
-	borderWidth: number;
-	responsive: boolean;
-	loadingMode: "eager" | "lazy";
 	allowTransparency: boolean;
+	backgroundColor: string;
+	borderColor: string;
+	borderRadius: number;
+	borderWidth: number;
+	height: string;
+	loadingMode: "eager" | "lazy";
+	padding: number;
+	responsive: boolean;
+	showBorder: boolean;
+	width: string;
 }
 
 interface EmbedCustomizerProps {

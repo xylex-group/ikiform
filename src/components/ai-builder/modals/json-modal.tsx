@@ -17,9 +17,9 @@ import type { FormSchema } from "@/lib/ai-builder/types";
 import { CopyButton } from "../utils/copy-button";
 
 interface JsonModalProps {
+	activeForm: FormSchema | undefined;
 	isOpen: boolean;
 	onClose: () => void;
-	activeForm: FormSchema | undefined;
 }
 
 export function JsonModal({ isOpen, onClose, activeForm }: JsonModalProps) {
@@ -27,7 +27,9 @@ export function JsonModal({ isOpen, onClose, activeForm }: JsonModalProps) {
 	const isLoading = !highlightedCode;
 
 	useEffect(() => {
-		if (!activeForm?.schema) return;
+		if (!activeForm?.schema) {
+			return;
+		}
 
 		const highlightCode = async () => {
 			try {
@@ -56,7 +58,9 @@ export function JsonModal({ isOpen, onClose, activeForm }: JsonModalProps) {
 		highlightCode();
 	}, [activeForm?.schema]);
 
-	if (!activeForm?.schema) return null;
+	if (!activeForm?.schema) {
+		return null;
+	}
 
 	return (
 		<Dialog onOpenChange={onClose} open={isOpen}>

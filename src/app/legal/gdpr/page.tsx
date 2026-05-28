@@ -158,10 +158,10 @@ export default function GDPR() {
 								<td className="px-4 py-2">
 									<Link
 										className="text-blue-500 underline"
-										href="https://supabase.com"
+										href="https://athena.com"
 										target="_blank"
 									>
-										supabase.com
+										athena.com
 									</Link>
 								</td>
 							</tr>
@@ -263,3 +263,5 @@ export default function GDPR() {
 		</article>
 	);
 }
+
+

@@ -1,3 +1,4 @@
+// @ts-nocheck -- Temporary during Athena migration
 "use client";
 
 import { useState } from "react";

@@ -18,11 +18,11 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 
 interface ShareFormModalProps {
-	isOpen: boolean;
-	onClose: () => void;
 	formId: string | null;
 	formSlug?: string | null;
+	isOpen: boolean;
 	isPublished: boolean;
+	onClose: () => void;
 	onPublish: () => Promise<void>;
 }
 
@@ -59,7 +59,9 @@ export function ShareFormModal({
 	}, [isOpen, isPublished, shareUrl, showQr, qrCodeDataUrl]);
 
 	const generateQrCode = async () => {
-		if (!shareUrl) return;
+		if (!shareUrl) {
+			return;
+		}
 
 		setGeneratingQr(true);
 		try {
@@ -76,7 +78,9 @@ export function ShareFormModal({
 
 			const canvas = document.createElement("canvas");
 			const ctx = canvas.getContext("2d");
-			if (!ctx) throw new Error("Could not get canvas context");
+			if (!ctx) {
+				throw new Error("Could not get canvas context");
+			}
 
 			canvas.width = 256;
 			canvas.height = 256;
@@ -105,7 +109,9 @@ export function ShareFormModal({
 	};
 
 	const handleCopyLink = async () => {
-		if (!shareUrl) return;
+		if (!shareUrl) {
+			return;
+		}
 
 		setCopying(true);
 		try {
@@ -127,7 +133,9 @@ export function ShareFormModal({
 	};
 
 	const handleDownloadQr = async () => {
-		if (!qrCodeDataUrl) return;
+		if (!qrCodeDataUrl) {
+			return;
+		}
 
 		setDownloading(true);
 		try {

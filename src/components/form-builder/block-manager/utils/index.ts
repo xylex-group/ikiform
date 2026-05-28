@@ -6,7 +6,9 @@ export const handleBlockReorder = (
 	result: DragEndResult,
 	onBlocksUpdate: (blocks: FormBlock[]) => void
 ) => {
-	if (!result.destination) return;
+	if (!result.destination) {
+		return;
+	}
 
 	const reorderedBlocks = Array.from(blocks);
 	const [movedBlock] = reorderedBlocks.splice(result.source.index, 1);

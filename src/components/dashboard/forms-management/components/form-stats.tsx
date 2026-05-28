@@ -30,7 +30,9 @@ export const FormStats = memo(function FormStats({
 	);
 
 	const stats = useMemo(() => {
-		if (forms.length === 0) return [];
+		if (forms.length === 0) {
+			return [];
+		}
 
 		const totalForms = forms.length;
 		const publishedForms = forms.filter((f) => f.is_published).length;
@@ -73,7 +75,9 @@ export const FormStats = memo(function FormStats({
 		);
 	}
 
-	if (forms.length === 0) return null;
+	if (forms.length === 0) {
+		return null;
+	}
 
 	return (
 		<div

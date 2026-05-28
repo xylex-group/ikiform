@@ -2,15 +2,15 @@ import { type NextRequest, NextResponse } from "next/server";
 import { formsDbServer } from "@/lib/database";
 import { requirePremium } from "@/lib/utils/premium-check";
 import { sanitizeString } from "@/lib/utils/sanitize";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/athena/server";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -60,11 +60,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -117,3 +117,5 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 		);
 	}
 }
+
+

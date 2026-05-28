@@ -1,24 +1,24 @@
 import type { FormField, FormSchema, FormSubmission } from "@/lib/database";
 
 export interface QuizResult {
+	answeredQuestions: number;
+	fieldResults: QuizFieldResult[];
+	passed: boolean;
+	percentage: number;
 	score: number;
 	totalPossible: number;
-	percentage: number;
-	passed: boolean;
-	answeredQuestions: number;
 	totalQuestions: number;
-	fieldResults: QuizFieldResult[];
 }
 
 export interface QuizFieldResult {
+	correctAnswer: string | string[];
+	explanation?: string;
 	fieldId: string;
 	fieldLabel: string;
-	userAnswer: string | string[];
-	correctAnswer: string | string[];
 	isCorrect: boolean;
-	points: number;
 	maxPoints: number;
-	explanation?: string;
+	points: number;
+	userAnswer: string | string[];
 }
 
 export function calculateQuizScore(

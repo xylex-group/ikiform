@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { ensureDefaultFormSettings } from "@/lib/forms";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/athena/server";
 import DashboardClient from "./dashboard-client";
 
 // Skeleton components for streaming
@@ -50,12 +50,12 @@ function DashboardSkeleton() {
 }
 
 async function DashboardData() {
-	const supabase = await createClient();
+	const athena = await createClient();
 
 	const {
 		data: { user },
 		error: userError,
-	} = await supabase.auth.getUser();
+	} = await athena.auth.getUser();
 
 	if (userError || !user) {
 		redirect("/login");
@@ -63,14 +63,14 @@ async function DashboardData() {
 
 	// Parallel fetch: forms and premium status at the same time
 	const [formsResult, premiumResult] = await Promise.all([
-		supabase
+		athena
 			.from("forms")
 			.select(
 				"id, title, description, is_published, created_at, updated_at, user_id, schema, slug"
 			)
 			.eq("user_id", user.id)
 			.order("updated_at", { ascending: false }),
-		supabase
+		athena
 			.from("users")
 			.select("has_premium, polar_customer_id")
 			.eq("uid", user.id)
@@ -102,3 +102,5 @@ export default function DashboardPage() {
 		</Suspense>
 	);
 }
+
+

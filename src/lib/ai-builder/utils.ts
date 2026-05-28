@@ -4,7 +4,9 @@ export const generateSessionId = () =>
 export const extractJsonFromText = (text: string) => {
 	try {
 		const match = text.match(/\{[\s\S]*\}/);
-		if (match) return JSON.parse(match[0]);
+		if (match) {
+			return JSON.parse(match[0]);
+		}
 	} catch {
 		return null;
 	}

@@ -2,8 +2,8 @@ import { motion } from "motion/react";
 import { forwardRef, memo } from "react";
 
 interface StreamingIndicatorProps {
-	streamedContent: string;
 	streamError: string | null;
+	streamedContent: string;
 }
 
 export const StreamingIndicator = memo(

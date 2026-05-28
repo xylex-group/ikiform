@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createWebhook, getWebhooks } from "@/lib/webhooks/outbound";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/athena/server";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
 	const startTime = Date.now();
@@ -9,11 +9,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 	);
 
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 		}
 
 		if (formId) {
-			const { data: form, error: formError } = await supabase
+			const { data: form, error: formError } = await athena
 				.from("forms")
 				.select("id, user_id")
 				.eq("id", formId)
@@ -87,11 +87,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 	);
 
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 		if (body.formId || body.form_id) {
 			const formId = body.formId || body.form_id;
-			const { data: form, error: formError } = await supabase
+			const { data: form, error: formError } = await athena
 				.from("forms")
 				.select("id, user_id")
 				.eq("id", formId)
@@ -151,3 +151,5 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 		);
 	}
 }
+
+

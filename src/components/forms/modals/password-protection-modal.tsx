@@ -12,8 +12,8 @@ import { Label } from "@/components/ui/label";
 interface PasswordProtectionModalProps {
 	isOpen: boolean;
 	message: string;
-	onPasswordSubmit: (password: string) => void;
 	onCancel: () => void;
+	onPasswordSubmit: (password: string) => void;
 }
 
 export function PasswordProtectionModal({
@@ -40,7 +40,9 @@ export function PasswordProtectionModal({
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (!isOpen) return;
+			if (!isOpen) {
+				return;
+			}
 
 			if (e.key === "Escape") {
 				e.preventDefault();
@@ -105,7 +107,9 @@ export function PasswordProtectionModal({
 
 	const handlePasswordChange = (value: string) => {
 		setPassword(value);
-		if (error) setError("");
+		if (error) {
+			setError("");
+		}
 	};
 
 	const handleCancel = () => {
@@ -114,7 +118,9 @@ export function PasswordProtectionModal({
 		}
 	};
 
-	if (!isOpen) return null;
+	if (!isOpen) {
+		return null;
+	}
 
 	return (
 		<div

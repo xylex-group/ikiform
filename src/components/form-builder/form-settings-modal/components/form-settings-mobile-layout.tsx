@@ -9,8 +9,8 @@ import { SettingsSearch } from "./settings-search";
 
 interface FormSettingsMobileLayoutProps {
 	activeSection: FormSettingsSection;
-	onSectionChange: (section: FormSettingsSection) => void;
 	onClose: () => void;
+	onSectionChange: (section: FormSettingsSection) => void;
 	sectionProps: any;
 }
 

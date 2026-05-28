@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 
 test.describe.configure({ timeout: 90_000 });
 
@@ -106,7 +106,11 @@ function routePath(url: string): string {
 	return new URL(url).pathname;
 }
 
-async function recoverNavigation(page: Page, expectedRoute: string, stats: InteractionStats) {
+async function recoverNavigation(
+	page: Page,
+	expectedRoute: string,
+	stats: InteractionStats
+) {
 	const current = routePath(page.url());
 	if (current === expectedRoute) {
 		return;
@@ -116,7 +120,9 @@ async function recoverNavigation(page: Page, expectedRoute: string, stats: Inter
 		return;
 	}
 
-	await page.goto(expectedRoute, { waitUntil: "domcontentloaded" }).catch(() => undefined);
+	await page
+		.goto(expectedRoute, { waitUntil: "domcontentloaded" })
+		.catch(() => undefined);
 	await page.waitForLoadState("networkidle").catch(() => undefined);
 	stats.navigationsRecovered += 1;
 }
@@ -129,7 +135,8 @@ function recordAction(context: InteractionContext, message: string) {
 	if (context.actionLog.length >= 300) {
 		return;
 	}
-	const elapsed = INTERACTION_BUDGET_MS - Math.max(0, context.deadline - Date.now());
+	const elapsed =
+		INTERACTION_BUDGET_MS - Math.max(0, context.deadline - Date.now());
 	const entry = `[+${elapsed}ms] ${message}`;
 	context.actionLog.push(entry);
 	if (VERBOSE_INTERACTIONS) {
@@ -217,7 +224,9 @@ async function fillTextInputs(page: Page, context: InteractionContext) {
 			continue;
 		}
 
-		const tagName = await input.evaluate((element) => element.tagName.toLowerCase());
+		const tagName = await input.evaluate((element) =>
+			element.tagName.toLowerCase()
+		);
 		const type = await input.getAttribute("type");
 		const value =
 			type === "email"
@@ -230,7 +239,9 @@ async function fillTextInputs(page: Page, context: InteractionContext) {
 							? "Automated deep smoke text"
 							: "deep-smoke";
 
-		await input.fill(value, { timeout: CLICK_TIMEOUT_MS }).catch(() => undefined);
+		await input
+			.fill(value, { timeout: CLICK_TIMEOUT_MS })
+			.catch(() => undefined);
 		context.stats.fills += 1;
 		recordAction(context, `filled ${type ?? tagName} with "${value}"`);
 	}
@@ -257,7 +268,9 @@ async function toggleControls(page: Page, context: InteractionContext) {
 		if (!(await toggle.isVisible().catch(() => false))) {
 			continue;
 		}
-		await toggle.click({ timeout: CLICK_TIMEOUT_MS, noWaitAfter: true }).catch(() => undefined);
+		await toggle
+			.click({ timeout: CLICK_TIMEOUT_MS, noWaitAfter: true })
+			.catch(() => undefined);
 		context.stats.toggles += 1;
 		recordAction(context, "toggle click");
 	}
@@ -276,10 +289,14 @@ async function exerciseSelects(page: Page, context: InteractionContext) {
 		if (!(await trigger.isVisible().catch(() => false))) {
 			continue;
 		}
-		await trigger.click({ timeout: CLICK_TIMEOUT_MS, noWaitAfter: true }).catch(() => undefined);
+		await trigger
+			.click({ timeout: CLICK_TIMEOUT_MS, noWaitAfter: true })
+			.catch(() => undefined);
 		const item = page.locator("[data-slot='select-item']").nth(0);
 		if (await item.isVisible().catch(() => false)) {
-			await item.click({ timeout: CLICK_TIMEOUT_MS, noWaitAfter: true }).catch(() => undefined);
+			await item
+				.click({ timeout: CLICK_TIMEOUT_MS, noWaitAfter: true })
+				.catch(() => undefined);
 			context.stats.selects += 1;
 			recordAction(context, "select option click");
 		}
@@ -323,7 +340,9 @@ async function exerciseMenusAndOverlays(
 				if (!(await item.isVisible().catch(() => false))) {
 					continue;
 				}
-				await item.click({ timeout: CLICK_TIMEOUT_MS, noWaitAfter: true }).catch(() => undefined);
+				await item
+					.click({ timeout: CLICK_TIMEOUT_MS, noWaitAfter: true })
+					.catch(() => undefined);
 				context.stats.clicks += 1;
 				recordAction(context, "menu/option click");
 				await page.waitForTimeout(30);
@@ -351,10 +370,7 @@ async function exerciseStructuralControls(
 	);
 }
 
-async function exerciseButtons(
-	page: Page,
-	context: InteractionContext
-) {
+async function exerciseButtons(page: Page, context: InteractionContext) {
 	await clickBatch(
 		page,
 		[
@@ -391,18 +407,21 @@ async function keyboardAndScrollPass(page: Page, context: InteractionContext) {
 	recordAction(context, "scroll down+up");
 }
 
-async function runDeepInteractionPass(page: Page, expectedRoute: string): Promise<DeepPassResult> {
+async function runDeepInteractionPass(
+	page: Page,
+	expectedRoute: string
+): Promise<DeepPassResult> {
 	const context: InteractionContext = {
 		expectedRoute,
 		deadline: Date.now() + INTERACTION_BUDGET_MS,
 		remainingActions: MAX_ACTIONS_PER_ROUTE,
 		stats: {
-		clicks: 0,
-		fills: 0,
-		toggles: 0,
-		selects: 0,
-		keys: 0,
-		navigationsRecovered: 0,
+			clicks: 0,
+			fills: 0,
+			toggles: 0,
+			selects: 0,
+			keys: 0,
+			navigationsRecovered: 0,
 			actionsConsumed: 0,
 			budgetExhausted: false,
 		},
@@ -433,21 +452,32 @@ for (const route of ROUTES) {
 			waitUntil: "domcontentloaded",
 		});
 
-		expect(response?.status(), `Unexpected status for ${route}`).toBeLessThan(500);
+		expect(response?.status(), `Unexpected status for ${route}`).toBeLessThan(
+			500
+		);
 		await page.waitForLoadState("networkidle").catch(() => undefined);
 		const landedRoute = routePath(page.url());
 
 		await expect(page.locator("body")).toBeVisible();
 		await expect(page.locator("body")).not.toContainText(/Application error/i);
-		await expect(page.locator("body")).not.toContainText(/Internal Server Error/i);
+		await expect(page.locator("body")).not.toContainText(
+			/Internal Server Error/i
+		);
 
-		const { stats, actionLog } = await runDeepInteractionPass(page, landedRoute);
+		const { stats, actionLog } = await runDeepInteractionPass(
+			page,
+			landedRoute
+		);
 		await page.waitForTimeout(200);
 
 		await testInfo.attach("interaction-stats", {
 			contentType: "application/json",
 			body: Buffer.from(
-				JSON.stringify({ route, landedRoute, stats, finalUrl: page.url() }, null, 2)
+				JSON.stringify(
+					{ route, landedRoute, stats, finalUrl: page.url() },
+					null,
+					2
+				)
 			),
 		});
 		await testInfo.attach("interaction-log", {

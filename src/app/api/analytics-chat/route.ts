@@ -10,7 +10,7 @@ import {
 	filterSystemMessages,
 } from "@/lib/utils/prompt-injection";
 import { sanitizeString } from "@/lib/utils/sanitize";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/athena/server";
 
 const systemPrompt = process.env.ANALYTICS_AI_SYSTEM_PROMPT;
 
@@ -25,15 +25,15 @@ let apiKeyValid: boolean | null = null;
 const MAX_MESSAGES = 20;
 
 interface ConversationAnalysis {
+	contextualHints: string[];
+	conversationTurns: number;
+	hasDirectRequest: boolean;
 	hasFollowUpQuestions: boolean;
-	referencesLastResponse: boolean;
-	topicsDiscussed: string[];
 	lastAIResponse: string | null;
 	lastUserMessage: string | null;
-	conversationTurns: number;
 	needsContext: boolean;
-	contextualHints: string[];
-	hasDirectRequest: boolean;
+	referencesLastResponse: boolean;
+	topicsDiscussed: string[];
 }
 
 function createErrorResponse(message: string, status = 500) {
@@ -266,11 +266,11 @@ export async function POST(req: NextRequest): Promise<Response> {
 	}
 
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user) {
 			return createErrorResponse("Unauthorized", 401);
@@ -628,7 +628,9 @@ export async function POST(req: NextRequest): Promise<Response> {
 				try {
 					while (true) {
 						const { value, done } = await reader.read();
-						if (done) break;
+						if (done) {
+							break;
+						}
 
 						if (controller.desiredSize === null) {
 							break;
@@ -728,3 +730,5 @@ export async function GET(): Promise<Response> {
 		}
 	);
 }
+
+

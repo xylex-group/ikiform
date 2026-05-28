@@ -33,7 +33,9 @@ export function FieldWrapper({
 	};
 
 	const renderFieldLabel = () => {
-		if (!(shouldShowLabel && field.label)) return null;
+		if (!(shouldShowLabel && field.label)) {
+			return null;
+		}
 
 		return (
 			<Label
@@ -48,7 +50,9 @@ export function FieldWrapper({
 
 	const renderFieldDescription = () => {
 		const description = getFieldDescription();
-		if (!(shouldShowLabel && description)) return null;
+		if (!(shouldShowLabel && description)) {
+			return null;
+		}
 
 		return (
 			<p className="form-description text-muted-foreground text-sm opacity-80">
@@ -59,13 +63,17 @@ export function FieldWrapper({
 
 	const renderFieldHelpText = () => {
 		const helpText = getFieldHelpText();
-		if (!(shouldShowHelpText && helpText)) return null;
+		if (!(shouldShowHelpText && helpText)) {
+			return null;
+		}
 
 		return <p className="text-muted-foreground text-xs">{helpText}</p>;
 	};
 
 	const renderFieldError = () => {
-		if (!(shouldShowError && error)) return null;
+		if (!(shouldShowError && error)) {
+			return null;
+		}
 
 		return (
 			<p

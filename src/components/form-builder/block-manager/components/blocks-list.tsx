@@ -8,23 +8,23 @@ import { BlockItem } from "./block-item";
 
 interface BlocksListProps {
 	blocks: FormBlock[];
-	expandedBlocks: Set<string>;
-	selectedBlockId: string | null;
-	selectedFieldId: string | null;
+	editDescription: string;
 	editingBlock: string | null;
 	editTitle: string;
-	editDescription: string;
-	onBlockSelect: (blockId: string | null) => void;
-	onFieldSelect: (fieldId: string | null) => void;
-	onToggleExpansion: (blockId: string) => void;
-	onStartEditing: (block: FormBlock) => void;
+	expandedBlocks: Set<string>;
 	onBlockDelete: (blockId: string) => void;
-	onFieldDelete: (fieldId: string) => void;
+	onBlockSelect: (blockId: string | null) => void;
 	onBlocksUpdate: (blocks: FormBlock[]) => void;
-	onTitleChange: (title: string) => void;
-	onDescriptionChange: (description: string) => void;
-	onSaveEdit: () => void;
 	onCancelEdit: () => void;
+	onDescriptionChange: (description: string) => void;
+	onFieldDelete: (fieldId: string) => void;
+	onFieldSelect: (fieldId: string | null) => void;
+	onSaveEdit: () => void;
+	onStartEditing: (block: FormBlock) => void;
+	onTitleChange: (title: string) => void;
+	onToggleExpansion: (blockId: string) => void;
+	selectedBlockId: string | null;
+	selectedFieldId: string | null;
 }
 
 export function BlocksList({

@@ -141,7 +141,10 @@ export function SliderFieldSettings({
 				{sliderSettings.sliderMode === "range" ? (
 					<>
 						<div className="flex flex-col gap-2">
-							<Label className="font-medium text-sm" htmlFor="slider-default-min">
+							<Label
+								className="font-medium text-sm"
+								htmlFor="slider-default-min"
+							>
 								Default Minimum
 							</Label>
 							<Input
@@ -170,7 +173,10 @@ export function SliderFieldSettings({
 							</p>
 						</div>
 						<div className="flex flex-col gap-2">
-							<Label className="font-medium text-sm" htmlFor="slider-default-max">
+							<Label
+								className="font-medium text-sm"
+								htmlFor="slider-default-max"
+							>
 								Default Maximum
 							</Label>
 							<Input
@@ -222,7 +228,10 @@ export function SliderFieldSettings({
 							type="number"
 							value={sliderSettings.defaultValue}
 						/>
-						<p className="text-muted-foreground text-xs" id="slider-default-help">
+						<p
+							className="text-muted-foreground text-xs"
+							id="slider-default-help"
+						>
 							Pre-filled value when the form loads
 						</p>
 					</div>

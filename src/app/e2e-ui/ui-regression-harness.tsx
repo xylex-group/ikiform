@@ -29,9 +29,7 @@ export function UiRegressionHarness() {
 					leftIcon={<ChevronRight className="size-4" />}
 					variant="outline"
 				>
-					<Link href="/e2e-ui">
-						AsChild Icon Button
-					</Link>
+					<Link href="/e2e-ui">AsChild Icon Button</Link>
 				</Button>
 			</div>
 

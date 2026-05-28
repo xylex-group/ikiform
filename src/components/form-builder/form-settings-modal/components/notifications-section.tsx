@@ -16,10 +16,10 @@ import { toast } from "@/hooks/use-toast";
 import type { LocalSettings, NotificationSettings } from "../types";
 
 interface NotificationsSectionProps {
-	localSettings: LocalSettings;
-	updateNotifications: (updates: Partial<NotificationSettings>) => void;
 	formId?: string;
+	localSettings: LocalSettings;
 	schema?: any;
+	updateNotifications: (updates: Partial<NotificationSettings>) => void;
 }
 
 export function NotificationsSection({

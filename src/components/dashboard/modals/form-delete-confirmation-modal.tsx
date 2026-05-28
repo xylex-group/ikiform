@@ -14,15 +14,15 @@ import {
 } from "@/components/ui/dialog";
 
 interface ConfirmationModalProps {
-	open: boolean;
-	onOpenChange: (open: boolean) => void;
-	title: string;
-	description: string;
-	confirmText?: string;
 	cancelText?: string;
-	variant?: "default" | "destructive";
-	onConfirm: () => void;
+	confirmText?: string;
+	description: string;
 	isLoading?: boolean;
+	onConfirm: () => void;
+	onOpenChange: (open: boolean) => void;
+	open: boolean;
+	title: string;
+	variant?: "default" | "destructive";
 }
 
 export function ConfirmationModal({
@@ -54,7 +54,9 @@ export function ConfirmationModal({
 
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent) => {
-			if (!open) return;
+			if (!open) {
+				return;
+			}
 
 			if (event.key === "Escape") {
 				handleCancel();

@@ -42,7 +42,7 @@ export interface EncryptedFormExportV1 {
 }
 
 function getWebCrypto(): Crypto {
-	if (!(globalThis.crypto?.subtle)) {
+	if (!globalThis.crypto?.subtle) {
 		throw new Error("Secure transfer is not supported in this environment.");
 	}
 	return globalThis.crypto;

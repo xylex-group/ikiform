@@ -16,10 +16,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 
 interface PasswordProtectionSectionProps {
-	localSettings: any;
-	updatePasswordProtection: (updates: any) => void;
 	formId?: string;
+	localSettings: any;
 	schema?: any;
+	updatePasswordProtection: (updates: any) => void;
 }
 
 export function PasswordProtectionSection({

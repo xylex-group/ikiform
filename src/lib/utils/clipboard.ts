@@ -1,8 +1,8 @@
 interface ClipboardOptions {
-	showSuccessToast?: boolean;
-	showErrorToast?: boolean;
-	successMessage?: string;
 	errorMessage?: string;
+	showErrorToast?: boolean;
+	showSuccessToast?: boolean;
+	successMessage?: string;
 }
 
 export async function copyToClipboard(

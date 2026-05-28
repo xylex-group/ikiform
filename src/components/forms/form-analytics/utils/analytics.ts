@@ -24,7 +24,9 @@ export const getFieldLabel = (form: Form, fieldId: string) => {
 	if (!field && form.schema.blocks) {
 		for (const block of form.schema.blocks) {
 			field = block.fields?.find((f) => f.id === fieldId);
-			if (field) break;
+			if (field) {
+				break;
+			}
 		}
 	}
 	return field?.label || fieldId;
@@ -44,7 +46,9 @@ export const getSubmissionCompletionRate = (
 	submission: FormSubmission,
 	totalFields: number
 ) => {
-	if (totalFields === 0) return 0;
+	if (totalFields === 0) {
+		return 0;
+	}
 	const filledFields = Object.values(submission.submission_data).filter(
 		(val) => val !== "" && val !== null && val !== undefined
 	).length;
@@ -60,7 +64,9 @@ export const filterSubmissions = (
 	submissions.filter((submission) => {
 		if (searchTerm) {
 			const searchString = JSON.stringify(submission).toLowerCase();
-			if (!searchString.includes(searchTerm.toLowerCase())) return false;
+			if (!searchString.includes(searchTerm.toLowerCase())) {
+				return false;
+			}
 		}
 
 		const submissionDate = new Date(submission.submitted_at);
@@ -73,15 +79,21 @@ export const filterSubmissions = (
 
 			switch (filterState.timeRange) {
 				case "today":
-					if (submissionDate < today) return false;
+					if (submissionDate < today) {
+						return false;
+					}
 					break;
 				case "week":
 					startDate.setDate(startDate.getDate() - 7);
-					if (submissionDate < startDate) return false;
+					if (submissionDate < startDate) {
+						return false;
+					}
 					break;
 				case "month":
 					startDate.setMonth(startDate.getMonth() - 1);
-					if (submissionDate < startDate) return false;
+					if (submissionDate < startDate) {
+						return false;
+					}
 					break;
 			}
 		}
@@ -93,13 +105,19 @@ export const filterSubmissions = (
 			);
 			switch (filterState.completionRate) {
 				case "complete":
-					if (completionRate < 100) return false;
+					if (completionRate < 100) {
+						return false;
+					}
 					break;
 				case "partial":
-					if (completionRate < 1 || completionRate === 100) return false;
+					if (completionRate < 1 || completionRate === 100) {
+						return false;
+					}
 					break;
 				case "empty":
-					if (completionRate > 0) return false;
+					if (completionRate > 0) {
+						return false;
+					}
 					break;
 			}
 		}
@@ -230,7 +248,9 @@ export const calculateHourlySubmissions = (
 };
 
 export const calculateBounceRate = (submissions: FormSubmission[]): number => {
-	if (submissions.length === 0) return 0;
+	if (submissions.length === 0) {
+		return 0;
+	}
 
 	const bouncedSubmissions = submissions.filter((sub) => {
 		const filledFields = Object.values(sub.submission_data).filter(
@@ -246,7 +266,9 @@ export const calculateConversionFunnel = (
 	form: Form,
 	submissions: FormSubmission[]
 ): ConversionFunnelStep[] | null => {
-	if (!(form.schema.settings?.multiStep && form.schema.blocks)) return null;
+	if (!(form.schema.settings?.multiStep && form.schema.blocks)) {
+		return null;
+	}
 
 	const funnel = form.schema.blocks.map((block) => {
 		const blockFieldIds = block.fields?.map((f) => f.id) || [];

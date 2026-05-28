@@ -13,7 +13,9 @@ export const useFormSubmissions = (formId: string) => {
 	const [refreshing, setRefreshing] = useState(false);
 
 	const loadSubmissions = useCallback(async () => {
-		if (!user) return;
+		if (!user) {
+			return;
+		}
 		try {
 			const formSubmissions = await formsDb.getFormSubmissions(formId, user.id);
 			setSubmissions(formSubmissions);

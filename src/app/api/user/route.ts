@@ -4,7 +4,7 @@ import {
 	sendWelcomeEmail,
 } from "@/lib/services/notifications";
 import { sanitizeString } from "@/lib/utils/sanitize";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/athena/server";
 
 const userCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 30_000;
@@ -31,14 +31,14 @@ function setCachedUser(email: string, data: any) {
 
 export async function POST(request: NextRequest) {
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 		const body = await request.json().catch(() => ({}));
 		const { ensureOnly } = body;
 
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -67,13 +67,13 @@ export async function POST(request: NextRequest) {
 			});
 		}
 
-		const { data: existingUser } = await supabase
+		const { data: existingUser } = await athena
 			.from("users")
 			.select("has_premium, has_free_trial, polar_customer_id")
 			.eq("email", sanitizedEmail)
 			.single();
 
-		const { data: upsertedUser, error: upsertError } = await supabase
+		const { data: upsertedUser, error: upsertError } = await athena
 			.from("users")
 			.upsert(
 				{
@@ -129,12 +129,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET(_request: NextRequest) {
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -153,7 +153,7 @@ export async function GET(_request: NextRequest) {
 			});
 		}
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("users")
 			.select(
 				"uid, email, name, has_premium, has_free_trial, polar_customer_id, created_at, updated_at"
@@ -187,3 +187,5 @@ export async function GET(_request: NextRequest) {
 		);
 	}
 }
+
+

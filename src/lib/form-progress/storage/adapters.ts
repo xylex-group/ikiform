@@ -15,7 +15,9 @@ export class LocalStorageAdapter implements ProgressStorageAdapter {
 	async load(key: string): Promise<FormProgress | null> {
 		try {
 			const stored = localStorage.getItem(`${this.prefix}${key}`);
-			if (!stored) return null;
+			if (!stored) {
+				return null;
+			}
 
 			const data = JSON.parse(stored) as FormProgress;
 
@@ -67,7 +69,9 @@ export class SessionStorageAdapter implements ProgressStorageAdapter {
 	async load(key: string): Promise<FormProgress | null> {
 		try {
 			const stored = sessionStorage.getItem(`${this.prefix}${key}`);
-			if (!stored) return null;
+			if (!stored) {
+				return null;
+			}
 
 			const data = JSON.parse(stored) as FormProgress;
 

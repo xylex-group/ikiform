@@ -11,20 +11,20 @@ export interface TagInputProps
 		React.InputHTMLAttributes<HTMLInputElement>,
 		"size" | "value" | "onChange"
 	> {
-	tags: string[];
-	onTagsChange: (tags: string[]) => void;
-	maxTags?: number;
-	placeholder?: string;
-	tagVariant?: "default" | "secondary" | "destructive" | "outline" | "ghost";
-	tagSize?: "sm" | "default" | "lg";
 	allowDuplicates?: boolean;
-	onTagAdd?: (tag: string) => void;
-	onTagRemove?: (tag: string) => void;
-	separator?: string | RegExp;
 	clearAllButton?: boolean;
-	onClearAll?: () => void;
 	disabled?: boolean;
 	error?: boolean;
+	maxTags?: number;
+	onClearAll?: () => void;
+	onTagAdd?: (tag: string) => void;
+	onTagRemove?: (tag: string) => void;
+	onTagsChange: (tags: string[]) => void;
+	placeholder?: string;
+	separator?: string | RegExp;
+	tagSize?: "sm" | "default" | "lg";
+	tags: string[];
+	tagVariant?: "default" | "secondary" | "destructive" | "outline" | "ghost";
 }
 
 const tagBadgeVariantMap = {
@@ -65,9 +65,15 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
 		const addTag = React.useCallback(
 			(tag: string) => {
 				const trimmedTag = tag.trim();
-				if (!trimmedTag) return;
-				if (!allowDuplicates && safeTags.includes(trimmedTag)) return;
-				if (maxTags && safeTags.length >= maxTags) return;
+				if (!trimmedTag) {
+					return;
+				}
+				if (!allowDuplicates && safeTags.includes(trimmedTag)) {
+					return;
+				}
+				if (maxTags && safeTags.length >= maxTags) {
+					return;
+				}
 
 				const newTags = [...safeTags, trimmedTag];
 				onTagsChange(newTags);

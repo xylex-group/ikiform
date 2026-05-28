@@ -5,9 +5,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface User {
-	has_premium: boolean;
-	has_free_trial: boolean;
 	created_at: string;
+	has_free_trial: boolean;
+	has_premium: boolean;
 }
 
 interface TrialBannerWrapperProps {
@@ -46,7 +46,9 @@ export function TrialBannerWrapper({ className }: TrialBannerWrapperProps) {
 	);
 
 	const trialEndDate = useMemo(() => {
-		if (!user?.created_at) return null;
+		if (!user?.created_at) {
+			return null;
+		}
 		return new Date(
 			new Date(user.created_at).getTime() + 14 * 24 * 60 * 60 * 1000
 		);
@@ -77,7 +79,9 @@ export function TrialBannerWrapper({ className }: TrialBannerWrapperProps) {
 	}, [fetchUser]);
 
 	useEffect(() => {
-		if (!trialEndDate) return;
+		if (!trialEndDate) {
+			return;
+		}
 
 		const updateTime = () => {
 			const now = new Date();

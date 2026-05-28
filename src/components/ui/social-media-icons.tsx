@@ -10,19 +10,19 @@ import {
 } from "react-icons/fa6";
 
 interface SocialMediaPlatforms {
-	linkedin?: string;
-	twitter?: string;
-	youtube?: string;
-	instagram?: string;
 	facebook?: string;
 	github?: string;
+	instagram?: string;
+	linkedin?: string;
+	twitter?: string;
 	website?: string;
+	youtube?: string;
 }
 
 interface SocialMediaIconsProps {
-	platforms: SocialMediaPlatforms;
-	iconSize?: "sm" | "md" | "lg";
 	className?: string;
+	iconSize?: "sm" | "md" | "lg";
+	platforms: SocialMediaPlatforms;
 	showLabels?: boolean;
 }
 
@@ -74,7 +74,9 @@ export function SocialMediaIcons({
 				const Icon = socialIcons[platform as keyof typeof socialIcons];
 				const label = socialLabels[platform as keyof typeof socialLabels];
 
-				if (typeof Icon !== "function" || !url) return null;
+				if (typeof Icon !== "function" || !url) {
+					return null;
+				}
 
 				return (
 					<Link

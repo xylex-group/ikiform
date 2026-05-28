@@ -2,12 +2,7 @@
 
 import { ChevronRight, Maximize2, Star } from "lucide-react";
 import Link from "next/link";
-import React, {
-	type CSSProperties,
-	useCallback,
-	useEffect,
-	useState,
-} from "react";
+import React, { type CSSProperties, useCallback, useState } from "react";
 import useSWR from "swr";
 import DemoFormBuilder from "@/components/form-builder/form-builder/demo-form-builder";
 import { Badge, Card } from "../ui";
@@ -32,7 +27,9 @@ export const EmbeddedForm = React.memo(function EmbeddedForm({
 	const [hasError, setHasError] = useState(false);
 
 	const handleMessage = useCallback((event: MessageEvent) => {
-		if (event.origin !== IFRAME_ORIGIN) return;
+		if (event.origin !== IFRAME_ORIGIN) {
+			return;
+		}
 		if (
 			event.data?.type === "resize" &&
 			typeof event.data?.height === "number"
@@ -374,8 +371,8 @@ export default function Hero() {
 					<AvatarGroup />
 				</div>
 
-				<Card className="w-full max-w-7xl rounded-none border-b-0 bg-card shadow-none flex flex-col py-0">
-					<Tabs className="w-full flex flex-col" defaultValue="form-demo">
+				<Card className="flex w-full max-w-7xl flex-col rounded-none border-b-0 bg-card py-0 shadow-none">
+					<Tabs className="flex w-full flex-col" defaultValue="form-demo">
 						<div className="flex items-center justify-start border-border border-b px-4 py-4 md:px-6">
 							<TabsList>
 								<TabsTrigger value="form-demo">Form Demo</TabsTrigger>

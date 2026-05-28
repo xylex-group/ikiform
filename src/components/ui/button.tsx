@@ -1,11 +1,11 @@
-import { Slot } from "@/components/ui/slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
+import { Slot } from "@/components/ui/slot";
 import { cn } from "@/lib/utils";
 import { Loader } from "./loader";
 
 const buttonVariants = cva(
-	"inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 " +
+	"inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0" +
 		"transition-transform will-change-transform active:scale-97",
 	{
 		variants: {
@@ -43,8 +43,8 @@ export interface ButtonProps
 	extends React.ButtonHTMLAttributes<HTMLButtonElement>,
 		VariantProps<typeof buttonVariants> {
 	asChild?: boolean;
-	loading?: boolean;
 	leftIcon?: React.ReactNode;
+	loading?: boolean;
 	rightIcon?: React.ReactNode;
 }
 

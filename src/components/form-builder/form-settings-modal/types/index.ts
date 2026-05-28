@@ -1,12 +1,12 @@
 import type { FormSchema } from "@/lib/database";
 
 export interface FormSettingsModalProps {
+	formId?: string;
 	isOpen: boolean;
 	onClose: () => void;
-	schema: FormSchema;
 	onSchemaUpdate: (updates: Partial<FormSchema>) => void;
+	schema: FormSchema;
 	userEmail?: string;
-	formId?: string;
 }
 
 export interface NotificationLink {
@@ -15,47 +15,25 @@ export interface NotificationLink {
 }
 
 export interface NotificationSettings {
-	enabled?: boolean;
-	email?: string;
-	subject?: string;
-	message?: string;
 	customLinks?: NotificationLink[];
+	email?: string;
+	enabled?: boolean;
+	message?: string;
+	subject?: string;
 }
 
 export interface LocalSettings {
-	title: string;
-	publicTitle?: string;
-	hideHeader?: boolean;
-	description?: string;
-	submitText?: string;
-	successMessage?: string;
-	redirectUrl?: string;
-
-	layout?: {
-		maxWidth?: "sm" | "md" | "lg" | "xl" | "full" | "custom";
-		customWidth?: string;
-		padding?: "none" | "sm" | "md" | "lg";
-		margin?: "none" | "sm" | "md" | "lg";
-		borderRadius?: "none" | "sm" | "md" | "lg" | "xl";
-		spacing?: "compact" | "normal" | "relaxed";
-		alignment?: "left" | "center" | "right";
+	api?: {
+		enabled?: boolean;
+		apiKey?: string;
+		allowExternalSubmissions?: boolean;
 	};
 	behavior?: {
 		autoFocusFirstField?: boolean;
 	};
-	colors?: {
-		background?: string;
-		text?: string;
-		primary?: string;
-		border?: string;
-		websiteBackground?: string;
-	};
-	typography?: {
-		fontFamily?: string;
-		fontSize?: "xs" | "sm" | "base" | "lg" | "xl";
-		fontWeight?: "light" | "normal" | "medium" | "semibold" | "bold";
-		lineHeight?: "tight" | "normal" | "relaxed";
-		letterSpacing?: "tight" | "normal" | "wide";
+	botProtection?: {
+		enabled?: boolean;
+		message?: string;
 	};
 	branding?: {
 		socialMedia?: {
@@ -75,13 +53,14 @@ export interface LocalSettings {
 		};
 		showIkiformBranding?: boolean;
 	};
-	rateLimit?: {
-		enabled?: boolean;
-		maxSubmissions?: number;
-		timeWindow?: number;
-		blockDuration?: number;
-		message?: string;
+	colors?: {
+		background?: string;
+		text?: string;
+		primary?: string;
+		border?: string;
+		websiteBackground?: string;
 	};
+	description?: string;
 	duplicatePrevention?: {
 		enabled?: boolean;
 		strategy?: "ip" | "email" | "session" | "combined";
@@ -91,47 +70,16 @@ export interface LocalSettings {
 		allowOverride?: boolean;
 		maxAttempts?: number;
 	};
-	botProtection?: {
-		enabled?: boolean;
-		message?: string;
-	};
-	profanityFilter?: {
-		enabled?: boolean;
-		strictMode?: boolean;
-		replaceWithAsterisks?: boolean;
-		customMessage?: string;
-		customWords?: string[];
-		whitelistedWords?: string[];
-	};
-	responseLimit?: {
-		enabled?: boolean;
-		maxResponses?: number;
-		message?: string;
-	};
-	passwordProtection?: {
-		enabled?: boolean;
-		password?: string;
-		message?: string;
-	};
-	rtl?: boolean;
-	notifications?: NotificationSettings;
-	showProgress?: boolean;
-	quiz?: {
-		enabled?: boolean;
-		passingScore?: number;
-		showScore?: boolean;
-		showCorrectAnswers?: boolean;
-		allowRetake?: boolean;
-		timeLimit?: number;
-		resultMessage?: {
-			pass?: string;
-			fail?: string;
-		};
-	};
-	api?: {
-		enabled?: boolean;
-		apiKey?: string;
-		allowExternalSubmissions?: boolean;
+	hideHeader?: boolean;
+
+	layout?: {
+		maxWidth?: "sm" | "md" | "lg" | "xl" | "full" | "custom";
+		customWidth?: string;
+		padding?: "none" | "sm" | "md" | "lg";
+		margin?: "none" | "sm" | "md" | "lg";
+		borderRadius?: "none" | "sm" | "md" | "lg" | "xl";
+		spacing?: "compact" | "normal" | "relaxed";
+		alignment?: "left" | "center" | "right";
 	};
 	metadata?: {
 		title?: string;
@@ -157,49 +105,101 @@ export interface LocalSettings {
 		noImageIndex?: boolean;
 		noTranslate?: boolean;
 	};
+	notifications?: NotificationSettings;
+	passwordProtection?: {
+		enabled?: boolean;
+		password?: string;
+		message?: string;
+	};
+	profanityFilter?: {
+		enabled?: boolean;
+		strictMode?: boolean;
+		replaceWithAsterisks?: boolean;
+		customMessage?: string;
+		customWords?: string[];
+		whitelistedWords?: string[];
+	};
+	publicTitle?: string;
+	quiz?: {
+		enabled?: boolean;
+		passingScore?: number;
+		showScore?: boolean;
+		showCorrectAnswers?: boolean;
+		allowRetake?: boolean;
+		timeLimit?: number;
+		resultMessage?: {
+			pass?: string;
+			fail?: string;
+		};
+	};
+	rateLimit?: {
+		enabled?: boolean;
+		maxSubmissions?: number;
+		timeWindow?: number;
+		blockDuration?: number;
+		message?: string;
+	};
+	redirectUrl?: string;
+	responseLimit?: {
+		enabled?: boolean;
+		maxResponses?: number;
+		message?: string;
+	};
+	rtl?: boolean;
+	showProgress?: boolean;
+	submitText?: string;
+	successMessage?: string;
+	title: string;
+	typography?: {
+		fontFamily?: string;
+		fontSize?: "xs" | "sm" | "base" | "lg" | "xl";
+		fontWeight?: "light" | "normal" | "medium" | "semibold" | "bold";
+		lineHeight?: "tight" | "normal" | "relaxed";
+		letterSpacing?: "tight" | "normal" | "wide";
+	};
 }
 
 export interface BasicInfoSectionProps {
-	localSettings: LocalSettings;
-	updateSettings: (updates: Partial<LocalSettings>) => void;
 	formId?: string;
+	localSettings: LocalSettings;
 	schema?: any;
+	updateSettings: (updates: Partial<LocalSettings>) => void;
 }
 
 export interface RateLimitSectionProps {
+	formId?: string;
 	localSettings: LocalSettings;
+	schema?: any;
 	updateRateLimit: (
 		updates: Partial<NonNullable<LocalSettings["rateLimit"]>>
 	) => void;
-	formId?: string;
-	schema?: any;
 }
 
 export interface DuplicatePreventionSectionProps {
+	formId?: string;
 	localSettings: LocalSettings;
+	schema?: any;
 	updateDuplicatePrevention: (
 		updates: Partial<NonNullable<LocalSettings["duplicatePrevention"]>>
 	) => void;
-	formId?: string;
-	schema?: any;
 }
 
 export interface ProfanityFilterSectionProps {
+	formId?: string;
 	localSettings: LocalSettings;
+	schema?: any;
 	updateProfanityFilter: (
 		updates: Partial<NonNullable<LocalSettings["profanityFilter"]>>
 	) => void;
-	formId?: string;
-	schema?: any;
 }
 
 export interface BotProtectionSectionProps {
+	formId?: string;
 	localSettings: LocalSettings;
+	schema?: any;
 	updateBotProtection: (
 		updates: Partial<NonNullable<LocalSettings["botProtection"]>>
 	) => void;
-	formId?: string;
-	schema?: any;
 }
 
 export interface SocialMediaSectionProps {
@@ -212,10 +212,10 @@ export interface SocialMediaSectionProps {
 }
 
 export interface ApiSectionProps {
-	localSettings: LocalSettings;
-	updateApi: (updates: Partial<NonNullable<LocalSettings["api"]>>) => void;
 	formId?: string;
+	localSettings: LocalSettings;
 	schema?: any;
+	updateApi: (updates: Partial<NonNullable<LocalSettings["api"]>>) => void;
 }
 
 export interface MetadataSectionProps {
@@ -236,7 +236,7 @@ export type FormSettingsSection =
 	| "metadata";
 
 export interface FormSettingsSectionConfig {
+	iconName: string;
 	id: FormSettingsSection;
 	label: string;
-	iconName: string;
 }

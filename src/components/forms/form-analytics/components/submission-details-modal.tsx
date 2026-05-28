@@ -12,10 +12,10 @@ import type { Form, FormSubmission } from "@/lib/database";
 import { formatDate, getFieldLabel } from "../utils";
 
 interface SubmissionDetailsModalProps {
+	form: Form;
 	isOpen: boolean;
 	onClose: () => void;
 	submission: FormSubmission | null;
-	form: Form;
 }
 
 export function SubmissionDetailsModal({
@@ -24,7 +24,9 @@ export function SubmissionDetailsModal({
 	submission,
 	form,
 }: SubmissionDetailsModalProps) {
-	if (!submission) return null;
+	if (!submission) {
+		return null;
+	}
 
 	return (
 		<Dialog onOpenChange={onClose} open={isOpen}>

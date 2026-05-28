@@ -4,7 +4,9 @@ export function applyBuilderMode<T extends Record<string, any>>(
 	props: T,
 	builderMode: boolean
 ): T {
-	if (!builderMode) return props;
+	if (!builderMode) {
+		return props;
+	}
 
 	return {
 		...props,

@@ -26,12 +26,12 @@ export interface NotificationLink {
 }
 
 export interface SendNotificationOptions {
-	to: string;
-	subject: string;
-	message: string;
-	from?: string;
 	analyticsUrl?: string;
 	customLinks?: NotificationLink[];
+	from?: string;
+	message: string;
+	subject: string;
+	to: string;
 }
 
 function renderLinks(analyticsUrl?: string, customLinks?: NotificationLink[]) {

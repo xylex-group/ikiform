@@ -10,7 +10,7 @@ import {
 	filterSystemMessages,
 } from "@/lib/utils/prompt-injection";
 import { sanitizeString } from "@/lib/utils/sanitize";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/athena/server";
 
 const systemPrompt =
 	process.env.AI_FORM_SYSTEM_PROMPT ||
@@ -35,8 +35,8 @@ function createErrorResponse(message: string, status = 500) {
 }
 
 interface AiMessage {
-	role: string;
 	content: string;
+	role: string;
 }
 
 function validateAndSanitizeMessages(messages: AiMessage[]): AiMessage[] {
@@ -79,11 +79,11 @@ interface AuthenticatedUser {
 async function authenticateAndCheckPremium(
 	_req: NextRequest
 ): Promise<{ user: AuthenticatedUser } | { error: Response }> {
-	const supabase = await createClient();
+	const athena = await createClient();
 	const {
 		data: { user },
 		error: authError,
-	} = await supabase.auth.getUser();
+	} = await athena.auth.getUser();
 	if (authError || !user) {
 		return { error: createErrorResponse("Unauthorized", 401) };
 	}
@@ -321,14 +321,20 @@ export async function POST(req: NextRequest): Promise<Response> {
 
 	try {
 		const authResult = await authenticateAndCheckPremium(req);
-		if ("error" in authResult) return authResult.error;
+		if ("error" in authResult) {
+			return authResult.error;
+		}
 		const user = authResult.user;
 
 		const apiKeyError = validateApiKey();
-		if (apiKeyError) return apiKeyError;
+		if (apiKeyError) {
+			return apiKeyError;
+		}
 
 		const parseResult = await parseAndSanitizeRequest(req);
-		if ("error" in parseResult) return parseResult.error;
+		if ("error" in parseResult) {
+			return parseResult.error;
+		}
 		const sanitizedMessages = parseResult.sanitizedMessages;
 		const sessionId = parseResult.sessionId;
 
@@ -377,3 +383,5 @@ export async function GET(): Promise<Response> {
 		}
 	);
 }
+
+

@@ -9,29 +9,29 @@ export interface PublicFormProps {
 }
 
 export interface SingleStepFormState {
-	formData: Record<string, any>;
-	errors: Record<string, string>;
-	submitting: boolean;
-	submitted: boolean;
-	quizResults: QuizResult | null;
 	duplicateError: {
 		message: string;
 		timeRemaining?: number;
 		attemptsRemaining?: number;
 	} | null;
+	errors: Record<string, string>;
+	formData: Record<string, any>;
 
 	progress: FormProgress | null;
+	progressError: string | null;
 	progressLoading: boolean;
 	progressSaving: boolean;
-	progressError: string | null;
+	quizResults: QuizResult | null;
+	submitted: boolean;
+	submitting: boolean;
 }
 
 export interface SingleStepFormActions {
-	setFormData: (data: Record<string, any>) => void;
-	setErrors: (errors: Record<string, string>) => void;
-	setSubmitting: (submitting: boolean) => void;
-	setSubmitted: (submitted: boolean) => void;
+	clearProgress: () => Promise<void>;
 	handleFieldValueChange: (fieldId: string, value: any) => void;
 	handleSubmit: (e: React.FormEvent) => Promise<void>;
-	clearProgress: () => Promise<void>;
+	setErrors: (errors: Record<string, string>) => void;
+	setFormData: (data: Record<string, any>) => void;
+	setSubmitted: (submitted: boolean) => void;
+	setSubmitting: (submitting: boolean) => void;
 }

@@ -129,10 +129,14 @@ export function EmailInputField(props: BaseFieldProps) {
 	};
 
 	const renderAutoCompleteDropdown = () => {
-		if (!shouldShowAutoComplete()) return null;
+		if (!shouldShowAutoComplete()) {
+			return null;
+		}
 
 		const emailSettings = getEmailSettings();
-		if (!emailSettings?.autoCompleteDomain) return null;
+		if (!emailSettings?.autoCompleteDomain) {
+			return null;
+		}
 
 		return (
 			<div className="absolute top-full right-0 left-0 z-10 mt-1 rounded-xl border border-border bg-accent p-2">
@@ -158,7 +162,9 @@ export function EmailInputField(props: BaseFieldProps) {
 	};
 
 	const renderAutoCompleteBadge = () => {
-		if (!shouldShowAutoCompleteBadge()) return null;
+		if (!shouldShowAutoCompleteBadge()) {
+			return null;
+		}
 
 		const emailSettings = getEmailSettings();
 		return (
@@ -171,7 +177,9 @@ export function EmailInputField(props: BaseFieldProps) {
 	};
 
 	const renderAllowedDomains = () => {
-		if (!shouldShowAllowedDomains()) return null;
+		if (!shouldShowAllowedDomains()) {
+			return null;
+		}
 
 		const emailSettings = getEmailSettings();
 		return (

@@ -51,9 +51,9 @@ function hexToHsl(hex: string): string {
 }
 
 interface ActualFormPreviewProps {
+	className?: string;
 	localSettings: LocalSettings;
 	schema: FormSchema;
-	className?: string;
 }
 
 export function ActualFormPreview({
@@ -91,7 +91,9 @@ export function ActualFormPreview({
 	};
 
 	React.useEffect(() => {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		document.documentElement.classList.remove("dark");
 		document.documentElement.classList.add("light");

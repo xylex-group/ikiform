@@ -11,16 +11,16 @@ import type { FormField } from "@/lib/database";
 
 interface FileFieldSettingsProps {
 	field: FormField;
-	onUpdateSettings: (updates: Partial<FormField["settings"]>) => void;
 	onFieldUpdate: (field: FormField) => void;
+	onUpdateSettings: (updates: Partial<FormField["settings"]>) => void;
 }
 
 interface FileFieldSettings {
 	accept?: string;
-	maxFiles?: number;
-	maxSize?: number;
 	allowedTypes?: string[];
 	helpText?: string;
+	maxFiles?: number;
+	maxSize?: number;
 }
 
 const COMMON_FILE_TYPES = [
@@ -87,7 +87,9 @@ export function FileFieldSettings({
 	};
 
 	const formatFileSize = (bytes: number): string => {
-		if (!bytes) return "0 Bytes";
+		if (!bytes) {
+			return "0 Bytes";
+		}
 		const k = 1024;
 		const sizes = ["Bytes", "KB", "MB", "GB"];
 		const i = Math.floor(Math.log(bytes) / Math.log(k));

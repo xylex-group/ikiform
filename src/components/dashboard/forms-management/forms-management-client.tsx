@@ -1,6 +1,6 @@
 "use client";
 
-import type { User } from "@supabase/supabase-js";
+import type { AppAuthUser } from "@/lib/auth/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "@/hooks/use-toast";
@@ -17,7 +17,7 @@ import { copyToClipboard, generateShareUrl } from "./utils";
 
 interface FormsManagementClientProps extends FormsManagementProps {
 	initialForms: Form[];
-	user: User;
+	user: AppAuthUser;
 }
 
 function filterAndSortForms(
@@ -62,8 +62,16 @@ function filterAndSortForms(
 	sorted.sort((a, b) => {
 		switch (sortBy) {
 			case "title": {
-				const aTitle = (a.schema?.settings?.title || a.title || "").toLowerCase();
-				const bTitle = (b.schema?.settings?.title || b.title || "").toLowerCase();
+				const aTitle = (
+					a.schema?.settings?.title ||
+					a.title ||
+					""
+				).toLowerCase();
+				const bTitle = (
+					b.schema?.settings?.title ||
+					b.title ||
+					""
+				).toLowerCase();
 				return aTitle.localeCompare(bTitle);
 			}
 			case "created": {

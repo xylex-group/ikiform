@@ -10,60 +10,33 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+// Safe browser-only Athena Auth client (avoids server-only deps)
+import { athenaBrowserAuth } from "@/lib/auth/athena-browser-auth";
 import { constantTimeCompare } from "@/lib/utils/constant-time-compare";
-import { createClient } from "@/utils/supabase/client";
+
+const getAuthClient = async () => athenaBrowserAuth;
 
 export default function ResetPasswordClient() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
+	const [sessionReady, setSessionReady] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-	const [sessionReady, setSessionReady] = useState(false);
 	const [passwords, setPasswords] = useState({
 		password: "",
 		confirmPassword: "",
 	});
 
 	useEffect(() => {
-		const handleRecoverySession = async () => {
-			const supabase = createClient();
+		const token = searchParams.get("token");
+		if (!token) {
+			toast.error("No reset token found. Please request a new password reset.");
+			router.push("/login");
+			return;
+		}
 
-			const accessToken = searchParams.get("access_token");
-			const refreshToken = searchParams.get("refresh_token");
-
-			if (accessToken && refreshToken) {
-				try {
-					const { data, error } = await supabase.auth.setSession({
-						access_token: accessToken,
-						refresh_token: refreshToken,
-					});
-
-					if (error) {
-						console.error("Session error:", error);
-						toast.error(
-							"Invalid or expired reset link. Please request a new one."
-						);
-						router.push("/login");
-					} else if (data.session) {
-						setSessionReady(true);
-						toast.success("Ready to reset your password!");
-						window.history.replaceState({}, "", "/reset-password");
-					}
-				} catch (error) {
-					console.error("Recovery session error:", error);
-					toast.error("Something went wrong. Please try again.");
-					router.push("/login");
-				}
-			} else {
-				toast.error(
-					"No reset token found. Please request a new password reset."
-				);
-				router.push("/login");
-			}
-		};
-
-		handleRecoverySession();
+		setSessionReady(true);
 	}, [searchParams, router]);
 
 	const handlePasswordChange = (field: string, value: string) => {
@@ -94,21 +67,32 @@ export default function ResetPasswordClient() {
 	const handleResetPassword = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (!validatePasswords()) return;
+		if (!validatePasswords()) {
+			return;
+		}
 
 		setLoading(true);
-		const supabase = createClient();
+		const auth = await getAuthClient();
+		const token = searchParams.get("token");
+
+		if (!token) {
+			toast.error("Reset token is missing. Request a new link.");
+			setLoading(false);
+			router.push("/login");
+			return;
+		}
 
 		try {
-			const { error } = await supabase.auth.updateUser({
-				password: passwords.password,
+			const result = await auth.resetPassword({
+				newPassword: passwords.password,
+				token,
 			});
 
-			if (error) {
-				toast.error(error.message);
-			} else {
+			if (result.ok) {
 				toast.success("Password updated successfully!");
 				router.push("/dashboard");
+			} else {
+				toast.error(result.error || "Failed to update password");
 			}
 		} catch (error) {
 			console.error("Password reset error:", error);

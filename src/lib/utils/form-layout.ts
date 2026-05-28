@@ -10,18 +10,18 @@ import {
 import { loadGoogleFont } from "./google-fonts";
 
 export interface LayoutClasses {
-	maxWidthClass: string;
-	paddingClass: string;
 	containerClass: string;
 	marginClass: string;
+	maxWidthClass: string;
+	paddingClass: string;
 }
 
 export interface FormCustomStyles {
-	containerStyle: React.CSSProperties;
 	cardStyle: React.CSSProperties;
+	containerStyle: React.CSSProperties;
 	formStyle: React.CSSProperties;
-	textStyle: React.CSSProperties;
 	headingStyle: React.CSSProperties;
+	textStyle: React.CSSProperties;
 }
 
 export const getFormLayoutClasses = (schema: FormSchema): LayoutClasses => {

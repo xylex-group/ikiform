@@ -33,8 +33,8 @@ const textareaVariants = cva(
 export interface TextareaProps
 	extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size">,
 		VariantProps<typeof textareaVariants> {
-	error?: boolean;
 	clearable?: boolean;
+	error?: boolean;
 	onClear?: () => void;
 }
 

@@ -2,8 +2,8 @@ import type { FormField } from "@/lib/database";
 
 export interface FieldSettingsPanelProps {
 	field: FormField | null;
-	onFieldUpdate: (field: FormField) => void;
 	onClose: () => void;
+	onFieldUpdate: (field: FormField) => void;
 }
 
 export interface EmptyStateProps {
@@ -41,11 +41,11 @@ export type FieldVariant = "default" | "filled" | "ghost" | "underline";
 
 export interface FieldHelpers {
 	hasOptions: boolean;
-	isTextType: boolean;
 	isNumberType: boolean;
-	isTextareaType: boolean;
-	isSliderType: boolean;
-	isTagsType: boolean;
-	isSocialType: boolean;
 	isSelectType: boolean;
+	isSliderType: boolean;
+	isSocialType: boolean;
+	isTagsType: boolean;
+	isTextareaType: boolean;
+	isTextType: boolean;
 }

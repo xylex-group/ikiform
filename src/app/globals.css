@@ -117,7 +117,6 @@
 	--sidebar-ring: oklch(0.488 0.243 264.376);
 }
 
-
 @keyframes shimmer {
 	0% {
 		transform: translateX(-100%);
@@ -168,13 +167,15 @@
 		webkit-tap-highlight-color: transparent !important;
 		-webkit-tap-highlight-color: transparent !important;
 	}
-	
+
 	body {
 		@apply bg-background text-foreground font-sans;
 	}
-	
-	button, a, .switch{
-	cursor: pointer;
+
+	button,
+	a,
+	.switch {
+		cursor: pointer;
 	}
 
 	.prose {
@@ -193,20 +194,20 @@
 		}
 
 		ul {
-			@apply flex flex-col gap-2 list-disc;
 			list-style-type: disc;
+			@apply flex flex-col gap-2 list-disc;
 		}
 
 		ol {
-			@apply flex flex-col gap-2 list-decimal;
 			list-style-type: decimal;
+			@apply flex flex-col gap-2 list-decimal;
 		}
 	}
 }
 
 .toast {
-	border-radius: var(--radius-card) !important;
 	font-weight: 500 !important;
+	border-radius: var(--radius-card) !important;
 }
 
 .go2072408551 {
@@ -218,8 +219,8 @@
 }
 
 .custom-scrollbar {
-	scrollbar-width: thin;
 	scrollbar-color: hsl(var(--muted)) transparent;
+	scrollbar-width: thin;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -244,10 +245,10 @@
 }
 
 .form-card-hover:hover {
-	transform: translateY(-2px);
 	box-shadow:
 		0 10px 25px -5px rgba(0, 0, 0, 0.1),
 		0 4px 6px -2px rgba(0, 0, 0, 0.05);
+	transform: translateY(-2px);
 }
 
 .dark .form-card-hover:hover {
@@ -312,14 +313,14 @@ pre {
 
 [data-theme="dark"] .shiki,
 [data-theme="dark"] .shiki span {
-	background-color: var(--s-dark-bg) !important;
 	color: var(--s-dark) !important;
+	background-color: var(--s-dark-bg) !important;
 }
 
 [data-theme="dim"] .shiki,
 [data-theme="dim"] .shiki span {
-	background-color: var(--s-dim-bg) !important;
 	color: var(--s-dim) !important;
+	background-color: var(--s-dim-bg) !important;
 }
 
 .shiki .github-dark {
@@ -347,8 +348,8 @@ pre {
 }
 
 .scrollbar-none {
-	scrollbar-width: none;
 	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 
 .scrollbar-none::-webkit-scrollbar {

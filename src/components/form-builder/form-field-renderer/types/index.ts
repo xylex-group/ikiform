@@ -2,33 +2,33 @@ import type { RefObject } from "react";
 import type { FormField } from "@/lib/database";
 
 export interface FormFieldRendererProps {
-	field: FormField;
-	value: any;
-	onChange: (value: any) => void;
-	error?: string;
-	fieldRef?: RefObject<any>;
-	disabled?: boolean;
-	formId?: string;
 	builderMode?: boolean;
+	disabled?: boolean;
+	error?: string;
+	field: FormField;
+	fieldRef?: RefObject<any>;
+	formId?: string;
+	onChange: (value: any) => void;
+	value: any;
 }
 
 export interface FieldWrapperProps {
-	field: FormField;
-	error?: string;
-	children: React.ReactNode;
 	builderMode?: boolean;
+	children: React.ReactNode;
+	error?: string;
+	field: FormField;
 }
 
 export interface BaseFieldProps {
-	field: FormField;
-	value: any;
-	onChange: (value: any) => void;
-	error?: string;
-	fieldRef?: RefObject<any>;
+	builderMode?: boolean;
 	className?: string;
 	disabled?: boolean;
+	error?: string;
+	field: FormField;
+	fieldRef?: RefObject<any>;
 	formId?: string;
-	builderMode?: boolean;
+	onChange: (value: any) => void;
+	value: any;
 }
 
 export type FieldSize = "sm" | "lg" | "default";

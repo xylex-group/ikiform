@@ -22,7 +22,9 @@ export function useBlockEditing(
 	};
 
 	const saveBlockEdit = () => {
-		if (!editingState.editingBlock) return;
+		if (!editingState.editingBlock) {
+			return;
+		}
 
 		const updatedBlocks = blocks.map((block) =>
 			block.id === editingState.editingBlock

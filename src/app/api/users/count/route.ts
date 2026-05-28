@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createClient as createAdminClient } from "@/lib/athena/admin";
 
 export async function GET() {
 	try {
-		const supabase = createAdminClient();
-		const { count, error } = await supabase
+		const athena = createAdminClient();
+		const { count, error } = await athena
 			.from("users")
 			.select("*", { count: "exact", head: true });
 
@@ -25,3 +25,5 @@ export async function GET() {
 		return NextResponse.json({ count: null }, { status: 500 });
 	}
 }
+
+

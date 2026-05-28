@@ -7,7 +7,7 @@ import type {
 	WebhookLog,
 } from "@/lib/database/database.types";
 import { sendFormNotification } from "@/lib/services/notifications";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createAthenaAdminClient } from "@/utils/athena/admin";
 
 type WebhookRow = Database["public"]["Tables"]["webhooks"]["Row"];
 type WebhookInsert = Database["public"]["Tables"]["webhooks"]["Insert"];
@@ -47,8 +47,8 @@ export async function getWebhooks({
 	accountId?: string;
 	userId?: string;
 }): Promise<WebhookConfig[]> {
-	const supabase = createAdminClient();
-	let query = supabase.from("webhooks" as const).select("*");
+	const athena = createAthenaAdminClient();
+	let query = athena.from("webhooks" as const).select("*");
 
 	const effectiveAccountId = userId || accountId;
 	if (effectiveAccountId) {
@@ -60,7 +60,9 @@ export async function getWebhooks({
 	}
 
 	const { data, error } = await query;
-	if (error) throw new Error(error.message);
+	if (error) {
+		throw new Error(error.message);
+	}
 
 	if (userId && data) {
 		const filteredData = await Promise.all(
@@ -68,7 +70,7 @@ export async function getWebhooks({
 				const webhookRow = row as WebhookRow;
 
 				if (webhookRow.form_id) {
-					const { data: form } = await supabase
+					const { data: form } = await athena
 						.from("forms")
 						.select("id, user_id")
 						.eq("id", webhookRow.form_id)
@@ -106,11 +108,11 @@ export async function createWebhook(
 		throw new Error("Missing required fields: url, events, or method");
 	}
 
-	const supabase = createAdminClient();
+	const athena = createAthenaAdminClient();
 
 	if ((data.formId || (data as any).form_id) && userId) {
 		const formId = data.formId || (data as any).form_id;
-		const { data: form, error: formError } = await supabase
+		const { data: form, error: formError } = await athena
 			.from("forms")
 			.select("id, user_id")
 			.eq("id", formId)
@@ -154,7 +156,7 @@ export async function createWebhook(
 		updated_at: now,
 	};
 
-	const { data: result, error } = await supabase
+	const { data: result, error } = await athena
 		.from("webhooks" as const)
 		.insert([insertData] as any)
 		.select("*")
@@ -181,11 +183,11 @@ export async function updateWebhook(
 	data: Partial<WebhookConfig>,
 	userId?: string
 ): Promise<WebhookConfig> {
-	const supabase = createAdminClient();
+	const athena = createAthenaAdminClient();
 
 	if ((data.formId || (data as any).form_id) && userId) {
 		const formId = data.formId || (data as any).form_id;
-		const { data: form, error: formError } = await supabase
+		const { data: form, error: formError } = await athena
 			.from("forms")
 			.select("id, user_id")
 			.eq("id", formId)
@@ -229,7 +231,7 @@ export async function updateWebhook(
 		updated_at: now,
 	};
 	const { data: result, error } = await (
-		supabase.from("webhooks" as const) as any
+		athena.from("webhooks" as const) as any
 	)
 		.update(updateData)
 		.eq("id", id)
@@ -254,10 +256,10 @@ export async function deleteWebhook(
 	id: string,
 	userId?: string
 ): Promise<void> {
-	const supabase = createAdminClient();
+	const athena = createAthenaAdminClient();
 
 	if (userId) {
-		const { data: webhook, error: fetchError } = await supabase
+		const { data: webhook, error: fetchError } = await athena
 			.from("webhooks")
 			.select("id, account_id, form_id")
 			.eq("id", id)
@@ -269,7 +271,7 @@ export async function deleteWebhook(
 
 		if (webhook.account_id !== userId) {
 			if (webhook.form_id) {
-				const { data: form } = await supabase
+				const { data: form } = await athena
 					.from("forms")
 					.select("id, user_id")
 					.eq("id", webhook.form_id)
@@ -285,11 +287,13 @@ export async function deleteWebhook(
 		}
 	}
 
-	const { error } = await supabase
+	const { error } = await athena
 		.from("webhooks" as const)
 		.delete()
 		.eq("id", id);
-	if (error) throw new Error(error.message);
+	if (error) {
+		throw new Error(error.message);
+	}
 }
 
 export async function getWebhookLogs({
@@ -303,14 +307,14 @@ export async function getWebhookLogs({
 	accountId?: string;
 	userId?: string;
 }): Promise<WebhookLog[]> {
-	const supabase = createAdminClient();
+	const athena = createAthenaAdminClient();
 	const effectiveAccountId = userId || accountId;
 	if (!effectiveAccountId) {
 		throw new Error("Account ID or User ID is required");
 	}
 
 	if (webhookId && userId) {
-		const { data: webhook, error: webhookError } = await supabase
+		const { data: webhook, error: webhookError } = await athena
 			.from("webhooks")
 			.select("id, account_id, form_id")
 			.eq("id", webhookId)
@@ -322,7 +326,7 @@ export async function getWebhookLogs({
 
 		if (webhook.account_id !== userId) {
 			if (webhook.form_id) {
-				const { data: form } = await supabase
+				const { data: form } = await athena
 					.from("forms")
 					.select("id, user_id")
 					.eq("id", webhook.form_id)
@@ -339,7 +343,7 @@ export async function getWebhookLogs({
 	}
 
 	if (formId && userId) {
-		const { data: form, error: formError } = await supabase
+		const { data: form, error: formError } = await athena
 			.from("forms")
 			.select("id, user_id")
 			.eq("id", formId)
@@ -351,13 +355,19 @@ export async function getWebhookLogs({
 		}
 	}
 
-	let query = supabase.from("webhook_logs" as const).select("*");
-	if (webhookId) query = query.eq("webhook_id", webhookId);
-	if (formId) query = query.eq("form_id", formId as any);
+	let query = athena.from("webhook_logs" as const).select("*");
+	if (webhookId) {
+		query = query.eq("webhook_id", webhookId);
+	}
+	if (formId) {
+		query = query.eq("form_id", formId as any);
+	}
 	query = query.eq("account_id", effectiveAccountId as any);
 	query = query.order("timestamp", { ascending: false });
 	const { data, error } = await query;
-	if (error) throw new Error(error.message);
+	if (error) {
+		throw new Error(error.message);
+	}
 
 	if (!(data && Array.isArray(data))) {
 		return [];
@@ -368,7 +378,7 @@ export async function getWebhookLogs({
 			data.map(async (log) => {
 				const logRow = log as WebhookLogRow;
 				if (logRow.webhook_id) {
-					const { data: webhook } = await supabase
+					const { data: webhook } = await athena
 						.from("webhooks")
 						.select("id, account_id, form_id")
 						.eq("id", logRow.webhook_id)
@@ -383,7 +393,7 @@ export async function getWebhookLogs({
 					}
 
 					if (webhook.form_id) {
-						const { data: form } = await supabase
+						const { data: form } = await athena
 							.from("forms")
 							.select("id, user_id")
 							.eq("id", webhook.form_id)
@@ -411,24 +421,30 @@ export async function resendWebhookDelivery(
 	id: string,
 	body: { logId: string }
 ): Promise<any> {
-	const supabase = createAdminClient();
+	const athena = createAthenaAdminClient();
 
-	const { data: log, error: logError } = await supabase
+	const { data: log, error: logError } = await athena
 		.from("webhook_logs" as const)
 		.select("*")
 		.eq("id", body.logId)
 		.single();
-	if (logError || !log) throw new Error("Log not found");
+	if (logError || !log) {
+		throw new Error("Log not found");
+	}
 
 	const webhookIdFromLog = (log as WebhookLogRow).webhook_id;
-	if (!webhookIdFromLog) throw new Error("Webhook id missing on log");
+	if (!webhookIdFromLog) {
+		throw new Error("Webhook id missing on log");
+	}
 
-	const { data: webhook, error: webhookError } = await supabase
+	const { data: webhook, error: webhookError } = await athena
 		.from("webhooks" as const)
 		.select("*")
 		.eq("id", webhookIdFromLog)
 		.single();
-	if (webhookError || !webhook) throw new Error("Webhook not found");
+	if (webhookError || !webhook) {
+		throw new Error("Webhook not found");
+	}
 
 	let payload = (log as WebhookLogRow).request_payload as string | null;
 	let headers: Record<string, string> = {
@@ -489,7 +505,7 @@ export async function resendWebhookDelivery(
 		attempt: ((log as WebhookLogRow).attempt || 0) + 1,
 	};
 
-	await supabase.from("webhook_logs" as const).insert([logInsert] as any);
+	await athena.from("webhook_logs" as const).insert([logInsert] as any);
 	if (errorMsg) {
 		return { status, responseBody, error: errorMsg };
 	}
@@ -500,14 +516,16 @@ export async function testWebhook(
 	id: string,
 	samplePayload?: any
 ): Promise<any> {
-	const supabase = createAdminClient();
+	const athena = createAthenaAdminClient();
 
-	const { data: webhook, error } = await supabase
+	const { data: webhook, error } = await athena
 		.from("webhooks" as const)
 		.select("*")
 		.eq("id", id)
 		.single();
-	if (error || !webhook) throw new Error("Webhook not found");
+	if (error || !webhook) {
+		throw new Error("Webhook not found");
+	}
 
 	const payload = samplePayload || {
 		test: true,
@@ -558,7 +576,7 @@ export async function testWebhook(
 			timestamp: new Date().toISOString(),
 			attempt: 0,
 		};
-		await supabase.from("webhook_logs" as const).insert([logInsert] as any);
+		await athena.from("webhook_logs" as const).insert([logInsert] as any);
 
 		try {
 			if (simulate === "success" && notifyEmail && notifySuccess) {
@@ -615,7 +633,7 @@ export async function testWebhook(
 		attempt: 0,
 	};
 
-	await supabase.from("webhook_logs" as const).insert([logInsert] as any);
+	await athena.from("webhook_logs" as const).insert([logInsert] as any);
 
 	const notifyEmail = (webhook as WebhookRow).notification_email;
 	const notifySuccess = (webhook as WebhookRow).notify_on_success ?? false;
@@ -817,7 +835,9 @@ function renderTemplate(
 		let value = context;
 		for (const k of keys) {
 			value = value?.[k];
-			if (value === undefined || value === null) return "";
+			if (value === undefined || value === null) {
+				return "";
+			}
 		}
 		if (isJson) {
 			try {
@@ -860,11 +880,11 @@ export async function triggerWebhooks(
 	event: WebhookEventType,
 	payload: any
 ): Promise<void> {
-	const supabase = createAdminClient();
+	const athena = createAthenaAdminClient();
 
 	const { formId, accountId } = payload;
 
-	const { data: webhooks, error } = await supabase
+	const { data: webhooks, error } = await athena
 		.from("webhooks" as const)
 		.select("*")
 		.contains("events", [event])
@@ -877,7 +897,9 @@ export async function triggerWebhooks(
 				.filter(Boolean)
 				.join(",")
 		);
-	if (error) throw new Error(error.message);
+	if (error) {
+		throw new Error(error.message);
+	}
 	if (!webhooks || webhooks.length === 0) {
 		return;
 	}
@@ -932,7 +954,7 @@ export async function deliverWithRetry(
 	headers: Record<string, string>,
 	attempt: number
 ): Promise<void> {
-	const supabase = createAdminClient();
+	const athena = createAthenaAdminClient();
 	const methodsWithBody = ["POST", "PUT", "PATCH"];
 	const startTime = Date.now();
 
@@ -1029,7 +1051,7 @@ export async function deliverWithRetry(
 			timestamp: new Date().toISOString(),
 			attempt,
 		};
-		await supabase.from("webhook_logs" as const).insert([successLog] as any);
+		await athena.from("webhook_logs" as const).insert([successLog] as any);
 
 		console.log(
 			`[WEBHOOK DELIVERY] Successfully delivered webhook ${webhook.id} in ${duration}ms`
@@ -1061,7 +1083,7 @@ export async function deliverWithRetry(
 			timestamp: new Date().toISOString(),
 			attempt,
 		};
-		await supabase.from("webhook_logs" as const).insert([failureLog] as any);
+		await athena.from("webhook_logs" as const).insert([failureLog] as any);
 
 		const isFinalAttempt = attempt + 1 >= 3;
 		if (
@@ -1098,3 +1120,5 @@ export async function deliverWithRetry(
 		}
 	}
 }
+
+

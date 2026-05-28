@@ -22,7 +22,8 @@ Built with Next.js App Router, React, Supabase, and Tailwind CSS.
 
 - Next.js 16 (App Router + Turbopack)
 - React 19
-- Supabase
+- @xylex-group/athena (Athena DB gateway + Auth)
+- Vercel Blob (file storage)
 - Tailwind CSS v4
 - Base UI primitives via `@base-ui/react`
 - shadcn CLI with `base-vega` style (`components.json`)
@@ -35,6 +36,7 @@ Built with Next.js App Router, React, Supabase, and Tailwind CSS.
 2. Configure environment:
    - `cp .env.example .env.local`
    - Fill required values in `.env.local`
+   - **Migration note**: The project is in the process of migrating from Supabase to `@xylex-group/athena`. See the detailed plan at `.grok/sessions/.../plan.md`.
 3. Start local dev server:
    - `bun run dev`
 

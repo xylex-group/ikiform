@@ -2,17 +2,17 @@ import type { LucideIcon } from "lucide-react";
 import type { FormField, FormSchema } from "@/lib/database";
 
 export interface FieldPaletteProps {
-	onAddField: (fieldType: FormField["type"]) => void;
 	compact?: boolean;
 	formSchema?: FormSchema;
+	onAddField: (fieldType: FormField["type"]) => void;
 	onSchemaUpdate?: (schema: FormSchema) => void;
 }
 
 export interface FieldTypeConfig {
-	type: FormField["type"];
-	label: string;
-	icon: LucideIcon;
 	description: string;
+	icon: LucideIcon;
+	label: string;
+	type: FormField["type"];
 }
 
 export interface CompactFieldItemProps {
@@ -26,6 +26,6 @@ export interface FieldItemProps {
 }
 
 export interface PaletteHeaderProps {
-	title: string;
 	description: string;
+	title: string;
 }

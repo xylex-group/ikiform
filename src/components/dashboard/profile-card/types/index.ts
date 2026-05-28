@@ -1,21 +1,21 @@
-import type { User } from "@supabase/supabase-js";
+import type { AppAuthUser } from "@/lib/auth/types";
 
 export interface ProfileCardProps {
 	className?: string;
 }
 
 export interface UserProfileData {
-	name: string;
-	email: string;
 	avatarUrl?: string;
-	hasPremium: boolean;
+	email: string;
 	hasCustomerPortal: boolean;
+	hasPremium: boolean;
+	name: string;
 }
 
 export interface PremiumStatus {
-	hasPremium: boolean;
-	hasCustomerPortal: boolean;
 	checkingPremium: boolean;
+	hasCustomerPortal: boolean;
+	hasPremium: boolean;
 }
 
 export interface ProfileActionsProps {
@@ -23,8 +23,8 @@ export interface ProfileActionsProps {
 }
 
 export interface ProfileInfoProps {
-	user: User;
 	hasPremium: boolean;
+	user: AppAuthUser;
 }
 
 export interface ProfileLoadingProps {
@@ -32,7 +32,7 @@ export interface ProfileLoadingProps {
 }
 
 export interface UserAvatarProps {
-	name: string;
 	avatarUrl?: string;
+	name: string;
 	size?: "sm" | "md" | "lg" | "xl";
 }

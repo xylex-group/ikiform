@@ -24,22 +24,22 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface WebhookLog {
-	id: string;
-	webhook_id: string;
-	event: string;
-	status: "success" | "failed" | "pending";
-	request_payload: any;
-	response_status?: number;
-	response_body?: string;
-	error?: string;
-	timestamp: string;
 	attempt: number;
+	error?: string;
+	event: string;
+	id: string;
+	request_payload: any;
+	response_body?: string;
+	response_status?: number;
+	status: "success" | "failed" | "pending";
+	timestamp: string;
+	webhook_id: string;
 }
 
 interface WebhookLogDrawerProps {
-	webhookId: string | null;
-	open: boolean;
 	onClose: () => void;
+	open: boolean;
+	webhookId: string | null;
 }
 
 function CodeBlock({
@@ -145,18 +145,26 @@ function PayloadViewer({ payload }: { payload: any }) {
 	}
 
 	function getEventName(payload: any): string | undefined {
-		if (payload.event) return payload.event;
+		if (payload.event) {
+			return payload.event;
+		}
 
 		if (Array.isArray(payload.embeds) && payload.embeds.length > 0) {
-			if (payload.embeds[0].title) return payload.embeds[0].title;
-			if (payload.embeds[0].description) return payload.embeds[0].description;
+			if (payload.embeds[0].title) {
+				return payload.embeds[0].title;
+			}
+			if (payload.embeds[0].description) {
+				return payload.embeds[0].description;
+			}
 		}
 
 		return;
 	}
 
 	function formatFormFields(fields: any[]) {
-		if (!Array.isArray(fields)) return null;
+		if (!Array.isArray(fields)) {
+			return null;
+		}
 
 		return (
 			<div className="flex flex-col gap-3">
@@ -182,10 +190,15 @@ function PayloadViewer({ payload }: { payload: any }) {
 	}
 
 	function formatValue(value: any): string {
-		if (value === null || value === undefined) return "N/A";
-		if (typeof value === "string") return value;
-		if (typeof value === "number" || typeof value === "boolean")
+		if (value === null || value === undefined) {
+			return "N/A";
+		}
+		if (typeof value === "string") {
+			return value;
+		}
+		if (typeof value === "number" || typeof value === "boolean") {
 			return String(value);
+		}
 		if (Array.isArray(value)) {
 			if (value.length > 0 && typeof value[0] === "object") {
 				try {
@@ -520,12 +533,16 @@ export function WebhookLogDialog({
 	const [viewPayload, setViewPayload] = useState<any | null>(null);
 
 	async function fetchLogs() {
-		if (!webhookId) return;
+		if (!webhookId) {
+			return;
+		}
 		setLoading(true);
 		setError(null);
 		try {
 			const res = await fetch(`/api/webhook/logs?webhookId=${webhookId}`);
-			if (!res.ok) throw new Error("Failed to fetch logs");
+			if (!res.ok) {
+				throw new Error("Failed to fetch logs");
+			}
 			const data = await res.json();
 			setLogs(Array.isArray(data) ? data : []);
 		} catch (e: any) {
@@ -536,12 +553,16 @@ export function WebhookLogDialog({
 	}
 
 	useEffect(() => {
-		if (!(open && webhookId)) return;
+		if (!(open && webhookId)) {
+			return;
+		}
 		fetchLogs();
 	}, [open, webhookId]);
 
 	async function handleResend(log: WebhookLog) {
-		if (!webhookId) return;
+		if (!webhookId) {
+			return;
+		}
 		try {
 			const res = await fetch(`/api/webhook/${webhookId}/resend`, {
 				method: "POST",

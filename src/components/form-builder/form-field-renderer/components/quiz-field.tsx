@@ -11,10 +11,10 @@ import { getErrorRingClasses } from "../utils";
 import { sanitizeOptions } from "../utils/sanitizeOptions";
 
 interface QuizFieldProps extends BaseFieldProps {
-	showFeedback?: boolean;
 	isSubmitted?: boolean;
-	userScore?: number;
+	showFeedback?: boolean;
 	totalPossibleScore?: number;
+	userScore?: number;
 }
 
 export function QuizField({
@@ -88,7 +88,9 @@ export function QuizField({
 	};
 
 	const getFeedbackIcon = () => {
-		if (!(showFeedback && isSubmitted && value)) return null;
+		if (!(showFeedback && isSubmitted && value)) {
+			return null;
+		}
 
 		if (isAnswerCorrect()) {
 			return <CheckCircle className="size-4 text-green-600" />;
@@ -97,7 +99,9 @@ export function QuizField({
 	};
 
 	const getFeedbackCardStyling = () => {
-		if (!(showFeedback && isSubmitted && value)) return "";
+		if (!(showFeedback && isSubmitted && value)) {
+			return "";
+		}
 
 		if (isAnswerCorrect()) {
 			return "border-green-200 bg-green-50";
@@ -106,7 +110,9 @@ export function QuizField({
 	};
 
 	const getOptionStyling = (optionValue: string) => {
-		if (!(showFeedback && isSubmitted)) return "";
+		if (!(showFeedback && isSubmitted)) {
+			return "";
+		}
 
 		const correctAnswer = getCorrectAnswer();
 		const isThisOptionCorrect = correctAnswer === optionValue;
@@ -122,7 +128,9 @@ export function QuizField({
 	};
 
 	const getOptionIcon = (optionValue: string) => {
-		if (!(showFeedback && isSubmitted)) return null;
+		if (!(showFeedback && isSubmitted)) {
+			return null;
+		}
 
 		const correctAnswer = getCorrectAnswer();
 		const isThisOptionCorrect = correctAnswer === optionValue;
@@ -139,13 +147,17 @@ export function QuizField({
 
 	const getCorrectAnswerText = () => {
 		const correctAnswer = getCorrectAnswer();
-		if (!correctAnswer) return "";
+		if (!correctAnswer) {
+			return "";
+		}
 
 		const correctOption = getQuizOptions().find(
 			(opt) => (typeof opt === "string" ? opt : opt.value) === correctAnswer
 		);
 
-		if (!correctOption) return correctAnswer;
+		if (!correctOption) {
+			return correctAnswer;
+		}
 		return typeof correctOption === "string"
 			? correctOption
 			: correctOption.label || correctOption.value;
@@ -212,7 +224,9 @@ export function QuizField({
 						optionLabel = option.label || option.value || "";
 					}
 
-					if (!optionValue) return null;
+					if (!optionValue) {
+						return null;
+					}
 
 					return (
 						<div
@@ -242,7 +256,9 @@ export function QuizField({
 	};
 
 	const renderFeedback = () => {
-		if (!(showFeedback && isSubmitted && value)) return null;
+		if (!(showFeedback && isSubmitted && value)) {
+			return null;
+		}
 
 		const points = getQuizPoints();
 		const explanation = getQuizExplanation();

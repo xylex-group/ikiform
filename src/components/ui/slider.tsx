@@ -18,8 +18,8 @@ interface SliderProps
 	> {
 	defaultValue?: number[];
 	enableRangeDrag?: boolean;
-	onValueCommitted?: (value: number[]) => void;
 	onValueChange?: (value: number[]) => void;
+	onValueCommitted?: (value: number[]) => void;
 	value?: number[];
 }
 
@@ -66,7 +66,9 @@ function Slider({
 	}, [_values]);
 
 	const canDragRange =
-		enableRangeDrag && _values.length === 2 && typeof onValueChange === "function";
+		enableRangeDrag &&
+		_values.length === 2 &&
+		typeof onValueChange === "function";
 
 	const getPointerCoordinate = useCallback(
 		(event: PointerEvent | ReactPointerEvent<Element>) => {
@@ -152,7 +154,15 @@ function Slider({
 			window.removeEventListener("pointercancel", stopRangeDrag);
 			window.removeEventListener("blur", clearRangeDrag);
 		};
-	}, [canDragRange, getPointerCoordinate, max, min, onValueChange, orientation, step]);
+	}, [
+		canDragRange,
+		getPointerCoordinate,
+		max,
+		min,
+		onValueChange,
+		orientation,
+		step,
+	]);
 
 	const handleRangeDragStart = useCallback(
 		(event: ReactPointerEvent<HTMLDivElement>) => {
@@ -191,17 +201,19 @@ function Slider({
 			onValueChange={
 				onValueChange
 					? (nextValue) => {
-						onValueChange(Array.isArray(nextValue) ? [...nextValue] : [nextValue]);
-					}
+							onValueChange(
+								Array.isArray(nextValue) ? [...nextValue] : [nextValue]
+							);
+						}
 					: undefined
 			}
 			onValueCommitted={
 				onValueCommitted
 					? (nextValue) => {
-						onValueCommitted(
-							Array.isArray(nextValue) ? [...nextValue] : [nextValue]
-						);
-					}
+							onValueCommitted(
+								Array.isArray(nextValue) ? [...nextValue] : [nextValue]
+							);
+						}
 					: undefined
 			}
 			orientation={orientation}
@@ -227,7 +239,7 @@ function Slider({
 				</SliderPrimitive.Track>
 				{thumbEntries.map(({ key }) => (
 					<SliderPrimitive.Thumb
-						className="size-4 rounded-full border border-primary bg-primary shadow-sm transition-[color,box-shadow] hover:ring-4 hover:ring-primary/30 focus-visible:ring-4 focus-visible:ring-primary/40 focus-visible:outline-hidden block shrink-0 select-none disabled:pointer-events-none disabled:opacity-50"
+						className="block size-4 shrink-0 select-none rounded-full border border-primary bg-primary shadow-sm transition-[color,box-shadow] hover:ring-4 hover:ring-primary/30 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-primary/40 disabled:pointer-events-none disabled:opacity-50"
 						data-slot="slider-thumb"
 						key={key}
 					/>

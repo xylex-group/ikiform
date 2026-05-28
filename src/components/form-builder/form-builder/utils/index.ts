@@ -56,10 +56,14 @@ export const saveDraftToStorage = (
 };
 
 export const loadDraftFromStorage = (draftKey: string): FormSchema | null => {
-	if (typeof window === "undefined") return null;
+	if (typeof window === "undefined") {
+		return null;
+	}
 
 	const draft = localStorage.getItem(draftKey);
-	if (!draft) return null;
+	if (!draft) {
+		return null;
+	}
 
 	try {
 		const parsed = JSON.parse(draft);
@@ -86,7 +90,9 @@ export const findSelectedField = (
 	formSchema: FormSchema,
 	selectedFieldId: string | null
 ): FormField | null => {
-	if (!selectedFieldId) return null;
+	if (!selectedFieldId) {
+		return null;
+	}
 
 	const allFields = formSchema.blocks?.length
 		? formSchema.blocks.flatMap((block) => block.fields)

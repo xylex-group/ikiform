@@ -81,8 +81,12 @@ const exportToCSV = (form: Form, submissions: FormSubmission[]) => {
 				submission.ip_address || "",
 				...allFields.map((field) => {
 					const value = submission.submission_data[field.id];
-					if (value === null || value === undefined) return "";
-					if (typeof value === "object") return JSON.stringify(value);
+					if (value === null || value === undefined) {
+						return "";
+					}
+					if (typeof value === "object") {
+						return JSON.stringify(value);
+					}
 					return String(value).replace(/,/g, ";");
 				}),
 			].join(",")
@@ -129,7 +133,9 @@ export function FormSubmissions({ form, submissions }: FormSubmissionsProps) {
 	const [currentPage, setCurrentPage] = useState(1);
 
 	const filteredSubmissions = submissions.filter((submission) => {
-		if (!searchTerm) return true;
+		if (!searchTerm) {
+			return true;
+		}
 		const searchLower = searchTerm.toLowerCase();
 		return (
 			submission.id.toLowerCase().includes(searchLower) ||

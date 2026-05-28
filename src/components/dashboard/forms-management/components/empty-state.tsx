@@ -13,8 +13,8 @@ import {
 import type { EmptyStateProps } from "../types";
 
 interface EmptyStateExtendedProps extends EmptyStateProps {
-	onCreateWithAI: () => void;
 	onCreateManually: () => void;
+	onCreateWithAI: () => void;
 }
 
 export const EmptyState = memo(function EmptyState({

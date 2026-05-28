@@ -76,13 +76,13 @@ const sidebarItemVariants = cva(
 export interface SidebarProps
 	extends React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof sidebarVariants> {
-	collapsed?: boolean;
-	onCollapsedChange?: (collapsed: boolean) => void;
-	collapsible?: boolean;
-	overlay?: boolean;
-	onOverlayClick?: () => void;
-	position?: "fixed" | "relative";
 	children: React.ReactNode;
+	collapsed?: boolean;
+	collapsible?: boolean;
+	onCollapsedChange?: (collapsed: boolean) => void;
+	onOverlayClick?: () => void;
+	overlay?: boolean;
+	position?: "fixed" | "relative";
 }
 
 const SidebarContext = React.createContext<{
@@ -370,15 +370,15 @@ const SidebarBody: React.FC<SidebarBodyProps> = ({ children, className }) => {
 };
 
 interface SidebarItemProps {
-	id: string;
-	label: string;
-	icon?: LucideIcon;
-	href?: string;
 	badge?: React.ReactNode;
 	children?: React.ReactNode;
+	className?: string;
+	href?: string;
+	icon?: LucideIcon;
+	id: string;
+	label: string;
 	level?: number;
 	onClick?: () => void;
-	className?: string;
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({
@@ -560,9 +560,9 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 
 export interface SidebarContentProps {
 	children: React.ReactNode;
-	sidebarCollapsed?: boolean;
 	className?: string;
 	position?: "fixed" | "relative";
+	sidebarCollapsed?: boolean;
 }
 
 const SidebarContent: React.FC<SidebarContentProps> = ({

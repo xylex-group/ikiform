@@ -4,7 +4,8 @@ import {
 	sendWelcomeEmail,
 } from "@/lib/services/notifications";
 
-import { createClient } from "@/utils/supabase/server";
+import { createAthenaAuthClient } from "@/utils/athena/auth-client";
+import { createAthenaServerClient } from "@/utils/athena/server";
 
 export async function GET(request: NextRequest) {
 	const { searchParams, origin } = new URL(request.url);
@@ -12,18 +13,16 @@ export async function GET(request: NextRequest) {
 	const next = searchParams.get("next") ?? "/dashboard";
 
 	if (code) {
-		const supabase = await createClient();
-		const { data: sessionData, error: sessionError } =
-			await supabase.auth.exchangeCodeForSession(code);
+		const auth = createAthenaAuthClient();
+		// Athena Auth typically handles the OAuth callback on its side.
+		// We fetch the resulting session here.
+		const sessionResult = await auth.getSession();
 
-		if (!sessionError && sessionData?.session) {
-			const {
-				data: { user },
-				error: userError,
-			} = await supabase.auth.getUser(sessionData.session.access_token);
+		if (sessionResult.ok && sessionResult.data) {
+			const user = sessionResult.data.user;
 
-			if (user && !userError) {
-				const { id: uid, email, user_metadata } = user;
+			if (user) {
+				const { id: uid, email, user_metadata } = user as any;
 
 				if (email) {
 					const name =
@@ -32,7 +31,8 @@ export async function GET(request: NextRequest) {
 						user_metadata?.user_name ||
 						email.split("@")[0] ||
 						"";
-					const { data: existingUser } = await supabase
+					const athena = await createAthenaServerClient();
+					const { data: existingUser } = await athena
 						.from("users")
 						.select("email, has_premium, has_free_trial, polar_customer_id")
 						.eq("email", email)
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 						};
 					}
 
-					const { error: upsertError } = await supabase
+					const { error: upsertError } = await athena
 						.from("users")
 						.upsert(upsertData, { onConflict: "email" });
 

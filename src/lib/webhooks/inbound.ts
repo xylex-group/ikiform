@@ -1,6 +1,5 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database/database.types";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createAthenaAdminClient } from "@/utils/athena/admin";
 
 type InboundWebhookMappingRow =
 	Database["public"]["Tables"]["inbound_webhook_mappings"]["Row"];
@@ -10,13 +9,13 @@ type InboundWebhookMappingUpdate =
 	Database["public"]["Tables"]["inbound_webhook_mappings"]["Update"];
 
 export interface InboundWebhookMapping {
-	id: string;
+	createdAt: string;
+	enabled: boolean;
 	endpoint: string;
-	targetFormId: string;
+	id: string;
 	mappingRules: Record<string, string>;
 	secret?: string | null;
-	enabled: boolean;
-	createdAt: string;
+	targetFormId: string;
 	updatedAt: string;
 }
 
@@ -37,7 +36,7 @@ function mapInboundMappingRow(
 export async function createInboundMapping(
 	data: Partial<InboundWebhookMapping>
 ): Promise<InboundWebhookMapping> {
-	const supabase = createAdminClient() as SupabaseClient<Database>;
+	const athena = createAthenaAdminClient();
 	const now = new Date().toISOString();
 
 	if (!(data.endpoint && data.targetFormId)) {
@@ -54,13 +53,14 @@ export async function createInboundMapping(
 		updated_at: now,
 	};
 
-	const { data: result, error } = await supabase
+	const { data: result, error } = await athena
 		.from("inbound_webhook_mappings")
 		.insert([insertData] as any)
 		.select()
 		.single();
-	if (error || !result)
+	if (error || !result) {
 		throw new Error(error?.message || "Failed to create inbound mapping");
+	}
 	return mapInboundMappingRow(result);
 }
 
@@ -69,12 +69,16 @@ export async function getInboundMappings({
 }: {
 	targetFormId?: string;
 } = {}): Promise<InboundWebhookMapping[]> {
-	const supabase = createAdminClient() as SupabaseClient<Database>;
-	let query = supabase.from("inbound_webhook_mappings").select("*");
-	if (targetFormId) query = query.eq("target_form_id", targetFormId);
+	const athena = createAthenaAdminClient();
+	let query = athena.from("inbound_webhook_mappings").select("*");
+	if (targetFormId) {
+		query = query.eq("target_form_id", targetFormId);
+	}
 	query = query.order("created_at", { ascending: false });
 	const { data, error } = await query;
-	if (error) throw new Error(error.message);
+	if (error) {
+		throw new Error(error.message);
+	}
 	return Array.isArray(data) ? data.map(mapInboundMappingRow) : [];
 }
 
@@ -82,7 +86,7 @@ export async function updateInboundMapping(
 	id: string,
 	data: Partial<InboundWebhookMapping>
 ): Promise<InboundWebhookMapping> {
-	const supabase = createAdminClient() as SupabaseClient<Database>;
+	const athena = createAthenaAdminClient();
 	const now = new Date().toISOString();
 
 	const updateData: InboundWebhookMappingUpdate = {
@@ -95,22 +99,26 @@ export async function updateInboundMapping(
 	};
 
 	const { data: result, error } = await (
-		supabase.from("inbound_webhook_mappings") as any
+		athena.from("inbound_webhook_mappings") as any
 	)
 		.update(updateData)
 		.eq("id", id)
 		.select()
 		.single();
-	if (error || !result)
+	if (error || !result) {
 		throw new Error(error?.message || "Failed to update inbound mapping");
+	}
 	return mapInboundMappingRow(result);
 }
 
 export async function deleteInboundMapping(id: string): Promise<void> {
-	const supabase = createAdminClient() as SupabaseClient<Database>;
-	const { error } = await supabase
+	const athena = createAthenaAdminClient();
+	const { error } = await athena
 		.from("inbound_webhook_mappings")
 		.delete()
 		.eq("id", id);
-	if (error) throw new Error(error.message);
+	if (error) {
+		throw new Error(error.message);
+	}
 }
+

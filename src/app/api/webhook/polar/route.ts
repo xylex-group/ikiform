@@ -1,14 +1,14 @@
 import { Webhooks } from "@polar-sh/nextjs";
 import { sanitizeString } from "@/lib/utils/sanitize";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createClient as createAdminClient } from "@/lib/athena/admin";
 
 const webhookSecret = process.env.POLAR_WEBHOOK_SECRET;
 if (!webhookSecret) {
 	throw new Error("POLAR_WEBHOOK_SECRET environment variable is not set");
 }
 
-const findUserByEmail = async (supabase: any, email: string) => {
-	const { data: userData, error: lookupError } = await supabase
+const findUserByEmail = async (athena: any, email: string) => {
+	const { data: userData, error: lookupError } = await athena
 		.from("users")
 		.select("uid, email")
 		.eq("email", email)
@@ -23,7 +23,7 @@ const findUserByEmail = async (supabase: any, email: string) => {
 };
 
 const updateUserPremiumStatus = async (
-	supabase: any,
+	athena: any,
 	uid: string,
 	email: string,
 	hasPremium: boolean,
@@ -40,7 +40,7 @@ const updateUserPremiumStatus = async (
 		updateData.customer_name = customerName;
 	}
 
-	const { data, error } = await supabase
+	const { data, error } = await athena
 		.from("users")
 		.update(updateData)
 		.eq("uid", uid)
@@ -82,7 +82,7 @@ export const POST = Webhooks({
 		}
 
 		try {
-			const supabase = createAdminClient();
+			const athena = createAdminClient();
 			const customerEmail = sanitizeString(payload.data.customer?.email || "");
 
 			if (!customerEmail) {
@@ -90,11 +90,13 @@ export const POST = Webhooks({
 				return;
 			}
 
-			const userData = await findUserByEmail(supabase, customerEmail);
-			if (!userData) return;
+			const userData = await findUserByEmail(athena, customerEmail);
+			if (!userData) {
+				return;
+			}
 
 			const updatedUser = await updateUserPremiumStatus(
-				supabase,
+				athena,
 				userData.uid,
 				customerEmail,
 				true,
@@ -115,7 +117,7 @@ export const POST = Webhooks({
 
 	onSubscriptionCreated: async (payload) => {
 		try {
-			const supabase = createAdminClient();
+			const athena = createAdminClient();
 			const customerEmail = sanitizeString(payload.data.customer?.email || "");
 
 			if (!customerEmail) {
@@ -123,11 +125,13 @@ export const POST = Webhooks({
 				return;
 			}
 
-			const userData = await findUserByEmail(supabase, customerEmail);
-			if (!userData) return;
+			const userData = await findUserByEmail(athena, customerEmail);
+			if (!userData) {
+				return;
+			}
 
 			const updatedUser = await updateUserPremiumStatus(
-				supabase,
+				athena,
 				userData.uid,
 				customerEmail,
 				true,
@@ -148,7 +152,7 @@ export const POST = Webhooks({
 
 	onSubscriptionActive: async (payload) => {
 		try {
-			const supabase = createAdminClient();
+			const athena = createAdminClient();
 			const customerEmail = sanitizeString(payload.data.customer?.email || "");
 
 			if (!customerEmail) {
@@ -156,11 +160,13 @@ export const POST = Webhooks({
 				return;
 			}
 
-			const userData = await findUserByEmail(supabase, customerEmail);
-			if (!userData) return;
+			const userData = await findUserByEmail(athena, customerEmail);
+			if (!userData) {
+				return;
+			}
 
 			const updatedUser = await updateUserPremiumStatus(
-				supabase,
+				athena,
 				userData.uid,
 				customerEmail,
 				true,
@@ -177,7 +183,7 @@ export const POST = Webhooks({
 
 	onSubscriptionUpdated: async (payload) => {
 		try {
-			const supabase = createAdminClient();
+			const athena = createAdminClient();
 			const customerEmail = sanitizeString(payload.data.customer?.email || "");
 
 			if (!customerEmail) {
@@ -185,15 +191,17 @@ export const POST = Webhooks({
 				return;
 			}
 
-			const userData = await findUserByEmail(supabase, customerEmail);
-			if (!userData) return;
+			const userData = await findUserByEmail(athena, customerEmail);
+			if (!userData) {
+				return;
+			}
 
 			const shouldHavePremium = ["active", "trialing"].includes(
 				payload.data.status
 			);
 
 			const updatedUser = await updateUserPremiumStatus(
-				supabase,
+				athena,
 				userData.uid,
 				customerEmail,
 				shouldHavePremium,
@@ -210,7 +218,7 @@ export const POST = Webhooks({
 
 	onSubscriptionRevoked: async (payload) => {
 		try {
-			const supabase = createAdminClient();
+			const athena = createAdminClient();
 			const customerEmail = sanitizeString(payload.data.customer?.email || "");
 
 			if (!customerEmail) {
@@ -218,11 +226,13 @@ export const POST = Webhooks({
 				return;
 			}
 
-			const userData = await findUserByEmail(supabase, customerEmail);
-			if (!userData) return;
+			const userData = await findUserByEmail(athena, customerEmail);
+			if (!userData) {
+				return;
+			}
 
 			const updatedUser = await updateUserPremiumStatus(
-				supabase,
+				athena,
 				userData.uid,
 				customerEmail,
 				false
@@ -237,7 +247,7 @@ export const POST = Webhooks({
 
 	onSubscriptionCanceled: async (payload) => {
 		try {
-			const supabase = createAdminClient();
+			const athena = createAdminClient();
 			const customerEmail = sanitizeString(payload.data.customer?.email || "");
 
 			if (!customerEmail) {
@@ -245,15 +255,17 @@ export const POST = Webhooks({
 				return;
 			}
 
-			const userData = await findUserByEmail(supabase, customerEmail);
-			if (!userData) return;
+			const userData = await findUserByEmail(athena, customerEmail);
+			if (!userData) {
+				return;
+			}
 
 			const shouldHavePremium = ["active", "trialing"].includes(
 				payload.data.status
 			);
 
 			const updatedUser = await updateUserPremiumStatus(
-				supabase,
+				athena,
 				userData.uid,
 				customerEmail,
 				shouldHavePremium,
@@ -268,3 +280,5 @@ export const POST = Webhooks({
 		}
 	},
 });
+
+

@@ -16,11 +16,11 @@ import { Separator } from "@/components/ui/separator";
 import type { QuizResult } from "@/lib/quiz/scoring";
 
 interface QuizResultsProps {
+	allowRetake?: boolean;
+	customMessage?: string;
+	onRetake?: () => void;
 	result: QuizResult;
 	showDetailedResults?: boolean;
-	allowRetake?: boolean;
-	onRetake?: () => void;
-	customMessage?: string;
 }
 
 export function QuizResults({
@@ -41,14 +41,22 @@ export function QuizResults({
 	} = result;
 
 	const getScoreColor = () => {
-		if (percentage >= 90) return "text-green-600";
-		if (percentage >= 70) return "text-blue-600";
-		if (percentage >= 50) return "text-yellow-600";
+		if (percentage >= 90) {
+			return "text-green-600";
+		}
+		if (percentage >= 70) {
+			return "text-blue-600";
+		}
+		if (percentage >= 50) {
+			return "text-yellow-600";
+		}
 		return "text-red-600";
 	};
 
 	const getScoreBadgeVariant = () => {
-		if (passed) return "default";
+		if (passed) {
+			return "default";
+		}
 		return "destructive";
 	};
 

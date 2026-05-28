@@ -62,7 +62,9 @@ export const FormCard = memo(function FormCard({
 		(e: React.MouseEvent) => {
 			e.stopPropagation();
 			setIsShareModalOpen(true);
-			if (onShare) onShare(form);
+			if (onShare) {
+				onShare(form);
+			}
 		},
 		[onShare, form]
 	);
@@ -150,7 +152,9 @@ export const FormCard = memo(function FormCard({
 	}, []);
 
 	const handleModalPublish = useCallback(async () => {
-		if (onShare) onShare(form);
+		if (onShare) {
+			onShare(form);
+		}
 	}, [onShare, form]);
 
 	return (

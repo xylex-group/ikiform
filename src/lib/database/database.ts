@@ -1,13 +1,34 @@
-import type { Database, FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/lib/database";
 import { ensureDefaultFormSettings } from "@/lib/forms";
-import { createAdminClient } from "@/utils/supabase/admin";
-import { createClient } from "@/utils/supabase/client";
-import { createClient as createServerClient } from "@/utils/supabase/server";
 
-export type Form = Database["public"]["Tables"]["forms"]["Row"];
-export type FormSubmission =
-	Database["public"]["Tables"]["form_submissions"]["Row"];
-export type User = Database["public"]["Tables"]["users"]["Row"];
+// Dynamic imports are used inside methods to avoid pulling @xylex-group/athena
+// (which has server-only deps like 'pg') into client bundles.
+
+const getAthenaClient = async () => {
+	const mod = await import("@/utils/athena/client");
+	return mod.createAthenaClient();
+};
+
+const getAthenaServerClient = async () => {
+	const mod = await import("@/utils/athena/server");
+	return mod.createAthenaServerClient();
+};
+
+const getAthenaAdminClient = async () => {
+	const mod = await import("@/utils/athena/admin");
+	return mod.createAthenaAdminClient();
+};
+
+/**
+ * Legacy type aliases (derived from old Supabase Database type).
+ * These will be gradually replaced by generated types from the Athena registry
+ * (RowOf<FormModel>, InsertOf<FormModel>, etc.).
+ */
+// Legacy aliases kept as any during migration to avoid massive type churn.
+// Will be replaced once the generated Athena registry is adopted.
+export type Form = any;
+export type FormSubmission = any;
+export type User = any;
 
 const cache = new Map<string, { data: any; expires: number }>();
 const CACHE_TTL = 5 * 60 * 1000;
@@ -34,13 +55,20 @@ function setCache(key: string, data: any): void {
 
 export const formsDb = {
 	async createForm(userId: string, title: string, schema: FormSchema) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 		const schemaWithDefaults = ensureDefaultFormSettings(schema);
 		const { generateUniqueSlug } = await import("@/lib/utils/slug");
 
 		const slug = generateUniqueSlug(title);
 
-		const { data, error } = await supabase
+		// Preferred future pattern (once `pnpm athena:generate` has run):
+		// const result = await typedClient
+		//   .fromModel("public", "forms")
+		//   .insert({ ... })
+		//   .select()
+		//   .single();
+
+		const { data, error } = await athena
 			.from("forms")
 			.insert({
 				user_id: userId,
@@ -52,7 +80,9 @@ export const formsDb = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const userFormsKey = getCacheKey("getUserForms", userId);
 		cache.delete(userFormsKey);
@@ -74,11 +104,13 @@ export const formsDb = {
 	async getUserForms(userId: string) {
 		const cacheKey = getCacheKey("getUserForms", userId);
 		const cached = getFromCache<Form[]>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("forms")
 			.select(
 				"id, title, description, is_published, created_at, updated_at, user_id, schema"
@@ -86,7 +118,9 @@ export const formsDb = {
 			.eq("user_id", userId)
 			.order("updated_at", { ascending: false });
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const forms = data.map((form) => ({
 			...form,
@@ -100,17 +134,21 @@ export const formsDb = {
 	async getUserFormsWithDetails(userId: string) {
 		const cacheKey = getCacheKey("getUserFormsWithDetails", userId);
 		const cached = getFromCache<Form[]>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("forms")
 			.select("*")
 			.eq("user_id", userId)
 			.order("updated_at", { ascending: false });
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const forms = data.map((form) => ({
 			...form,
@@ -124,18 +162,22 @@ export const formsDb = {
 	async getForm(formId: string, userId: string) {
 		const cacheKey = getCacheKey("getForm", formId, userId);
 		const cached = getFromCache<Form>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("forms")
 			.select("*")
 			.eq("id", formId)
 			.eq("user_id", userId)
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const form = {
 			...data,
@@ -149,11 +191,13 @@ export const formsDb = {
 	async getFormBasic(formId: string, userId: string): Promise<Partial<Form>> {
 		const cacheKey = getCacheKey("getFormBasic", formId, userId);
 		const cached = getFromCache<Partial<Form>>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("forms")
 			.select(
 				"id, title, description, is_published, user_id, created_at, updated_at"
@@ -162,14 +206,18 @@ export const formsDb = {
 			.eq("user_id", userId)
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		setCache(cacheKey, data);
 		return data;
 	},
 
 	async getMultipleForms(formIds: string[], userId: string) {
-		if (formIds.length === 0) return [];
+		if (formIds.length === 0) {
+			return [];
+		}
 
 		const cachedForms: Form[] = [];
 		const uncachedIds: string[] = [];
@@ -188,15 +236,17 @@ export const formsDb = {
 			return cachedForms;
 		}
 
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("forms")
 			.select("*")
 			.in("id", uncachedIds)
 			.eq("user_id", userId);
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const fetchedForms = data.map((form) => {
 			const processedForm = {
@@ -214,9 +264,9 @@ export const formsDb = {
 	},
 
 	async updateForm(formId: string, userId: string, updates: Partial<Form>) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data: formCheck, error: checkError } = await supabase
+		const { data: formCheck, error: checkError } = await athena
 			.from("forms")
 			.select("id")
 			.eq("id", formId)
@@ -232,7 +282,7 @@ export const formsDb = {
 			updates.slug = generateUniqueSlug(updates.title);
 		}
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("forms")
 			.update({
 				...updates,
@@ -243,7 +293,9 @@ export const formsDb = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const formCacheKey = getCacheKey("getForm", formId, userId);
 		const basicCacheKey = getCacheKey("getFormBasic", formId, userId);
@@ -264,17 +316,19 @@ export const formsDb = {
 	},
 
 	async deleteForm(formId: string, userId: string) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
 		const form = await this.getFormBasic(formId, userId);
 
-		const { error } = await supabase
+		const { error } = await athena
 			.from("forms")
 			.delete()
 			.eq("id", formId)
 			.eq("user_id", userId);
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const formCacheKey = getCacheKey("getForm", formId, userId);
 		const basicCacheKey = getCacheKey("getFormBasic", formId, userId);
@@ -297,9 +351,9 @@ export const formsDb = {
 		userId: string,
 		isPublished: boolean
 	) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("forms")
 			.update({
 				is_published: isPublished,
@@ -310,7 +364,9 @@ export const formsDb = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const formCacheKey = getCacheKey("getForm", formId, userId);
 		const basicCacheKey = getCacheKey("getFormBasic", formId, userId);
@@ -335,9 +391,9 @@ export const formsDb = {
 		submissionData: Record<string, any>,
 		ipAddress?: string
 	) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("form_submissions")
 			.insert({
 				form_id: formId,
@@ -347,9 +403,11 @@ export const formsDb = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
-		const { data: form } = await supabase
+		const { data: form } = await athena
 			.from("forms")
 			.select("user_id")
 			.eq("id", formId)
@@ -374,7 +432,9 @@ export const formsDb = {
 			const formIdStr = JSON.stringify(formId);
 			const userIdStr = JSON.stringify(userId);
 			for (const [key] of cache.entries()) {
-				if (!key.startsWith(prefix)) continue;
+				if (!key.startsWith(prefix)) {
+					continue;
+				}
 				// Parse the args array from the cache key to verify exact matches
 				const argsStr = key.slice(prefix.length);
 				try {
@@ -400,8 +460,8 @@ export const formsDb = {
 	},
 
 	async getFormSubmissions(formId: string, userId: string, limit?: number) {
-		const supabase = createClient();
-		const { data: form, error: formError } = await supabase
+		const athena = await getAthenaClient();
+		const { data: form, error: formError } = await athena
 			.from("forms")
 			.select("id")
 			.eq("id", formId)
@@ -414,9 +474,11 @@ export const formsDb = {
 
 		const cacheKey = getCacheKey("getFormSubmissions", formId, userId, limit);
 		const cached = getFromCache<FormSubmission[]>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		let query = supabase
+		let query = athena
 			.from("form_submissions")
 			.select("*")
 			.eq("form_id", formId)
@@ -428,7 +490,9 @@ export const formsDb = {
 
 		const { data, error } = await query;
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		setCache(cacheKey, data);
 		return data;
@@ -440,8 +504,8 @@ export const formsDb = {
 		page = 1,
 		pageSize = 50
 	) {
-		const supabase = createClient();
-		const { data: form, error: formError } = await supabase
+		const athena = await getAthenaClient();
+		const { data: form, error: formError } = await athena
 			.from("forms")
 			.select("id")
 			.eq("id", formId)
@@ -461,16 +525,20 @@ export const formsDb = {
 			pageSize
 		);
 		const cached = getFromCache<FormSubmission[]>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("form_submissions")
 			.select("*")
 			.eq("form_id", formId)
 			.order("submitted_at", { ascending: false })
 			.range(offset, offset + pageSize - 1);
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		setCache(cacheKey, data);
 		return data;
@@ -483,9 +551,9 @@ export const formsDb = {
 		content: string,
 		metadata: Record<string, any> = {}
 	) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_builder_chat")
 			.insert({
 				user_id: userId,
@@ -497,7 +565,9 @@ export const formsDb = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const historyCacheKey = getCacheKey(
 			"getAIBuilderChatHistory",
@@ -512,18 +582,22 @@ export const formsDb = {
 	async getAIBuilderChatHistory(userId: string, sessionId: string) {
 		const cacheKey = getCacheKey("getAIBuilderChatHistory", userId, sessionId);
 		const cached = getFromCache<any[]>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_builder_chat")
 			.select("*")
 			.eq("user_id", userId)
 			.eq("session_id", sessionId)
 			.order("created_at", { ascending: true });
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		setCache(cacheKey, data);
 		return data;
@@ -532,11 +606,13 @@ export const formsDb = {
 	async getAIBuilderSessions(userId: string, limit = 10) {
 		const cacheKey = getCacheKey("getAIBuilderSessions", userId, limit);
 		const cached = getFromCache<any[]>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_builder_chat")
 			.select("session_id, created_at")
 			.eq("user_id", userId)
@@ -544,7 +620,9 @@ export const formsDb = {
 			.order("created_at", { ascending: false })
 			.limit(limit);
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const sessions = data.reduce(
 			(acc, curr) => {
@@ -573,9 +651,9 @@ export const formsDb = {
 		content: string,
 		metadata: Record<string, any> = {}
 	) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_analytics_chat")
 			.insert({
 				user_id: userId,
@@ -588,7 +666,9 @@ export const formsDb = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const historyCacheKey = getCacheKey(
 			"getAIAnalyticsChatHistory",
@@ -613,11 +693,13 @@ export const formsDb = {
 			sessionId
 		);
 		const cached = getFromCache<any[]>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_analytics_chat")
 			.select("*")
 			.eq("user_id", userId)
@@ -625,7 +707,9 @@ export const formsDb = {
 			.eq("session_id", sessionId)
 			.order("created_at", { ascending: true });
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		setCache(cacheKey, data);
 		return data;
@@ -639,11 +723,13 @@ export const formsDb = {
 			limit
 		);
 		const cached = getFromCache<any[]>(cacheKey);
-		if (cached) return cached;
+		if (cached) {
+			return cached;
+		}
 
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_analytics_chat")
 			.select("session_id, form_id, created_at")
 			.eq("user_id", userId)
@@ -651,7 +737,9 @@ export const formsDb = {
 			.order("created_at", { ascending: false })
 			.limit(limit);
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const sessions = data.reduce(
 			(acc, curr) => {
@@ -699,10 +787,10 @@ export const formsDb = {
 
 export const formsDbServer = {
 	async getPublicForm(identifier: string) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 		const { isUUID } = await import("@/lib/utils/slug");
 
-		let query = supabase
+		let query = athena
 			.from("forms")
 			.select(
 				"id, title, description, slug, schema, is_published, created_at, updated_at, api_enabled"
@@ -717,7 +805,9 @@ export const formsDbServer = {
 
 		const { data, error } = await query.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		return {
 			...data,
@@ -726,16 +816,18 @@ export const formsDbServer = {
 	},
 
 	async verifyFormOwnership(formId: string, userId: string) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("forms")
 			.select("id")
 			.eq("id", formId)
 			.eq("user_id", userId)
 			.single();
 
-		if (error) return false;
+		if (error) {
+			return false;
+		}
 		return !!data;
 	},
 
@@ -744,9 +836,9 @@ export const formsDbServer = {
 		submissionData: Record<string, any>,
 		ipAddress?: string
 	) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("form_submissions")
 			.insert({
 				form_id: formId,
@@ -756,7 +848,9 @@ export const formsDbServer = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
@@ -767,9 +861,9 @@ export const formsDbServer = {
 		content: string,
 		metadata: Record<string, any> = {}
 	) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_builder_chat")
 			.insert({
 				user_id: userId,
@@ -781,28 +875,32 @@ export const formsDbServer = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
 	async getAIBuilderChatHistory(userId: string, sessionId: string) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_builder_chat")
 			.select("*")
 			.eq("user_id", userId)
 			.eq("session_id", sessionId)
 			.order("created_at", { ascending: true });
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
 	async getAIBuilderSessions(userId: string, limit = 10) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_builder_chat")
 			.select("session_id, created_at")
 			.eq("user_id", userId)
@@ -810,7 +908,9 @@ export const formsDbServer = {
 			.order("created_at", { ascending: false })
 			.limit(limit);
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const sessions = data.reduce(
 			(acc, curr) => {
@@ -836,9 +936,9 @@ export const formsDbServer = {
 		content: string,
 		metadata: Record<string, any> = {}
 	) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_analytics_chat")
 			.insert({
 				user_id: userId,
@@ -851,7 +951,9 @@ export const formsDbServer = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
@@ -860,9 +962,9 @@ export const formsDbServer = {
 		formId: string,
 		sessionId: string
 	) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_analytics_chat")
 			.select("*")
 			.eq("user_id", userId)
@@ -870,14 +972,16 @@ export const formsDbServer = {
 			.eq("session_id", sessionId)
 			.order("created_at", { ascending: true });
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
 	async getAIAnalyticsSessions(userId: string, formId: string, limit = 10) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("ai_analytics_chat")
 			.select("session_id, form_id, created_at")
 			.eq("user_id", userId)
@@ -885,7 +989,9 @@ export const formsDbServer = {
 			.order("created_at", { ascending: false })
 			.limit(limit);
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 
 		const sessions = data.reduce(
 			(acc, curr) => {
@@ -905,15 +1011,17 @@ export const formsDbServer = {
 	},
 
 	async getUser(email: string) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("users")
 			.select("*")
 			.eq("email", email)
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
@@ -924,15 +1032,15 @@ export const formsDbServer = {
 		hasPremium?: boolean,
 		polarCustomerId?: string | null
 	) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data: existingUser } = await supabase
+		const { data: existingUser } = await athena
 			.from("users")
 			.select("has_premium, polar_customer_id")
 			.eq("email", email)
 			.single();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("users")
 			.upsert(
 				{
@@ -950,86 +1058,102 @@ export const formsDbServer = {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
 	async updateUserPremiumStatus(email: string, hasPremium: boolean) {
-		const supabase = await createServerClient();
+		const athena = await getAthenaServerClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("users")
 			.update({ has_premium: hasPremium })
 			.eq("email", email)
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
 	async getUserByEmail(email: string) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("users")
 			.select("*")
 			.eq("email", email)
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
 	async updatePremiumStatus(email: string, hasPremium: boolean) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("users")
 			.update({ has_premium: hasPremium })
 			.eq("email", email)
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
 	async updatePolarCustomerId(email: string, polarCustomerId: string) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("users")
 			.update({ polar_customer_id: polarCustomerId })
 			.eq("email", email)
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
 	async updateUserProfile(email: string, updates: { name?: string }) {
-		const supabase = createClient();
+		const athena = await getAthenaClient();
 
-		const { data, error } = await supabase
+		const { data, error } = await athena
 			.from("users")
 			.update(updates)
 			.eq("email", email)
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	},
 
 	async countFormSubmissions(formId: string) {
-		const supabase = createAdminClient();
-		const { count, error } = await supabase
+		const athena = await getAthenaAdminClient();
+		const { count, error } = await athena
 			.from("form_submissions")
 			.select("id", { count: "exact", head: true })
 			.eq("form_id", formId);
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return count || 0;
 	},
 };
+
+

@@ -5,17 +5,17 @@ import { UrlEngine } from "@/lib/prepopulation/engines/url-engine";
 import type { PrepopulationResult } from "@/lib/prepopulation/types";
 
 interface PrepopulationData {
+	error?: string;
 	fieldId: string;
-	value: any;
 	source: string;
 	success: boolean;
-	error?: string;
+	value: any;
 }
 
 interface UsePrepopulationResult {
-	prepopulatedData: Record<string, any>;
-	loading: boolean;
 	errors: Record<string, string>;
+	loading: boolean;
+	prepopulatedData: Record<string, any>;
 	sources: Record<string, string>;
 }
 

@@ -81,8 +81,9 @@ export function SchedulerFieldSettings({
 							id="scheduler-link"
 							name="scheduler-link"
 							onChange={(e) => {
-								if (!(field.settings && field.settings.schedulerProvider))
+								if (!(field.settings && field.settings.schedulerProvider)) {
 									return;
+								}
 								onUpdateSettings({
 									schedulerLinks: {
 										...(field.settings.schedulerLinks || {}),

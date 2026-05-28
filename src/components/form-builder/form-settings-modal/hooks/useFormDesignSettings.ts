@@ -64,8 +64,12 @@ export function useColorValidation() {
 
 	const normalizeColor = useCallback(
 		(color: string): string => {
-			if (isValidHexColor(color)) return color;
-			if (isValidCssColor(color)) return color;
+			if (isValidHexColor(color)) {
+				return color;
+			}
+			if (isValidCssColor(color)) {
+				return color;
+			}
 			return "#000000";
 		},
 		[isValidHexColor, isValidCssColor]

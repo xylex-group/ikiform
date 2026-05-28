@@ -12,15 +12,15 @@ import {
 import { useEditableField } from "../hooks/useEditableField";
 
 interface EditableFieldProps {
-	value: string;
-	placeholder?: string;
-	onSave: (value: string) => void;
-	className?: string;
-	inputClassName?: string;
-	component?: "input" | "textarea";
-	rows?: number;
-	disabled?: boolean;
 	children?: React.ReactNode;
+	className?: string;
+	component?: "input" | "textarea";
+	disabled?: boolean;
+	inputClassName?: string;
+	onSave: (value: string) => void;
+	placeholder?: string;
+	rows?: number;
+	value: string;
 }
 
 export function EditableField({

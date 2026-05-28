@@ -1,6 +1,13 @@
-import { ArrowRight, Plus, Sparkles, Upload, type LucideIcon } from "lucide-react";
+import {
+	ArrowRight,
+	type LucideIcon,
+	Plus,
+	Sparkles,
+	Upload,
+} from "lucide-react";
 import { memo, useCallback, useState } from "react";
-import { Card, Separator } from "@/components/ui";
+import { Card } from "@/components/ui";
+import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -9,7 +16,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { FormHeaderProps } from "../types";
 
@@ -19,14 +25,14 @@ interface FormsHeaderProps extends FormHeaderProps {
 }
 
 interface CreateOptionCardProps {
+	badge?: string;
+	ctaLabel?: string;
 	description: string;
 	disabled?: boolean;
+	featured?: boolean;
 	icon: LucideIcon;
 	onClick: () => void;
 	title: string;
-	badge?: string;
-	ctaLabel?: string;
-	featured?: boolean;
 }
 
 function CreateOptionCard({
@@ -77,7 +83,9 @@ function CreateOptionCard({
 			</div>
 
 			<div className="flex-1">
-				<div className={cn("font-medium text-sm", featured && "text-foreground")}>
+				<div
+					className={cn("font-medium text-sm", featured && "text-foreground")}
+				>
 					{title}
 				</div>
 				<p
@@ -150,14 +158,16 @@ export const FormsHeader = memo(function FormsHeader({
 					</Button>
 				</DialogTrigger>
 
-				<DialogContent className="max-h-[90vh] overflow-hidden sm:p-6 p-4 sm:gap-6 gap-4 sm:max-w-2xl">
+				<DialogContent className="max-h-[90vh] gap-4 overflow-hidden p-4 sm:max-w-2xl sm:gap-6 sm:p-6">
 					<DialogHeader className="shrink-0">
-						<DialogTitle className={"text-xl font-mediumt tracking-tight"}>Create a New Form</DialogTitle>
+						<DialogTitle className={"font-mediumt text-xl tracking-tight"}>
+							Create a New Form
+						</DialogTitle>
 						<DialogDescription>
 							Choose how you want to start. You can generate with AI, build
 							manually, or import an encrypted file.
 						</DialogDescription>
-          </DialogHeader>
+					</DialogHeader>
 
 					<div className="flex flex-col gap-3">
 						<CreateOptionCard

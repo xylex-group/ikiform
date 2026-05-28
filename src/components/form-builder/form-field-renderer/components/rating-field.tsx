@@ -59,12 +59,16 @@ export function RatingField({
 		const itemRefs = useRef<HTMLButtonElement[]>([]);
 
 		const getTabIndex = (i: number) => {
-			if (!value) return i === 0 ? 0 : -1;
+			if (!value) {
+				return i === 0 ? 0 : -1;
+			}
 			return value === i + 1 ? 0 : -1;
 		};
 
 		const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
-			if (disabled) return;
+			if (disabled) {
+				return;
+			}
 			const count = ratingCount;
 			const current = typeof value === "number" && value > 0 ? value : 0;
 			let next = current;
@@ -108,7 +112,9 @@ export function RatingField({
 						key={index}
 						onClick={() => handleRatingClick(index + 1)}
 						ref={(el) => {
-							if (el) itemRefs.current[index] = el;
+							if (el) {
+								itemRefs.current[index] = el;
+							}
 						}}
 						role="radio"
 						tabIndex={getTabIndex(index)}

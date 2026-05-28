@@ -24,22 +24,22 @@ import { validateEmail } from "@/lib/validation/email-validation";
 import { PasswordProtectionModal } from "../../modals/password-protection-modal";
 
 interface MultiStepFormProps {
+	dir?: string;
 	formId: string;
 	schema: FormSchema;
-	dir?: string;
 }
 
 interface FormState {
 	currentStep: number;
-	formData: Record<string, any>;
-	errors: Record<string, string>;
-	submitting: boolean;
-	submitted: boolean;
 	duplicateError: {
 		message: string;
 		timeRemaining?: number;
 		attemptsRemaining?: number;
 	} | null;
+	errors: Record<string, string>;
+	formData: Record<string, any>;
+	submitted: boolean;
+	submitting: boolean;
 }
 
 function SuccessScreen({ schema }: { schema: FormSchema }) {
@@ -109,7 +109,9 @@ function FormProgress({
 	const { getButtonStyles } = useFormStyling(schema);
 	const buttonStyles = getButtonStyles(true);
 
-	if (totalSteps <= 1 || !showProgress) return null;
+	if (totalSteps <= 1 || !showProgress) {
+		return null;
+	}
 
 	return (
 		<div className="flex flex-col gap-3">
@@ -437,7 +439,9 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (submitting) return;
+			if (submitting) {
+				return;
+			}
 
 			if (
 				event.key === "ArrowRight" ||

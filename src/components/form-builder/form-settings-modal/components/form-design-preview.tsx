@@ -23,8 +23,8 @@ import {
 import type { LocalSettings } from "../types";
 
 interface FormDesignPreviewProps {
-	localSettings: LocalSettings;
 	className?: string;
+	localSettings: LocalSettings;
 }
 
 export function FormDesignPreview({

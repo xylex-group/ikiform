@@ -74,7 +74,9 @@ export function FieldGroupField({
 	};
 
 	const renderGroupFieldLabel = (groupField: any) => {
-		if (!groupField.label) return null;
+		if (!groupField.label) {
+			return null;
+		}
 
 		return (
 			<Label className="font-medium text-foreground text-sm">

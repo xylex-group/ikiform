@@ -57,8 +57,12 @@ export default function DemoFormBuilder() {
 
 	const handleFieldSelect = (fieldId: string | null) => {
 		setSelectedFieldId(fieldId);
-		if (isMobile && fieldId) setShowFieldSettings(true);
-		if (isMobile && !fieldId) setShowFieldSettings(false);
+		if (isMobile && fieldId) {
+			setShowFieldSettings(true);
+		}
+		if (isMobile && !fieldId) {
+			setShowFieldSettings(false);
+		}
 	};
 
 	const addField = (fieldType: FormField["type"]) => {
@@ -85,7 +89,9 @@ export default function DemoFormBuilder() {
 	const deleteField = (fieldId: string) => {
 		const updatedSchema = removeFieldFromSchema(formSchema, fieldId);
 		setFormSchema(updatedSchema);
-		if (selectedFieldId === fieldId) setSelectedFieldId(null);
+		if (selectedFieldId === fieldId) {
+			setSelectedFieldId(null);
+		}
 	};
 
 	const reorderFields = (fields: FormField[]) => {
@@ -163,7 +169,9 @@ export default function DemoFormBuilder() {
 				},
 			};
 		});
-		if (selectedBlockId === blockId) setSelectedBlockId(null);
+		if (selectedBlockId === blockId) {
+			setSelectedBlockId(null);
+		}
 	};
 
 	const updateFormSettings = (settings: Partial<FormSchema["settings"]>) => {
@@ -310,7 +318,9 @@ export default function DemoFormBuilder() {
 					<Drawer
 						onOpenChange={(open) => {
 							setShowFieldSettings(open);
-							if (!open) setSelectedFieldId(null);
+							if (!open) {
+								setSelectedFieldId(null);
+							}
 						}}
 						open={showFieldSettings}
 					>

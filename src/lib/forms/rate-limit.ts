@@ -112,11 +112,11 @@ export async function checkCustomRateLimit(
 }
 
 interface FormRateLimitSettings {
+	blockDuration: number;
 	enabled: boolean;
 	maxSubmissions: number;
-	timeWindow: number;
-	blockDuration: number;
 	message: string;
+	timeWindow: number;
 }
 
 export async function checkFormRateLimit(

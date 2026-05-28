@@ -14,15 +14,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface AdminControlsProps {
-	userId: string;
-	userName: string;
+	assignPremium: (userId: string) => void;
+	assignTrial: (userId: string) => void;
+	deleteUser: (userId: string) => void;
 	hasFreeTrial: boolean;
 	hasPremium: boolean;
-	assignTrial: (userId: string) => void;
-	removeTrial: (userId: string) => void;
-	assignPremium: (userId: string) => void;
 	removePremium: (userId: string) => void;
-	deleteUser: (userId: string) => void;
+	removeTrial: (userId: string) => void;
+	userId: string;
+	userName: string;
 }
 
 export function AdminControls({

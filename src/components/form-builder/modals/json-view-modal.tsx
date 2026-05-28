@@ -1,7 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Check, Copy } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createHighlighter, type Highlighter } from "shiki";
 
@@ -23,9 +23,9 @@ import {
 import type { FormSchema } from "@/lib/database";
 
 interface JsonViewModalProps {
-	schema: FormSchema;
 	isOpen: boolean;
 	onClose: () => void;
+	schema: FormSchema;
 }
 
 let highlighterInstance: Highlighter | null = null;
@@ -85,19 +85,25 @@ export function JsonViewModal({ schema, isOpen, onClose }: JsonViewModalProps) {
 		abortControllerRef.current = abortController;
 
 		const highlightCode = async () => {
-			if (abortController.signal.aborted) return;
+			if (abortController.signal.aborted) {
+				return;
+			}
 
 			setIsHighlighting(true);
 
 			try {
 				const highlighter = await getHighlighter();
 
-				if (abortController.signal.aborted) return;
+				if (abortController.signal.aborted) {
+					return;
+				}
 
 				const selectedTheme = "github-light";
 
 				const highlight = () => {
-					if (abortController.signal.aborted) return;
+					if (abortController.signal.aborted) {
+						return;
+					}
 
 					try {
 						const html = highlighter.codeToHtml(jsonString, {
@@ -163,7 +169,9 @@ export function JsonViewModal({ schema, isOpen, onClose }: JsonViewModalProps) {
 	}, [isOpen]);
 
 	useEffect(() => {
-		if (!isOpen) return;
+		if (!isOpen) {
+			return;
+		}
 		const onKeyDown = (e: KeyboardEvent) => {
 			if (e.key === "Escape") {
 				onClose();

@@ -67,7 +67,9 @@ export function MultiStepNavigation({
 
 	const handleDeleteStep = (index: number, e: React.MouseEvent) => {
 		e.stopPropagation();
-		if (schema.blocks.length <= 1) return;
+		if (schema.blocks.length <= 1) {
+			return;
+		}
 
 		setStepToDelete(index);
 		setDeleteDialogOpen(true);

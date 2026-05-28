@@ -14,10 +14,10 @@ import {
 import { Slider } from "@/components/ui/slider";
 
 interface EnhancedColorPickerProps {
-	value: string;
-	onChange: (color: string) => void;
-	label?: string;
 	allowTransparent?: boolean;
+	label?: string;
+	onChange: (color: string) => void;
+	value: string;
 }
 
 export function EnhancedColorPicker({

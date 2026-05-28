@@ -12,12 +12,12 @@ import { Switch } from "@/components/ui/switch";
 import type { WebhookConfig } from "../hooks/useWebhookManagement";
 
 interface WebhookListItemProps {
-	webhook: WebhookConfig;
-	onEdit: () => void;
 	onDelete: () => void;
-	onToggleEnabled: () => void;
+	onEdit: () => void;
 	onTest: () => void;
+	onToggleEnabled: () => void;
 	onViewLogs: () => void;
+	webhook: WebhookConfig;
 }
 
 export function WebhookListItem({

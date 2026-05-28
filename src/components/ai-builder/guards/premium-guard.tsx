@@ -4,11 +4,11 @@ import { Loader } from "@/components/ui/loader";
 import { AIBuilderSkeleton } from "../ai-builder-skeleton";
 
 interface PremiumGuardProps {
-	user: any;
-	hasPremium: boolean | null;
 	authLoading: boolean;
 	checking: boolean;
 	children: React.ReactNode;
+	hasPremium: boolean | null;
+	user: any;
 	useSkeleton?: boolean;
 }
 

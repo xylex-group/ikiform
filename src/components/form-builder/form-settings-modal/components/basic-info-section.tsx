@@ -532,15 +532,15 @@ export function BasicInfoSection({
 }
 
 interface BasicInfoFieldProps {
+	description?: string;
 	id: string;
+	isTextarea?: boolean;
 	label: string;
-	value: string;
 	onChange: (value: string) => void;
 	placeholder: string;
-	isTextarea?: boolean;
-	rows?: number;
-	description?: string;
 	required?: boolean;
+	rows?: number;
+	value: string;
 }
 
 function BasicInfoField({

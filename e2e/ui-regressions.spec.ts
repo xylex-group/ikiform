@@ -16,8 +16,8 @@ const IGNORE_ERROR_PATTERNS = [
 ] as const;
 
 interface CapturedError {
-	type: "console" | "pageerror";
 	message: string;
+	type: "console" | "pageerror";
 }
 
 function isIgnorableError(message: string): boolean {

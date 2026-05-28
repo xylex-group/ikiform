@@ -1,5 +1,7 @@
-import { createClient } from "@/utils/supabase/client";
-import { createClient as createServerClient } from "@/utils/supabase/server";
+import "server-only";
+
+import { createAthenaClient } from "@/utils/athena/client";
+import { createAthenaServerClient } from "@/utils/athena/server";
 
 export function generateApiKey(): string {
 	const timestamp = Date.now().toString(36);
@@ -18,10 +20,10 @@ export async function generateFormApiKey(formId: string): Promise<{
 	error?: string;
 }> {
 	try {
-		const supabase = createClient();
+		const athena = createAthenaClient();
 		const {
 			data: { user },
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (!user) {
 			return { success: false, error: "Authentication required" };
@@ -29,7 +31,7 @@ export async function generateFormApiKey(formId: string): Promise<{
 
 		const apiKey = generateApiKey();
 
-		const { error } = await supabase
+		const { error } = await athena
 			.from("forms")
 			.update({
 				api_key: apiKey,
@@ -56,16 +58,16 @@ export async function revokeFormApiKey(formId: string): Promise<{
 	error?: string;
 }> {
 	try {
-		const supabase = createClient();
+		const athena = createAthenaClient();
 		const {
 			data: { user },
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (!user) {
 			return { success: false, error: "Authentication required" };
 		}
 
-		const { error } = await supabase
+		const { error } = await athena
 			.from("forms")
 			.update({
 				api_key: null,
@@ -95,16 +97,16 @@ export async function toggleFormApiEnabled(
 	error?: string;
 }> {
 	try {
-		const supabase = createClient();
+		const athena = createAthenaClient();
 		const {
 			data: { user },
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (!user) {
 			return { success: false, error: "Authentication required" };
 		}
 
-		const { error } = await supabase
+		const { error } = await athena
 			.from("forms")
 			.update({
 				api_enabled: enabled,
@@ -135,9 +137,9 @@ export async function getFormByApiKey(apiKey: string): Promise<{
 			return { success: false, error: "Invalid API key format" };
 		}
 
-		const supabase = await createServerClient();
+		const athena = await createAthenaServerClient();
 
-		const { data: form, error } = await supabase
+		const { data: form, error } = await athena
 			.from("forms")
 			.select("*")
 			.eq("api_key", apiKey)
@@ -168,9 +170,9 @@ export async function validateFormApiAccess(
 			return { success: false, error: "Invalid API key format" };
 		}
 
-		const supabase = await createServerClient();
+		const athena = await createAthenaServerClient();
 
-		const { data: form, error } = await supabase
+		const { data: form, error } = await athena
 			.from("forms")
 			.select("*")
 			.eq("id", formId)
@@ -191,3 +193,5 @@ export async function validateFormApiAccess(
 		return { success: false, error: "An unexpected error occurred" };
 	}
 }
+
+

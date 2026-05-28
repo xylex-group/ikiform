@@ -19,25 +19,25 @@ import { Label } from "./label";
 import { Loader } from "./loader";
 
 interface GoogleFont {
-	family: string;
-	variants: string[];
-	subsets: string[];
-	version: string;
-	lastModified: string;
-	files: Record<string, string>;
-	category: "serif" | "sans-serif" | "monospace" | "display" | "handwriting";
-	kind: string;
-	menu: string;
 	axes?: Array<{
 		tag: string;
 		start: number;
 		end: number;
 	}>;
+	category: "serif" | "sans-serif" | "monospace" | "display" | "handwriting";
+	family: string;
+	files: Record<string, string>;
+	kind: string;
+	lastModified: string;
+	menu: string;
+	subsets: string[];
+	variants: string[];
+	version: string;
 }
 
 interface GoogleFontsResponse {
-	kind: string;
 	items: GoogleFont[];
+	kind: string;
 }
 
 interface GoogleFontFetchResult {
@@ -212,11 +212,11 @@ const fetchGoogleFonts = async (): Promise<GoogleFontFetchResult> => {
 };
 
 interface GoogleFontPickerProps {
-	value?: string;
-	onChange: (fontFamily: string) => void;
 	label?: string;
+	onChange: (fontFamily: string) => void;
 	placeholder?: string;
 	showPreview?: boolean;
+	value?: string;
 }
 
 export function GoogleFontPicker({
@@ -241,7 +241,9 @@ export function GoogleFontPicker({
 			setLoading(true);
 			const result = await fetchGoogleFonts();
 			setFonts(result.fonts);
-			setError(result.hasError ? "Failed to load fonts. Please try again." : null);
+			setError(
+				result.hasError ? "Failed to load fonts. Please try again." : null
+			);
 			setLoading(false);
 		};
 

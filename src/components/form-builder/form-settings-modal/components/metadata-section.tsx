@@ -103,9 +103,15 @@ export function MetadataSection({
 	};
 
 	const getRobotsValue = () => {
-		if (metadata.noIndex && metadata.noFollow) return "noindex,nofollow";
-		if (metadata.noIndex) return "noindex";
-		if (metadata.noFollow) return "nofollow";
+		if (metadata.noIndex && metadata.noFollow) {
+			return "noindex,nofollow";
+		}
+		if (metadata.noIndex) {
+			return "noindex";
+		}
+		if (metadata.noFollow) {
+			return "nofollow";
+		}
 		return "index";
 	};
 
@@ -289,8 +295,11 @@ export function MetadataSection({
 				const isTextarea = target.tagName === "TEXTAREA";
 				if (isTextarea && e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
 					e.preventDefault();
-					if (hasBasicChanges) saveBasic();
-					else if (hasSocialChanges) saveSocial();
+					if (hasBasicChanges) {
+						saveBasic();
+					} else if (hasSocialChanges) {
+						saveSocial();
+					}
 				}
 			}}
 			style={{

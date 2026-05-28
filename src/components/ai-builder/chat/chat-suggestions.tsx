@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 
 interface ChatSuggestionsProps {
-	suggestions: { text: string; icon: React.ReactNode }[];
 	onSuggestionClick: (text: string) => void;
+	suggestions: { text: string; icon: React.ReactNode }[];
 }
 
 export function ChatSuggestions({

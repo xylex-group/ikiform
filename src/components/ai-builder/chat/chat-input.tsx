@@ -7,9 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface ChatInputProps {
 	input: string;
-	setInput: (value: string) => void;
-	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 	isLoading: boolean;
+	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+	setInput: (value: string) => void;
 }
 
 export function ChatInput({
@@ -25,7 +25,9 @@ export function ChatInput({
 
 	const autoResize = () => {
 		const el = textareaRef.current;
-		if (!el) return;
+		if (!el) {
+			return;
+		}
 		el.style.height = "auto";
 		const maxHeight = 160;
 		el.style.height = Math.min(el.scrollHeight, maxHeight) + "px";

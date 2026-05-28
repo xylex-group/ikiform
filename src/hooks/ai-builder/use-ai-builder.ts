@@ -9,16 +9,16 @@ import {
 } from "@/lib/ai-builder/utils";
 
 interface AiBuilderState {
-	sessionId: string | null;
-	messages: ChatMessage[];
+	activeFormId: string | null;
+	forms: FormSchema[];
 	input: string;
 	isLoading: boolean;
-	forms: FormSchema[];
-	activeFormId: string | null;
 	isStreaming: boolean;
-	streamedContent: string;
-	streamError: string | null;
+	messages: ChatMessage[];
+	sessionId: string | null;
 	showJsonModal: boolean;
+	streamError: string | null;
+	streamedContent: string;
 }
 
 type AiBuilderAction =
@@ -91,7 +91,9 @@ export const useAIBuilder = (initialPrompt?: string) => {
 	const initialPromptProcessedRef = useRef(false);
 
 	const processInitialPrompt = useCallback(() => {
-		if (initialPromptProcessedRef.current) return;
+		if (initialPromptProcessedRef.current) {
+			return;
+		}
 
 		const urlParams = new URLSearchParams(window.location.search);
 		const promptParam = urlParams.get("prompt");
@@ -191,7 +193,9 @@ export const useAIBuilder = (initialPrompt?: string) => {
 
 	const autoSendPrompt = useCallback(
 		async (promptText: string) => {
-			if (!promptText.trim()) return;
+			if (!promptText.trim()) {
+				return;
+			}
 
 			const newMessage: ChatMessage = { role: "user", content: promptText };
 			dispatch({ type: "ADD_MESSAGE", payload: newMessage });
@@ -203,7 +207,9 @@ export const useAIBuilder = (initialPrompt?: string) => {
 	const handleSend = useCallback(
 		async (e: React.FormEvent<HTMLFormElement>) => {
 			e.preventDefault();
-			if (!state.input.trim()) return;
+			if (!state.input.trim()) {
+				return;
+			}
 
 			const currentInput = state.input;
 			dispatch({ type: "SET_INPUT", payload: "" });

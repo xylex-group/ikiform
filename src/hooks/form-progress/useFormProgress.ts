@@ -62,7 +62,9 @@ export function useFormProgress(
 
 	const debouncedSave = useCallback(
 		async (formData: Record<string, any>, currentStep = 0, totalSteps = 1) => {
-			if (!finalOptions.enableAutoSave) return;
+			if (!finalOptions.enableAutoSave) {
+				return;
+			}
 
 			if (saveTimeoutRef.current) {
 				clearTimeout(saveTimeoutRef.current);
@@ -80,8 +82,11 @@ export function useFormProgress(
 
 	const saveProgress = useCallback(
 		async (formData: Record<string, any>, currentStep = 0, totalSteps = 1) => {
-			if (!(storageRef.current && sessionIdRef.current && finalConfig.enabled))
+			if (
+				!(storageRef.current && sessionIdRef.current && finalConfig.enabled)
+			) {
 				return;
+			}
 
 			try {
 				setState((prev: FormProgressState) => ({
@@ -157,7 +162,9 @@ export function useFormProgress(
 	}, [formId]);
 
 	const clearProgress = useCallback(async () => {
-		if (!(storageRef.current && sessionIdRef.current)) return;
+		if (!(storageRef.current && sessionIdRef.current)) {
+			return;
+		}
 
 		try {
 			await storageRef.current.deleteProgress(formId, sessionIdRef.current);

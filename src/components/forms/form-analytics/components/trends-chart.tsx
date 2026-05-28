@@ -26,8 +26,12 @@ const getAllTrends = (trends: Record<string, number>) => {
 	const dates = keys.sort((a, b) => {
 		const ta = safeParseTime(a);
 		const tb = safeParseTime(b);
-		if (ta !== null && tb !== null) return ta - tb;
-		if (ta === null && tb === null) return a.localeCompare(b);
+		if (ta !== null && tb !== null) {
+			return ta - tb;
+		}
+		if (ta === null && tb === null) {
+			return a.localeCompare(b);
+		}
 		return ta !== null ? -1 : 1;
 	});
 	return dates.map((date) => ({ date, value: trends[date] }));

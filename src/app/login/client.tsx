@@ -14,7 +14,11 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { createClient } from "@/utils/supabase/client";
+
+// Safe browser-only Athena Auth client (avoids pulling 'pg' and other server modules)
+import { athenaBrowserAuth } from "@/lib/auth/athena-browser-auth";
+
+const getAuthClient = async () => athenaBrowserAuth;
 
 const baseInputClass =
 	"linear h-12 rounded-md px-4 py-3 text-sm transition-all duration-300 border-border";
@@ -59,14 +63,24 @@ export default function LoginForm() {
 	}, []);
 
 	useEffect(() => {
-		if (loading) return;
-		if (step === "email") emailRef.current?.focus();
-		if (step === "name") nameRef.current?.focus();
-		if (step === "password") passwordRef.current?.focus();
+		if (loading) {
+			return;
+		}
+		if (step === "email") {
+			emailRef.current?.focus();
+		}
+		if (step === "name") {
+			nameRef.current?.focus();
+		}
+		if (step === "password") {
+			passwordRef.current?.focus();
+		}
 	}, [step, loading]);
 
 	useEffect(() => {
-		if (!user) return;
+		if (!user) {
+			return;
+		}
 		const redirectUrl =
 			typeof window !== "undefined"
 				? sessionStorage.getItem("redirectAfterLogin")
@@ -123,13 +137,19 @@ export default function LoginForm() {
 		async (e: React.FormEvent) => {
 			e.preventDefault();
 			if (step === "email") {
-				if (!validateEmail()) return emailRef.current?.focus();
+				if (!validateEmail()) {
+					return emailRef.current?.focus();
+				}
 				setStep(isSignUp ? "name" : "password");
 			} else if (step === "name") {
-				if (!validateName()) return nameRef.current?.focus();
+				if (!validateName()) {
+					return nameRef.current?.focus();
+				}
 				setStep("password");
 			} else if (step === "password") {
-				if (!validatePassword()) return passwordRef.current?.focus();
+				if (!validatePassword()) {
+					return passwordRef.current?.focus();
+				}
 				await handleAuth();
 			}
 		},
@@ -137,8 +157,11 @@ export default function LoginForm() {
 	);
 
 	const back = useCallback(() => {
-		if (step === "password") setStep(isSignUp ? "name" : "email");
-		else if (step === "name") setStep("email");
+		if (step === "password") {
+			setStep(isSignUp ? "name" : "email");
+		} else if (step === "name") {
+			setStep("email");
+		}
 	}, [step, isSignUp]);
 
 	const reset = useCallback(() => {
@@ -150,18 +173,25 @@ export default function LoginForm() {
 	}, []);
 
 	const handleForgot = useCallback(async () => {
-		if (!form.email)
+		if (!form.email) {
 			return toast.error("Please enter your email address first");
-		if (!form.email.includes("@"))
+		}
+		if (!form.email.includes("@")) {
 			return toast.error("Please enter a valid email address");
+		}
 		setLoading(true);
-		const supabase = createClient();
+		const auth = await getAuthClient();
 		try {
-			const { error } = await supabase.auth.resetPasswordForEmail(form.email, {
+			const result = await auth.forgetPassword({
+				email: form.email,
 				redirectTo: `${window.location.origin}/reset-password`,
 			});
-			if (error) toast.error(error.message);
-			else toast.success("Password reset link sent!");
+			const error = result.ok ? null : result.error;
+			if (error) {
+				toast.error(error.message);
+			} else {
+				toast.success("Password reset link sent!");
+			}
 		} catch {
 			toast.error("An unexpected error occurred. Please try again.");
 		} finally {
@@ -171,45 +201,55 @@ export default function LoginForm() {
 
 	const handleAuth = useCallback(async () => {
 		setLoading(true);
-		const supabase = createClient();
+		const auth = await getAuthClient();
 		try {
 			if (isSignUp) {
-				const { data, error } = await supabase.auth.signUp({
+				const result = await auth.signUp.email({
 					email: form.email,
 					password: form.password,
-					options: { data: { name: form.name, full_name: form.name } },
+					// Athena Auth accepts extra data in a similar way
+					// @ts-expect-error - extra data handling depends on your Athena Auth server config
+					data: { name: form.name, full_name: form.name },
 				});
+				const data = result.ok ? result.data : null;
+				const error = result.ok ? null : result.error;
 				if (error) {
-					if (error.message.includes("already registered"))
+					if (error.message.includes("already registered")) {
 						toast.error(
 							"This email is already registered. Try signing in instead."
 						);
-					else toast.error(error.message);
+					} else {
+						toast.error(error.message);
+					}
 				} else {
 					try {
 						await fetch("/api/user", { method: "POST" });
 					} catch {}
-					if (data.user?.email_confirmed_at)
+					if (data.user?.email_confirmed_at) {
 						toast.success("Account created and verified!");
-					else
+					} else {
 						toast.success(
 							"Account created! Please check your email for verification."
 						);
+					}
 				}
 			} else {
-				const { data, error } = await supabase.auth.signInWithPassword({
+				const result = await auth.signIn.email({
 					email: form.email,
 					password: form.password,
 				});
+				const error = result.ok ? null : result.error;
 				if (error) {
-					if (error.message.includes("Invalid login credentials")) {
+					if (error.message?.includes("Invalid login credentials")) {
 						setErrors((e) => ({ ...e, password: "Invalid email or password" }));
 						passwordRef.current?.focus();
-					} else if (error.message.includes("Email not confirmed")) {
+					} else if (error.message?.includes("Email not confirmed")) {
 						toast.error(
 							"Please check your email and click the verification link before signing in."
 						);
-					} else toast.error(error.message);
+					} else {
+						toast.error(error.message || "Login failed");
+					}
 				} else {
 					try {
 						await fetch("/api/user", {
@@ -232,10 +272,10 @@ export default function LoginForm() {
 		localStorage.setItem("lastLoginMethod", provider);
 		setLastLoginMethod(provider);
 		toast(`Logging in with ${provider === "google" ? "Google" : "GitHub"}`);
-		const supabase = createClient();
-		await supabase.auth.signInWithOAuth({
+		const auth = await getAuthClient();
+		await auth.signIn.social({
 			provider,
-			options: { redirectTo: `${window.location.origin}/auth/callback` },
+			redirectTo: `${window.location.origin}/auth/callback`,
 		});
 	}, []);
 

@@ -17,10 +17,10 @@ import { toast } from "@/hooks/use-toast";
 import type { LocalSettings } from "../types";
 
 interface QuizSectionProps {
-	localSettings: LocalSettings;
-	updateSettings: (updates: Partial<LocalSettings>) => void;
 	formId?: string;
+	localSettings: LocalSettings;
 	schema?: any;
+	updateSettings: (updates: Partial<LocalSettings>) => void;
 }
 
 export function QuizSection({

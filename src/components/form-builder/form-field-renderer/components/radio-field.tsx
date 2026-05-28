@@ -80,17 +80,24 @@ export function RadioField(props: BaseFieldProps) {
 	const getOptionValue = (
 		option: string | { value: string; label?: string }
 	): string => {
-		if (typeof option === "string") return option;
-		if (option && typeof option === "object") return option.value || "";
+		if (typeof option === "string") {
+			return option;
+		}
+		if (option && typeof option === "object") {
+			return option.value || "";
+		}
 		return "";
 	};
 
 	const getOptionLabel = (
 		option: string | { value: string; label?: string }
 	): string => {
-		if (typeof option === "string") return option;
-		if (option && typeof option === "object")
+		if (typeof option === "string") {
+			return option;
+		}
+		if (option && typeof option === "object") {
 			return option.label || option.value || "";
+		}
 		return "";
 	};
 
@@ -130,7 +137,9 @@ export function RadioField(props: BaseFieldProps) {
 							const optionValue = getOptionValue(option);
 							const optionLabel = getOptionLabel(option);
 
-							if (!optionValue) return null;
+							if (!optionValue) {
+								return null;
+							}
 
 							const isCorrect = isQuizField && correctAnswer === optionValue;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { User } from "@supabase/supabase-js";
+import type { AppAuthUser } from "@/lib/auth/types";
 import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { ProfileInfo, UserAvatar } from "./components";
@@ -8,9 +8,9 @@ import type { ProfileCardProps } from "./types";
 import { extractAvatarUrl, extractUserName } from "./utils";
 
 interface ProfileCardClientProps extends ProfileCardProps {
-	user: User;
-	hasPremium: boolean;
 	hasCustomerPortal: boolean;
+	hasPremium: boolean;
+	user: AppAuthUser;
 }
 
 function ProfileCardClient({

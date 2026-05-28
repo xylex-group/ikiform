@@ -54,7 +54,9 @@ export function FormCustomizePage({ formId, schema }: FormCustomizePageProps) {
 	};
 
 	const handleSave = async () => {
-		if (!user) return;
+		if (!user) {
+			return;
+		}
 		try {
 			setSaving(true);
 			const newSchema = { ...schema, settings: localSettings };

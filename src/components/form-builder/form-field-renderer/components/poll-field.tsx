@@ -145,7 +145,9 @@ export function PollField({
 	};
 
 	const renderPollResults = () => {
-		if (!getShowResults()) return null;
+		if (!getShowResults()) {
+			return null;
+		}
 
 		const fakeResults = generateFakeResults();
 		const totalVotes = getTotalVotes();

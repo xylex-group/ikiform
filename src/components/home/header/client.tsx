@@ -1,13 +1,13 @@
 "use client";
 
-import type { User } from "@supabase/supabase-js";
+import type { AppAuthUser } from "@/lib/auth/types";
 import { AlignJustify, ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useReducer } from "react";
 import { Separator } from "@/components/ui";
+import { athenaBrowserAuth } from "@/lib/auth/athena-browser-auth";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/utils/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { Button } from "../../ui/button";
 import {
@@ -38,13 +38,13 @@ interface HeaderClientProps {
 }
 
 interface AuthState {
-	user: User | null;
 	loading: boolean;
+	user: AppAuthUser | null;
 }
 
 type AuthAction = {
 	type: "set-auth";
-	user: User | null;
+	user: AppAuthUser | null;
 };
 
 const INITIAL_AUTH_STATE: AuthState = {
@@ -65,7 +65,7 @@ function authStateReducer(state: AuthState, action: AuthAction): AuthState {
 }
 
 interface UserAvatarProps {
-	user: User;
+	user: AppAuthUser;
 }
 
 const UserAvatar = React.memo(function UserAvatar({ user }: UserAvatarProps) {
@@ -84,8 +84,8 @@ const UserAvatar = React.memo(function UserAvatar({ user }: UserAvatarProps) {
 UserAvatar.displayName = "UserAvatar";
 
 interface UserDropdownMenuProps {
-	user: User;
 	signOut: () => Promise<void>;
+	user: AppAuthUser;
 }
 
 const UserDropdownMenu = React.memo(function UserDropdownMenu({
@@ -168,7 +168,7 @@ const UserDropdownMenu = React.memo(function UserDropdownMenu({
 				</div>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem
-					className="min-h-[40px] font-medium text-destructive opacity-70 transition-opacity hover:opacity-100 mt-2 cursor-pointer"
+					className="mt-2 min-h-[40px] cursor-pointer font-medium text-destructive opacity-70 transition-opacity hover:opacity-100"
 					onSelect={handleSignOut}
 				>
 					<span className="text-destructive">Log out</span>
@@ -182,9 +182,9 @@ const UserDropdownMenu = React.memo(function UserDropdownMenu({
 UserDropdownMenu.displayName = "UserDropdownMenu";
 
 interface DesktopActionsProps {
-	user: User | null;
 	loading: boolean;
 	signOut: () => Promise<void>;
+	user: User | null;
 }
 
 const DesktopActionsSkeleton = React.memo(function DesktopActionsSkeleton() {
@@ -260,8 +260,8 @@ const DrawerLinks = React.memo(function DrawerLinks({
 DrawerLinks.displayName = "DrawerLinks";
 
 interface DrawerProfileSectionProps {
-	user: User | null;
 	signOut: () => Promise<void>;
+	user: User | null;
 }
 
 const DrawerProfileSection = React.memo(function DrawerProfileSection({
@@ -276,7 +276,9 @@ const DrawerProfileSection = React.memo(function DrawerProfileSection({
 		}
 	}, [signOut]);
 
-	if (!user) return null;
+	if (!user) {
+		return null;
+	}
 
 	const name =
 		user.user_metadata?.name ?? user.user_metadata?.full_name ?? "Account";
@@ -320,10 +322,10 @@ const DrawerProfileSection = React.memo(function DrawerProfileSection({
 DrawerProfileSection.displayName = "DrawerProfileSection";
 
 interface MobileDrawerProps {
-	user: User | null;
 	loading: boolean;
-	signOut: () => Promise<void>;
 	primaryLinks: NavLink[];
+	signOut: () => Promise<void>;
+	user: User | null;
 }
 
 const MobileDrawerButtonSkeleton = React.memo(
@@ -455,34 +457,28 @@ export function HeaderClient({ primaryLinks }: HeaderClientProps) {
 	const { user, loading } = authState;
 
 	useEffect(() => {
-		const supabase = createClient();
+		const auth = athenaBrowserAuth;
 
 		const fetchUser = async () => {
-			const { data } = await supabase.auth.getUser();
+			const result = await auth.getSession();
+			const sessionUser = result.ok ? result.data?.user : null;
 			dispatchAuth({
 				type: "set-auth",
-				user: data.user ?? null,
+				user: sessionUser ?? null,
 			});
 		};
 
 		fetchUser();
 
-		const {
-			data: { subscription },
-		} = supabase.auth.onAuthStateChange((_, session) => {
-			dispatchAuth({
-				type: "set-auth",
-				user: session?.user ?? null,
-			});
-		});
-
-		return () => subscription.unsubscribe();
+		// Athena Auth does not provide a realtime onAuthStateChange.
+		// We rely on explicit state updates + router.refresh() after login/logout.
+		// For a more reactive experience, consider a global auth context with polling or server-driven updates.
 	}, []);
 
 	const signOut = useCallback(async () => {
 		try {
-			const supabase = createClient();
-			await supabase.auth.signOut();
+			const auth = athenaBrowserAuth;
+			await auth.signOut();
 			router.push("/");
 			router.refresh();
 		} catch (error) {

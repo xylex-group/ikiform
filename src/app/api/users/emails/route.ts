@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/utils/supabase/admin";
-import { createClient } from "@/utils/supabase/server";
+import { createClient as createAdminClient } from "@/lib/athena/admin";
+import { createClient } from "@/lib/athena/server";
 
 export async function GET() {
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user?.email || user.email !== "preetsutharxd@gmail.com") {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -35,3 +35,5 @@ export async function GET() {
 		return NextResponse.json({ emails: [] }, { status: 500 });
 	}
 }
+
+

@@ -3,8 +3,8 @@ import { CtaList } from "../components/cta-list";
 import EmailLayout from "../components/email-layout";
 
 interface NewLoginEmailProps {
-	name?: string;
 	dashboardUrl: string;
+	name?: string;
 }
 
 export default function NewLoginEmail(props: NewLoginEmailProps) {

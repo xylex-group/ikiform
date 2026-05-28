@@ -1,52 +1,52 @@
 export interface FormProgress {
-	id: string;
-	formId: string;
-	userId?: string;
-	sessionId: string;
-	formData: Record<string, any>;
-	currentStep: number;
-	totalSteps: number;
 	completionPercentage: number;
-	lastUpdated: Date;
+	currentStep: number;
 	expiresAt: Date;
+	formData: Record<string, any>;
+	formId: string;
+	id: string;
+	lastUpdated: Date;
+	sessionId: string;
+	totalSteps: number;
+	userId?: string;
 }
 
 export interface FormProgressState {
-	progress: FormProgress | null;
-	loading: boolean;
-	saving: boolean;
 	error: string | null;
+	loading: boolean;
+	progress: FormProgress | null;
+	saving: boolean;
 }
 
 export interface FormProgressActions {
+	clearProgress: () => Promise<void>;
+	loadProgress: () => Promise<void>;
+	restoreProgress: () => void;
 	saveProgress: (
 		formData: Record<string, any>,
 		currentStep?: number
 	) => Promise<void>;
-	loadProgress: () => Promise<void>;
-	clearProgress: () => Promise<void>;
-	restoreProgress: () => void;
 }
 
 export interface SaveProgressOptions {
 	debounceMs?: number;
+	enableAutoSave?: boolean;
 	maxRetries?: number;
 	skipFields?: string[];
-	enableAutoSave?: boolean;
 }
 
 export interface ProgressStorageAdapter {
-	save: (key: string, data: FormProgress) => Promise<void>;
-	load: (key: string) => Promise<FormProgress | null>;
-	delete: (key: string) => Promise<void>;
 	clear: () => Promise<void>;
+	delete: (key: string) => Promise<void>;
+	load: (key: string) => Promise<FormProgress | null>;
+	save: (key: string, data: FormProgress) => Promise<void>;
 }
 
 export interface FormProgressConfig {
-	enabled: boolean;
-	storage: "localStorage" | "sessionStorage" | "indexedDB" | "server";
 	autoSaveInterval: number;
-	retentionDays: number;
 	compressionEnabled: boolean;
+	enabled: boolean;
 	encryptionEnabled: boolean;
+	retentionDays: number;
+	storage: "localStorage" | "sessionStorage" | "indexedDB" | "server";
 }

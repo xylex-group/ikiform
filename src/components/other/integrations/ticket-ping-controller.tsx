@@ -12,8 +12,7 @@ const TicketpingWithNoSsr = dynamic(
 
 export function TicketpingController() {
 	const pathname = usePathname();
-	const ticketpingDisabled =
-		process.env.NEXT_PUBLIC_DISABLE_TICKETPING === "1";
+	const ticketpingDisabled = process.env.NEXT_PUBLIC_DISABLE_TICKETPING === "1";
 
 	const shouldHide =
 		pathname.startsWith("/forms") ||

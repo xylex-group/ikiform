@@ -93,7 +93,9 @@ export const useFormBuilder = (formId?: string) => {
 	};
 
 	useEffect(() => {
-		if (isRestored.current) return;
+		if (isRestored.current) {
+			return;
+		}
 		isRestored.current = true;
 
 		const draft = loadDraftFromStorage(draftKey);
@@ -193,7 +195,9 @@ export const useFormBuilder = (formId?: string) => {
 	}, []);
 
 	const loadForm = async () => {
-		if (!(formId && user) || isFormLoaded.current) return;
+		if (!(formId && user) || isFormLoaded.current) {
+			return;
+		}
 
 		actions.setLoading(true);
 		try {
@@ -223,14 +227,18 @@ export const useFormBuilder = (formId?: string) => {
 	};
 
 	const debouncedAutoSave = async (schema: FormSchema) => {
-		if (!(formId && user) || state.saving || state.autoSaving) return;
+		if (!(formId && user) || state.saving || state.autoSaving) {
+			return;
+		}
 
 		if (autoSaveTimeoutRef.current) {
 			clearTimeout(autoSaveTimeoutRef.current);
 		}
 
 		autoSaveTimeoutRef.current = setTimeout(async () => {
-			if (!user) return;
+			if (!user) {
+				return;
+			}
 			actions.setAutoSaving(true);
 			try {
 				await formsDb.updateForm(formId, user.id, { schema });

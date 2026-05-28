@@ -1,6 +1,6 @@
-import type { User } from "@supabase/supabase-js";
+import type { AppAuthUser } from "@/lib/auth/types";
 
-export function extractUserName(user: User): string {
+export function extractUserName(user: AppAuthUser): string {
 	return (
 		user.user_metadata?.full_name ||
 		user.user_metadata?.name ||
@@ -10,12 +10,14 @@ export function extractUserName(user: User): string {
 	);
 }
 
-export function extractAvatarUrl(user: User): string | undefined {
+export function extractAvatarUrl(user: AppAuthUser): string | undefined {
 	return user.user_metadata?.avatar_url;
 }
 
 export function getUserInitials(name: string): string {
-	if (!name || name.length === 0) return "U";
+	if (!name || name.length === 0) {
+		return "U";
+	}
 
 	const words = name.trim().split(/\s+/);
 	if (words.length === 1) {

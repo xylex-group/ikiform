@@ -10,21 +10,21 @@ export type WebhookMethod =
 	| "PUT";
 
 export interface WebhookConfig {
-	id: string;
-	name?: string | null;
-	description?: string | null;
-	url: string;
-	events: string[];
-	method: WebhookMethod;
-	headers?: Record<string, string>;
-	payloadTemplate?: string;
-	enabled: boolean;
-	notificationEmail?: string | null;
-	notifyOnSuccess?: boolean;
-	notifyOnFailure?: boolean;
 	createdAt: string;
-	updatedAt: string;
+	description?: string | null;
+	enabled: boolean;
+	events: string[];
 	formId?: string;
+	headers?: Record<string, string>;
+	id: string;
+	method: WebhookMethod;
+	name?: string | null;
+	notificationEmail?: string | null;
+	notifyOnFailure?: boolean;
+	notifyOnSuccess?: boolean;
+	payloadTemplate?: string;
+	updatedAt: string;
+	url: string;
 }
 
 export function useWebhookManagement(options?: { formId?: string }) {
@@ -41,7 +41,9 @@ export function useWebhookManagement(options?: { formId?: string }) {
 				? `/api/webhook?formId=${encodeURIComponent(formId)}`
 				: "/api/webhook";
 			const res = await fetch(url);
-			if (!res.ok) throw new Error("Failed to fetch webhooks");
+			if (!res.ok) {
+				throw new Error("Failed to fetch webhooks");
+			}
 			const data = await res.json();
 			setWebhooks(data);
 		} catch (e: any) {
@@ -61,7 +63,9 @@ export function useWebhookManagement(options?: { formId?: string }) {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ ...webhook, formId }),
 			});
-			if (!res.ok) throw new Error("Failed to create webhook");
+			if (!res.ok) {
+				throw new Error("Failed to create webhook");
+			}
 			toast.success("Webhook created!");
 			await fetchWebhooks();
 		} catch (e: any) {
@@ -81,7 +85,9 @@ export function useWebhookManagement(options?: { formId?: string }) {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ ...webhook, formId }),
 			});
-			if (!res.ok) throw new Error("Failed to update webhook");
+			if (!res.ok) {
+				throw new Error("Failed to update webhook");
+			}
 			toast.success("Webhook updated!");
 			await fetchWebhooks();
 		} catch (e: any) {
@@ -97,7 +103,9 @@ export function useWebhookManagement(options?: { formId?: string }) {
 		setError(null);
 		try {
 			const res = await fetch(`/api/webhook/${id}`, { method: "DELETE" });
-			if (!res.ok) throw new Error("Failed to delete webhook");
+			if (!res.ok) {
+				throw new Error("Failed to delete webhook");
+			}
 			toast.success("Webhook deleted!");
 			await fetchWebhooks();
 		} catch (e: any) {

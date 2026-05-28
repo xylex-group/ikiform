@@ -1,0 +1,70 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultTextColor Black
+skinparam titleFontStyle bold
+skinparam arrowThickness 1.2
+
+title Migration Target: Athena-First Runtime (After)
+
+skinparam component {
+  BackgroundColor #EAF2FF
+  BorderColor #1E3A8A
+  FontColor Black
+}
+skinparam cloud {
+  BackgroundColor #F3F4F6
+  BorderColor #4B5563
+  FontColor Black
+}
+skinparam database {
+  BackgroundColor #FFF7ED
+  BorderColor #9A3412
+  FontColor Black
+}
+
+left to right direction
+
+actor User as U
+
+rectangle "Next.js App Layer" as Next {
+  component "Route Handlers\n/api/forms/[id]/api-key/*\n/api/forms/[id]/api-submit" as ApiRoutes #E0E7FF
+  component "Route Handlers\n/src/app/*" as AppRoutes
+  component "Form Settings UI\n(form-builder modal)" as Client
+}
+
+rectangle "Athena Runtime" as AthLayer {
+  component "src/utils/athena/server.ts" as AthServer #DCFCE7
+  component "src/utils/athena/client.ts" as AthClient #DCFCE7
+  component "src/lib/forms/api-keys.ts\n(server-only)" as ApiKeys #CCFBF1
+  component "src/lib/auth/athena-browser-auth.ts" as AuthCompat #FEF3C7
+}
+
+cloud "Athena Gateway\n(process.env.ATHENA_URL)" as Gateway
+cloud "Athena Auth\n(process.env.ATHENA_AUTH_URL)" as AthenaAuth
+
+database "Athena Postgres\npublic schema" as DB
+
+U --> Client : open API settings panel / click
+Client --> AppRoutes : fetch `/api/forms/{id}/api-key`\n(POST/PATCH/DELETE)
+Client --> ApiRoutes : form submit endpoint\n/api/forms/{id}/api-submit
+ApiRoutes --> ApiKeys : validateFormApiAccess
+ApiRoutes --> Gateway : query form + submission checks
+ApiRoutes --> Gateway : count/protection helpers
+
+AppRoutes --> AthServer : server actions + user-bound API updates
+AthServer --> Gateway : forms table ownership+auth checks
+AthServer --> AthenaAuth : session validation (cookies)
+AuthCompat --> AthenaAuth : signIn/signUp/password/verify
+AthClient --> Gateway : client reads/updates form schema
+Gateway --> DB : SQL execution and auth checks
+
+note right of ApiRoutes
+  API key writes are now executed via route\nactions with server auth context.
+  Browser never imports DB helpers.
+end note
+
+note left of AuthCompat
+  auth contract remains compatible with legacy
+  code paths while using Athena Auth APIs.
+end note
+@enduml

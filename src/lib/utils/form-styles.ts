@@ -8,17 +8,17 @@ export interface FormStyleConfig {
 		border?: string;
 		websiteBackground?: string;
 	};
-	typography?: {
-		fontFamily?: string;
-		fontSize?: string;
-		fontWeight?: string;
-	};
 	layout?: {
 		maxWidth?: string;
 		customWidth?: string;
 		padding?: string;
 		margin?: string;
 		borderRadius?: string;
+	};
+	typography?: {
+		fontFamily?: string;
+		fontSize?: string;
+		fontWeight?: string;
 	};
 }
 

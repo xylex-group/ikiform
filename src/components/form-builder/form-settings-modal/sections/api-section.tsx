@@ -32,12 +32,55 @@ import {
 	normalizeRangeSliderValue,
 	normalizeSingleSliderValue,
 } from "@/lib/fields/slider-utils";
-import {
-	generateFormApiKey,
-	revokeFormApiKey,
-	toggleFormApiEnabled,
-} from "@/lib/forms/api-keys";
 import type { ApiSectionProps } from "../types";
+
+type ApiKeyResult = {
+	success: boolean;
+	apiKey?: string;
+	error?: string;
+};
+
+const readApiSectionError = (payload: unknown, fallback: string): string => {
+	if (
+		typeof payload === "object" &&
+		payload !== null &&
+		"error" in payload &&
+		typeof (payload as { error?: unknown }).error === "string"
+	) {
+		return (payload as { error: string }).error;
+	}
+
+	return fallback;
+};
+
+const manageFormApiKey = async (
+	formId: string,
+	method: "POST" | "PATCH" | "DELETE",
+	body?: Record<string, unknown>
+): Promise<ApiKeyResult> => {
+	const response = await fetch(`/api/forms/${formId}/api-key`, {
+		method,
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "same-origin",
+		...(body ? { body: JSON.stringify(body) } : {}),
+	});
+
+	const payload = (await response.json().catch(() => null)) as ApiKeyResult | null;
+	if (!response.ok) {
+		return {
+			success: false,
+			error: readApiSectionError(payload, `Failed to ${method.toLowerCase()} API key`),
+		};
+	}
+
+	if (!payload) {
+		return { success: false, error: `Invalid response while ${method.toLowerCase()} API key` };
+	}
+
+	return payload;
+};
 
 export function ApiSection({
 	localSettings,
@@ -80,7 +123,13 @@ export function ApiSection({
 		}
 		setSaving(true);
 		try {
-			await toggleFormApiEnabled(formId, draftEnabled);
+			const response = await manageFormApiKey(formId, "PATCH", {
+				enabled: draftEnabled,
+			});
+			if (!response.success) {
+				toast.error(response.error || "Failed to save API settings");
+				return;
+			}
 			updateApi({ enabled: draftEnabled });
 			setSaved(true);
 			setHasChanges(false);
@@ -93,7 +142,9 @@ export function ApiSection({
 	};
 
 	const handleGenerateApiKey = async () => {
-		if (!formId) return;
+		if (!formId) {
+			return;
+		}
 		if (!user) {
 			toast.error("User authentication required");
 			return;
@@ -101,7 +152,7 @@ export function ApiSection({
 
 		setIsGenerating(true);
 		try {
-			const result = await generateFormApiKey(formId);
+			const result = await manageFormApiKey(formId, "POST");
 			if (result.success && result.apiKey) {
 				const newSchema = {
 					...schema,
@@ -130,7 +181,9 @@ export function ApiSection({
 	};
 
 	const handleRevokeApiKey = async () => {
-		if (!formId) return;
+		if (!formId) {
+			return;
+		}
 		if (!user) {
 			toast.error("User authentication required");
 			return;
@@ -138,7 +191,7 @@ export function ApiSection({
 
 		setIsRevoking(true);
 		try {
-			const result = await revokeFormApiKey(formId);
+			const result = await manageFormApiKey(formId, "DELETE");
 			if (result.success) {
 				const newSchema = {
 					...schema,
@@ -182,7 +235,9 @@ export function ApiSection({
 	};
 
 	const generateCodeExamples = () => {
-		if (!(formId && apiSettings.apiKey)) return {};
+		if (!(formId && apiSettings.apiKey)) {
+			return {};
+		}
 
 		const endpoint = `${window.location.origin}/api/forms/${formId}/api-submit`;
 		const apiKey = apiSettings.apiKey;
@@ -644,3 +699,4 @@ print_r($result);
 		</Card>
 	);
 }
+

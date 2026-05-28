@@ -15,13 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
 
 interface FormsSearchProps {
-	searchQuery: string;
-	onSearchChange: (query: string) => void;
-	statusFilter: string;
-	onStatusFilterChange: (status: string) => void;
-	sortBy: string;
-	onSortByChange: (sort: string) => void;
 	onClearFilters: () => void;
+	onSearchChange: (query: string) => void;
+	onSortByChange: (sort: string) => void;
+	onStatusFilterChange: (status: string) => void;
+	searchQuery: string;
+	sortBy: string;
+	statusFilter: string;
 }
 
 export const FormsSearch = memo(function FormsSearch({

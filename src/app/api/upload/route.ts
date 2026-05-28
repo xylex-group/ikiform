@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { uploadFile } from "@/lib/storage/supabase-storage";
+// Migration: now using Vercel Blob storage adapter
+import { deleteFile, uploadFile } from "@/lib/storage/vercel-blob";
 
 const ALLOWED_MIME_TYPES = [
 	"image/jpeg",
@@ -116,7 +117,6 @@ export async function DELETE(request: NextRequest) {
 			);
 		}
 
-		const { deleteFile } = await import("@/lib/storage/supabase-storage");
 		await deleteFile(filePath);
 
 		return NextResponse.json({ success: true });

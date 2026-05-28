@@ -1,20 +1,20 @@
 import { Filter } from "bad-words";
 
 export interface ProfanityFilterOptions {
-	enabled?: boolean;
-	strictMode?: boolean;
-	replaceWithAsterisks?: boolean;
-	customWords?: string[];
 	customMessage?: string;
+	customWords?: string[];
+	enabled?: boolean;
+	replaceWithAsterisks?: boolean;
+	strictMode?: boolean;
 	whitelistedWords?: string[];
 }
 
 export interface ProfanityCheckResult {
-	hasBeenFiltered: boolean;
 	cleanedText?: string;
-	originalText: string;
 	filteredWords: string[];
+	hasBeenFiltered: boolean;
 	message?: string;
+	originalText: string;
 }
 
 export class ProfanityFilterService {
@@ -48,12 +48,16 @@ export class ProfanityFilterService {
 	}
 
 	isProfane(text: string): boolean {
-		if (!(this.options.enabled && text)) return false;
+		if (!(this.options.enabled && text)) {
+			return false;
+		}
 		return this.filter.isProfane(text);
 	}
 
 	clean(text: string): string {
-		if (!(this.options.enabled && text)) return text;
+		if (!(this.options.enabled && text)) {
+			return text;
+		}
 		return this.filter.clean(text);
 	}
 

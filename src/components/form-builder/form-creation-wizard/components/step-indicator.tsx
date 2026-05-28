@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils";
 import type { WizardStep } from "../types";
 
 interface StepIndicatorProps {
-	currentStep: WizardStep;
 	completedSteps: WizardStep[];
+	currentStep: WizardStep;
 }
 
 const steps: { id: WizardStep }[] = [

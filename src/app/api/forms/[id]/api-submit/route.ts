@@ -17,11 +17,17 @@ import { sanitizeString } from "@/lib/utils/sanitize";
 import { createProfanityFilter } from "@/lib/validation/profanity-filter";
 
 function sanitizeObjectStrings(obj: any): any {
-	if (typeof obj === "string") return sanitizeString(obj);
-	if (Array.isArray(obj)) return obj.map(sanitizeObjectStrings);
+	if (typeof obj === "string") {
+		return sanitizeString(obj);
+	}
+	if (Array.isArray(obj)) {
+		return obj.map(sanitizeObjectStrings);
+	}
 	if (obj && typeof obj === "object") {
 		const result: any = {};
-		for (const key in obj) result[key] = sanitizeObjectStrings(obj[key]);
+		for (const key in obj) {
+			result[key] = sanitizeObjectStrings(obj[key]);
+		}
 		return result;
 	}
 	return obj;

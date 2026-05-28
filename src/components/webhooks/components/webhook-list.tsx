@@ -5,13 +5,13 @@ import type { WebhookConfig } from "../hooks/useWebhookManagement";
 import { WebhookListItem } from "./webhook-list-item";
 
 interface WebhookListProps {
-	webhooks: WebhookConfig[];
 	loading: boolean;
-	onEdit: (webhook: WebhookConfig) => void;
 	onDelete: (id: string) => void;
-	onToggleEnabled?: (webhook: WebhookConfig) => void;
+	onEdit: (webhook: WebhookConfig) => void;
 	onTest?: (webhook: WebhookConfig) => void;
+	onToggleEnabled?: (webhook: WebhookConfig) => void;
 	onViewLogs?: (webhook: WebhookConfig) => void;
+	webhooks: WebhookConfig[];
 }
 
 export function WebhookList({
@@ -25,14 +25,15 @@ export function WebhookList({
 }: WebhookListProps) {
 	const [hoveredIdx, setHoveredIdx] = React.useState<number | null>(null);
 
-	if (loading)
+	if (loading) {
 		return (
 			<div className="py-4 text-center">
 				<Loader />
 			</div>
 		);
+	}
 
-	if (!webhooks.length)
+	if (!webhooks.length) {
 		return (
 			<div className="rounded-lg border border-muted-foreground/25 border-dashed p-6 text-center">
 				<p className="text-muted-foreground text-sm">
@@ -41,6 +42,7 @@ export function WebhookList({
 				</p>
 			</div>
 		);
+	}
 
 	return (
 		<div className="relative flex flex-col">

@@ -105,14 +105,18 @@ export function BannerField({ field, error }: BaseFieldProps) {
 
 	const renderBannerTitle = () => {
 		const title = getBannerTitle();
-		if (!title) return null;
+		if (!title) {
+			return null;
+		}
 
 		return <AlertTitle className={getTitleClassName()}>{title}</AlertTitle>;
 	};
 
 	const renderBannerDescription = () => {
 		const description = getBannerDescription();
-		if (!description) return null;
+		if (!description) {
+			return null;
+		}
 
 		return (
 			<AlertDescription className={getDescriptionClassName()}>

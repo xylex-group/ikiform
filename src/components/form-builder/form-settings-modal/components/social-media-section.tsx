@@ -26,9 +26,9 @@ import { formsDb } from "@/lib/database";
 import type { SocialMediaSectionProps } from "../types";
 
 interface BrandingSectionProps extends SocialMediaSectionProps {
-	updateSettings: (updates: any) => void;
 	formId?: string;
 	schema?: any;
+	updateSettings: (updates: any) => void;
 }
 
 export function BrandingSection({

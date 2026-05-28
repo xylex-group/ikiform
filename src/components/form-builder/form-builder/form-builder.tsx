@@ -63,8 +63,12 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 	const handleFieldSelect = useCallback(
 		(fieldId: string | null) => {
 			actions.setSelectedFieldId(fieldId);
-			if (isMobile && fieldId) setShowFieldSettings(true);
-			if (isMobile && !fieldId) setShowFieldSettings(false);
+			if (isMobile && fieldId) {
+				setShowFieldSettings(true);
+			}
+			if (isMobile && !fieldId) {
+				setShowFieldSettings(false);
+			}
 		},
 		[actions, isMobile]
 	);
@@ -247,7 +251,9 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 	};
 
 	const handlePublishForm = async () => {
-		if (!(formId && user)) return;
+		if (!(formId && user)) {
+			return;
+		}
 
 		try {
 			await formsDb.togglePublishForm(formId, user.id, true);
@@ -463,7 +469,9 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 					<Drawer
 						onOpenChange={(open) => {
 							setShowFieldSettings(open);
-							if (!open) actions.setSelectedFieldId(null);
+							if (!open) {
+								actions.setSelectedFieldId(null);
+							}
 						}}
 						open={showFieldSettings}
 					>

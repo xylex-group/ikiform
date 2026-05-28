@@ -11,9 +11,9 @@ import type { ChatPanelProps } from "@/lib/ai-builder/types";
 import { ChatPanel } from "../chat/chat-panel";
 
 interface MobileChatDrawerProps extends ChatPanelProps {
+	drawerId?: string;
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
-	drawerId?: string;
 }
 
 export function MobileChatDrawer({

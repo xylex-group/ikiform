@@ -74,7 +74,9 @@ export function useFormStyling(schema: FormSchema) {
 	}, [schema.settings]);
 
 	useEffect(() => {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		const colors = (schema.settings as any)?.colors;
 		const typography = (schema.settings as any)?.typography;

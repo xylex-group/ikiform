@@ -1,6 +1,6 @@
 "use client";
 
-import type { User } from "@supabase/supabase-js";
+import type { AppAuthUser } from "@/lib/auth/types";
 import dynamic from "next/dynamic";
 import { Suspense, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -129,9 +129,9 @@ const FormsManagementSkeleton = () => (
 
 interface DashboardClientProps {
 	initialForms: Form[];
-	initialHasPremium: boolean;
 	initialHasCustomerPortal: boolean;
-	user: User;
+	initialHasPremium: boolean;
+	user: AppAuthUser;
 }
 
 export default function DashboardClient({

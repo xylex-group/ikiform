@@ -1,8 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface FormSkeletonProps {
-	variant?: "single-step" | "multi-step";
 	showProgress?: boolean;
+	variant?: "single-step" | "multi-step";
 }
 
 const transparentClass = "bg-transparent/40";

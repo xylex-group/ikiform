@@ -27,7 +27,7 @@ export function AIBuilderClient() {
 	const { user, loading: authLoading } = useAuth();
 
 	const router = useRouter();
-	const { hasPremium, checkingPremium: checking } = usePremiumStatus(user);
+	const { hasPremium, checkingPremium: checking } = usePremiumStatus();
 	const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
 	const [showSuggestions, setShowSuggestions] = useState(true);
 	const errorLiveRegionRef = useRef<HTMLDivElement | null>(null);

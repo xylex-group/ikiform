@@ -18,7 +18,9 @@ export async function generateMetadata({
 	const { slug } = await params;
 	try {
 		const form = await formsDbServer.getPublicForm(slug);
-		if (!form) return {};
+		if (!form) {
+			return {};
+		}
 
 		const metadata = form.schema?.settings?.metadata || {};
 		const baseUrl = "https://www.ikiform.com";

@@ -47,11 +47,17 @@ export class FormProgressStorage {
 		formData: Record<string, any>,
 		totalFields: number
 	): number {
-		if (totalFields === 0) return 0;
+		if (totalFields === 0) {
+			return 0;
+		}
 
 		const filledFields = Object.values(formData).filter((value) => {
-			if (value === null || value === undefined || value === "") return false;
-			if (Array.isArray(value) && value.length === 0) return false;
+			if (value === null || value === undefined || value === "") {
+				return false;
+			}
+			if (Array.isArray(value) && value.length === 0) {
+				return false;
+			}
 			return true;
 		}).length;
 
@@ -92,7 +98,9 @@ export class FormProgressStorage {
 	}
 
 	async saveProgress(progress: FormProgress): Promise<void> {
-		if (!this.config.enabled) return;
+		if (!this.config.enabled) {
+			return;
+		}
 
 		try {
 			const key = this.generateKey(progress.formId, progress.sessionId);
@@ -107,7 +115,9 @@ export class FormProgressStorage {
 		formId: string,
 		sessionId: string
 	): Promise<FormProgress | null> {
-		if (!this.config.enabled) return null;
+		if (!this.config.enabled) {
+			return null;
+		}
 
 		try {
 			const key = this.generateKey(formId, sessionId);

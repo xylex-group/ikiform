@@ -440,61 +440,40 @@ export interface Database {
 }
 
 export interface FormField {
-	valueKey?: string;
-	labelKey?: string;
-	id: string;
-	type:
-		| "text"
-		| "email"
-		| "textarea"
-		| "radio"
-		| "checkbox"
-		| "number"
-		| "select"
-		| "slider"
-		| "tags"
-		| "social"
-		| "date"
-		| "signature"
-		| "file"
-		| "poll"
-		| "rating"
-		| "time"
-		| "scheduler"
-		| "statement"
-		| "phone"
-		| "address"
-		| "link"
-		| "banner"
-		| "field-group";
-	label: string;
 	description?: string;
-	placeholder?: string;
-	required: boolean;
+	id: string;
+	label: string;
+	labelKey?: string;
 	options?: Array<string | { value: string; label?: string }>;
 	optionsApi?: string;
-	validation?: {
-		minLength?: number;
-		maxLength?: number;
-		min?: number;
-		max?: number;
-		pattern?: string;
+	placeholder?: string;
+	prepopulation?: {
+		enabled: boolean;
+		source: "url" | "api" | "profile" | "previous" | "template";
+		config: {
+			urlParam?: string;
 
-		requiredMessage?: string;
-		minLengthMessage?: string;
-		maxLengthMessage?: string;
-		minMessage?: string;
-		maxMessage?: string;
-		patternMessage?: string;
-		emailMessage?: string;
-		numberMessage?: string;
+			apiEndpoint?: string;
+			apiMethod?: "GET" | "POST";
+			apiHeaders?: Record<string, string>;
+			apiBodyTemplate?: string;
+			jsonPath?: string;
 
-		phoneMessage?: string;
+			lookbackDays?: number;
+			matchingFields?: string[];
 
-		addressMessage?: string;
+			profileField?: "name" | "email" | "phone" | "address" | "custom";
 
-		linkMessage?: string;
+			templateId?: string;
+
+			fallbackValue?: any;
+			overwriteExisting?: boolean;
+
+			requireConsent?: boolean;
+			consentMessage?: string;
+		};
 	};
+	required: boolean;
 	settings?: {
 		rows?: number;
 		min?: number;
@@ -571,39 +550,59 @@ export interface FormField {
 		groupSpacing?: "compact" | "normal" | "relaxed";
 		groupColumns?: 2 | 3 | 4;
 	};
-	prepopulation?: {
-		enabled: boolean;
-		source: "url" | "api" | "profile" | "previous" | "template";
-		config: {
-			urlParam?: string;
+	type:
+		| "text"
+		| "email"
+		| "textarea"
+		| "radio"
+		| "checkbox"
+		| "number"
+		| "select"
+		| "slider"
+		| "tags"
+		| "social"
+		| "date"
+		| "signature"
+		| "file"
+		| "poll"
+		| "rating"
+		| "time"
+		| "scheduler"
+		| "statement"
+		| "phone"
+		| "address"
+		| "link"
+		| "banner"
+		| "field-group";
+	validation?: {
+		minLength?: number;
+		maxLength?: number;
+		min?: number;
+		max?: number;
+		pattern?: string;
 
-			apiEndpoint?: string;
-			apiMethod?: "GET" | "POST";
-			apiHeaders?: Record<string, string>;
-			apiBodyTemplate?: string;
-			jsonPath?: string;
+		requiredMessage?: string;
+		minLengthMessage?: string;
+		maxLengthMessage?: string;
+		minMessage?: string;
+		maxMessage?: string;
+		patternMessage?: string;
+		emailMessage?: string;
+		numberMessage?: string;
 
-			lookbackDays?: number;
-			matchingFields?: string[];
+		phoneMessage?: string;
 
-			profileField?: "name" | "email" | "phone" | "address" | "custom";
+		addressMessage?: string;
 
-			templateId?: string;
-
-			fallbackValue?: any;
-			overwriteExisting?: boolean;
-
-			requireConsent?: boolean;
-			consentMessage?: string;
-		};
+		linkMessage?: string;
 	};
+	valueKey?: string;
 }
 
 export interface FormBlock {
-	id: string;
-	title: string;
 	description?: string;
 	fields: FormField[];
+	id: string;
 
 	settings?: {
 		showStepNumber?: boolean;
@@ -613,6 +612,7 @@ export interface FormBlock {
 		backgroundColor?: string;
 		borderColor?: string;
 	};
+	title: string;
 }
 
 export interface FormSchema {
@@ -781,34 +781,34 @@ export type WebhookEventType =
 	| "custom";
 
 export interface WebhookConfig {
-	id: string;
-	formId?: string;
 	accountId?: string;
-	name?: string | null;
-	description?: string | null;
-	url: string;
-	events: WebhookEventType[];
-	secret?: string;
-	method: "POST" | "PUT";
-	headers?: Record<string, string>;
-	payloadTemplate?: string;
-	enabled: boolean;
-	notificationEmail?: string | null;
-	notifyOnSuccess?: boolean;
-	notifyOnFailure?: boolean;
 	createdAt: string;
+	description?: string | null;
+	enabled: boolean;
+	events: WebhookEventType[];
+	formId?: string;
+	headers?: Record<string, string>;
+	id: string;
+	method: "POST" | "PUT";
+	name?: string | null;
+	notificationEmail?: string | null;
+	notifyOnFailure?: boolean;
+	notifyOnSuccess?: boolean;
+	payloadTemplate?: string;
+	secret?: string;
 	updatedAt: string;
+	url: string;
 }
 
 export interface WebhookLog {
-	id: string;
-	webhook_id: string;
-	event: WebhookEventType;
-	status: "success" | "failed" | "pending";
-	request_payload: any;
-	response_status?: number;
-	response_body?: string;
-	error?: string;
-	timestamp: string;
 	attempt: number;
+	error?: string;
+	event: WebhookEventType;
+	id: string;
+	request_payload: any;
+	response_body?: string;
+	response_status?: number;
+	status: "success" | "failed" | "pending";
+	timestamp: string;
+	webhook_id: string;
 }

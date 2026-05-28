@@ -11,7 +11,9 @@ export function FormActions({
 	isMultiStep,
 	onNextStep,
 }: FormActionsProps) {
-	if (fieldsLength === 0) return null;
+	if (fieldsLength === 0) {
+		return null;
+	}
 
 	const isLastStep =
 		!isMultiStep || currentStepIndex === (schema.blocks?.length || 1) - 1;

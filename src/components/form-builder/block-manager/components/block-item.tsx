@@ -13,12 +13,12 @@ import { BlockFieldsList } from "./block-fields-list";
 import { BlockHeader } from "./block-header";
 
 interface DraggableBlockItemProps extends BlockItemProps {
-	editTitle: string;
 	editDescription: string;
-	onTitleChange: (title: string) => void;
+	editTitle: string;
+	onCancelEdit: () => void;
 	onDescriptionChange: (description: string) => void;
 	onSaveEdit: () => void;
-	onCancelEdit: () => void;
+	onTitleChange: (title: string) => void;
 }
 
 export function BlockItem({

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
+import { createAthenaServerClient } from "@/utils/athena/server";
 
 export async function checkPremiumStatus(userId: string): Promise<boolean> {
 	try {
-		const supabase = await createClient();
-		const { data, error } = await supabase
+		const athena = await createAthenaServerClient();
+		const { data, error } = await athena
 			.from("users")
 			.select("has_premium")
 			.eq("uid", userId)

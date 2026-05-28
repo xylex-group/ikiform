@@ -61,10 +61,10 @@ export interface EmailValidationResult {
 
 export interface EmailValidationSettings {
 	allowedDomains?: string[];
-	blockedDomains?: string[];
 	autoCompleteDomain?: string;
-	requireBusinessEmail?: boolean;
+	blockedDomains?: string[];
 	customValidationMessage?: string;
+	requireBusinessEmail?: boolean;
 }
 
 export function validateEmail(
@@ -125,7 +125,9 @@ export function validateEmail(
 }
 
 export function autoCompleteEmail(username: string, domain: string): string {
-	if (!(username && domain)) return username;
+	if (!(username && domain)) {
+		return username;
+	}
 	return `${username}@${domain}`;
 }
 

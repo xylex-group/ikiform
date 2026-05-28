@@ -43,10 +43,14 @@ export const useAnalyticsChat = (
 
 	const handleChatSend = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!chatInput.trim() || chatLoading) return;
+		if (!chatInput.trim() || chatLoading) {
+			return;
+		}
 
 		const sessionId = chatSessionId || generateSessionId();
-		if (!chatSessionId) setChatSessionId(sessionId);
+		if (!chatSessionId) {
+			setChatSessionId(sessionId);
+		}
 
 		const userMessage: ChatMessage = {
 			role: "user",
@@ -90,19 +94,26 @@ export const useAnalyticsChat = (
 				signal: controller.signal,
 			});
 
-			if (!response.ok) throw new Error("Failed to send message");
+			if (!response.ok) {
+				throw new Error("Failed to send message");
+			}
 
 			const responseSessionId = response.headers.get("X-Session-ID");
-			if (responseSessionId && !chatSessionId)
+			if (responseSessionId && !chatSessionId) {
 				setChatSessionId(responseSessionId);
+			}
 
 			const reader = response.body?.getReader();
-			if (!reader) throw new Error("No response stream");
+			if (!reader) {
+				throw new Error("No response stream");
+			}
 
 			let fullResponse = "";
 			while (true) {
 				const { value, done } = await reader.read();
-				if (done) break;
+				if (done) {
+					break;
+				}
 
 				const chunk = new TextDecoder().decode(value);
 				fullResponse += chunk;

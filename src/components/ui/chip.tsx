@@ -37,9 +37,9 @@ const chipVariants = cva(
 export interface ChipProps
 	extends React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof chipVariants> {
+	dismissible?: boolean;
 	icon?: LucideIcon;
 	iconPosition?: "left" | "right";
-	dismissible?: boolean;
 	onDismiss?: () => void;
 }
 

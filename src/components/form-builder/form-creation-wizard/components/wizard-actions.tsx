@@ -4,9 +4,9 @@ import type React from "react";
 import { Button } from "@/components/ui/button";
 
 interface WizardActionsProps {
+	canContinue: boolean;
 	onCancel: () => void;
 	onContinue: () => void;
-	canContinue: boolean;
 }
 
 export const WizardActions: React.FC<WizardActionsProps> = ({

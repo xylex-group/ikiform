@@ -1,20 +1,20 @@
 import { Redis } from "@upstash/redis";
 
 interface DuplicatePreventionSettings {
-	enabled: boolean;
-	strategy: "ip" | "email" | "session" | "combined";
-	mode: "time-based" | "one-time";
-	timeWindow: number;
-	message: string;
 	allowOverride?: boolean;
+	enabled: boolean;
 	maxAttempts?: number;
+	message: string;
+	mode: "time-based" | "one-time";
+	strategy: "ip" | "email" | "session" | "combined";
+	timeWindow: number;
 }
 
 interface DuplicateCheckResult {
+	attemptsRemaining?: number;
 	isDuplicate: boolean;
 	message: string;
 	timeRemaining?: number;
-	attemptsRemaining?: number;
 }
 
 let redis: Redis | null = null;
@@ -202,8 +202,12 @@ export function generateIdentifier(
 			return sessionId ? `session:${sessionId}` : `ip:${ipAddress}`;
 		case "combined": {
 			const parts = [`ip:${ipAddress}`];
-			if (email) parts.push(`email:${email.toLowerCase()}`);
-			if (sessionId) parts.push(`session:${sessionId}`);
+			if (email) {
+				parts.push(`email:${email.toLowerCase()}`);
+			}
+			if (sessionId) {
+				parts.push(`session:${sessionId}`);
+			}
 			return parts.join("|");
 		}
 		default:

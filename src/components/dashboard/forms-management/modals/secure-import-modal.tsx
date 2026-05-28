@@ -105,11 +105,11 @@ export function SecureImportModal({
 	const handleDecrypt = async () => {
 		let hasError = false;
 
-		if (!selectedFile) {
+		if (selectedFile) {
+			setFileError("");
+		} else {
 			setFileError("Please choose an encrypted .ikiform file.");
 			hasError = true;
-		} else {
-			setFileError("");
 		}
 
 		if (passphrase.trim().length < MIN_PASSPHRASE_LENGTH) {
@@ -193,8 +193,10 @@ export function SecureImportModal({
 
 				<div className="grid min-h-0 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
 					<div className="min-h-0 border-b lg:border-r lg:border-b-0">
-						<div className="flex h-full min-h-[360px] max-h-[76vh] flex-col px-5 py-4 sm:px-6">
-							<ScrollArea className={`h-full flex-1 ${MODAL_SCROLL_AREA_CLASS}`}>
+						<div className="flex h-full max-h-[76vh] min-h-[360px] flex-col px-5 py-4 sm:px-6">
+							<ScrollArea
+								className={`h-full flex-1 ${MODAL_SCROLL_AREA_CLASS}`}
+							>
 								<div className="space-y-4 pr-3">
 									<div className="flex flex-col gap-2">
 										<Label htmlFor="secure-import-file">Encrypted file</Label>
@@ -213,9 +215,7 @@ export function SecureImportModal({
 										<p
 											aria-live="polite"
 											className={`min-h-5 text-xs ${
-												fileError
-													? "text-destructive"
-													: "text-muted-foreground"
+												fileError ? "text-destructive" : "text-muted-foreground"
 											}`}
 										>
 											{fileError ||
@@ -317,7 +317,10 @@ export function SecureImportModal({
 												/>
 											</div>
 											<div className="flex items-center justify-between gap-3">
-												<Label className="text-sm" htmlFor="preserve-notifications">
+												<Label
+													className="text-sm"
+													htmlFor="preserve-notifications"
+												>
 													Preserve notification recipient email
 												</Label>
 												<Switch

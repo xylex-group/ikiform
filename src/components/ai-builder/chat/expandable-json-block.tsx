@@ -14,8 +14,12 @@ let highlighterInstance: any = null;
 let highlighterPromise: Promise<any> | null = null;
 
 const getHighlighter = async () => {
-	if (highlighterInstance) return highlighterInstance;
-	if (highlighterPromise) return highlighterPromise;
+	if (highlighterInstance) {
+		return highlighterInstance;
+	}
+	if (highlighterPromise) {
+		return highlighterPromise;
+	}
 
 	highlighterPromise = createHighlighter({
 		themes: ["github-dark", "github-light"],
@@ -42,7 +46,9 @@ export const ExpandableJsonBlock = memo(function ExpandableJsonBlock({
 		const highlightCode = async () => {
 			try {
 				const highlighter = await getHighlighter();
-				if (!isMounted) return;
+				if (!isMounted) {
+					return;
+				}
 
 				const selectedTheme = "github-light";
 				const html = highlighter.codeToHtml(jsonString, {

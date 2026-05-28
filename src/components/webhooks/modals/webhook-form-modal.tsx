@@ -259,7 +259,9 @@ export function WebhookFormModal({
 	}
 
 	function goNext() {
-		if (!canProceedFromStep(currentStep)) return;
+		if (!canProceedFromStep(currentStep)) {
+			return;
+		}
 		setCurrentStep((s) => Math.min(s + 1, steps.length - 1));
 	}
 
@@ -295,8 +297,12 @@ export function WebhookFormModal({
 							const tag = target?.tagName?.toLowerCase();
 							const isTextarea = tag === "textarea";
 							const isButton = tag === "button";
-							if (isButton) return;
-							if (isTextarea) return;
+							if (isButton) {
+								return;
+							}
+							if (isTextarea) {
+								return;
+							}
 							if (currentStep < steps.length - 1) {
 								e.preventDefault();
 								goNext();

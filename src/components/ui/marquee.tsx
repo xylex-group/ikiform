@@ -4,18 +4,18 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface MarqueeProps {
+	"aria-label"?: string;
+	autoFill?: boolean;
 	children: React.ReactNode;
+	className?: string;
 	direction?: "left" | "right" | "up" | "down";
-	speed?: "slow" | "normal" | "fast" | number;
+	fade?: boolean;
+	gap?: string | number;
 	pauseOnHover?: boolean;
 	repeat?: number;
-	gap?: string | number;
-	fade?: boolean;
-	className?: string;
+	speed?: "slow" | "normal" | "fast" | number;
 	style?: React.CSSProperties;
 	vertical?: boolean;
-	autoFill?: boolean;
-	"aria-label"?: string;
 }
 
 export const Marquee = React.forwardRef<HTMLDivElement, MarqueeProps>(
@@ -48,7 +48,9 @@ export const Marquee = React.forwardRef<HTMLDivElement, MarqueeProps>(
 
 		React.useEffect(() => {
 			const container = containerRef.current;
-			if (!(container && isClient)) return;
+			if (!(container && isClient)) {
+				return;
+			}
 
 			const resizeObserver = new ResizeObserver(() => {
 				setContainerWidth(container.offsetWidth);
@@ -90,7 +92,9 @@ export const Marquee = React.forwardRef<HTMLDivElement, MarqueeProps>(
 		};
 
 		const calculateRepeat = (): number => {
-			if (!(autoFill && isClient)) return repeat;
+			if (!(autoFill && isClient)) {
+				return repeat;
+			}
 
 			if (containerWidth && contentWidth) {
 				return Math.ceil(containerWidth / contentWidth) + 1;

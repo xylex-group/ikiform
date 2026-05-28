@@ -11,9 +11,9 @@ import type * as React from "react";
 import EmailHeader from "./email-header";
 
 interface EmailLayoutProps {
-	previewText?: string;
-	heading?: string;
 	children?: React.ReactNode;
+	heading?: string;
+	previewText?: string;
 }
 
 export default function EmailLayout(props: EmailLayoutProps) {

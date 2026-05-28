@@ -3,8 +3,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface SuspenseWrapperProps {
 	children: React.ReactNode;
-	fallback?: React.ReactNode;
 	className?: string;
+	fallback?: React.ReactNode;
 }
 
 export function SuspenseWrapper({

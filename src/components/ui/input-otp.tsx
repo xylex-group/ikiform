@@ -63,18 +63,18 @@ const inputOTPSlotVariants = cva(
 );
 
 export interface InputOTPProps {
-	maxLength: number;
-	value?: string;
-	onChange?: (newValue: string) => void;
-	onComplete?: (newValue: string) => void;
-	disabled?: boolean;
-	pattern?: string;
+	animated?: boolean;
+	children?: React.ReactNode;
 	className?: string;
 	containerClassName?: string;
-	animated?: boolean;
-	variant?: "default" | "destructive";
+	disabled?: boolean;
+	maxLength: number;
+	onChange?: (newValue: string) => void;
+	onComplete?: (newValue: string) => void;
 	otpSize?: "sm" | "default" | "lg";
-	children?: React.ReactNode;
+	pattern?: string;
+	value?: string;
+	variant?: "default" | "destructive";
 }
 
 const InputOTP = React.forwardRef<
@@ -183,7 +183,9 @@ const InputOTPSlot = React.forwardRef<
 			</div>
 		);
 
-		if (!animated) return slotContent;
+		if (!animated) {
+			return slotContent;
+		}
 
 		return (
 			<motion.div

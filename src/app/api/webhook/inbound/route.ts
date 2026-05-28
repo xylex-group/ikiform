@@ -3,7 +3,7 @@ import {
 	createInboundMapping,
 	getInboundMappings,
 } from "@/lib/webhooks/inbound";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/athena/server";
 
 export async function GET(req: NextRequest) {
 	const startTime = Date.now();
@@ -12,11 +12,11 @@ export async function GET(req: NextRequest) {
 	);
 
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 		const targetFormId = searchParams.get("targetFormId") || undefined;
 
 		if (targetFormId) {
-			const { data: form, error: formError } = await supabase
+			const { data: form, error: formError } = await athena
 				.from("forms")
 				.select("id, user_id")
 				.eq("id", targetFormId)
@@ -80,11 +80,11 @@ export async function POST(req: NextRequest) {
 	);
 
 	try {
-		const supabase = await createClient();
+		const athena = await createClient();
 		const {
 			data: { user },
 			error: authError,
-		} = await supabase.auth.getUser();
+		} = await athena.auth.getUser();
 
 		if (authError || !user) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		const { data: form, error: formError } = await supabase
+		const { data: form, error: formError } = await athena
 			.from("forms")
 			.select("id, user_id")
 			.eq("id", body.targetFormId)
@@ -150,3 +150,5 @@ export async function POST(req: NextRequest) {
 		);
 	}
 }
+
+

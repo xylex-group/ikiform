@@ -7,8 +7,8 @@ import type { FormSchema } from "@/lib/database";
 import type { QuizResult } from "@/lib/quiz/scoring";
 
 interface SingleStepSuccessScreenProps {
-	schema: FormSchema;
 	quizResults?: QuizResult | null;
+	schema: FormSchema;
 }
 
 export const SingleStepSuccessScreen: React.FC<

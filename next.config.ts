@@ -2,6 +2,9 @@ import { withBotId } from "botid/next/config";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	// Athena has server-only dependencies (pg, fs, etc.). This tells Next.js not to bundle them on the client.
+	serverExternalPackages: ["@xylex-group/athena", "pg", "pg-native", "pg-connection-string", "pgpass"],
+
 	experimental: {
 		optimizePackageImports: ["@/components/ui"],
 	},

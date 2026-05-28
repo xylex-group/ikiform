@@ -1,77 +1,77 @@
 export interface PrepopulationConfig {
-	urlParam?: string;
+	apiBodyTemplate?: string;
 
 	apiEndpoint?: string;
-	apiMethod?: "GET" | "POST";
 	apiHeaders?: Record<string, string>;
-	apiBodyTemplate?: string;
+	apiMethod?: "GET" | "POST";
+	consentMessage?: string;
+
+	fallbackValue?: any;
 	jsonPath?: string;
 
 	lookbackDays?: number;
 	matchingFields?: string[];
+	overwriteExisting?: boolean;
 
 	profileField?: "name" | "email" | "phone" | "address" | "custom";
 
-	templateId?: string;
-
-	fallbackValue?: any;
-	overwriteExisting?: boolean;
-
 	requireConsent?: boolean;
-	consentMessage?: string;
+
+	templateId?: string;
+	urlParam?: string;
 }
 
 export interface PrepopulationSettings {
+	config: PrepopulationConfig;
 	enabled: boolean;
 	source: "url" | "api" | "profile" | "previous" | "template";
-	config: PrepopulationConfig;
 }
 
 export interface FormFieldWithPrepopulation {
-	id: string;
-	type: string;
-	label: string;
 	description?: string;
+	id: string;
+	label: string;
 	placeholder?: string;
-	required: boolean;
 	prepopulation?: PrepopulationSettings;
+	required: boolean;
+	type: string;
 }
 
 export interface PrepopulationTemplate {
-	id: string;
-	user_id: string;
-	name: string;
-	description?: string;
-	template_data: Record<string, any>;
 	created_at: string;
+	description?: string;
+	id: string;
+	name: string;
+	template_data: Record<string, any>;
 	updated_at: string;
+	user_id: string;
 }
 
 export interface PrepopulationLog {
-	id: string;
-	form_id: string;
-	field_id: string;
-	source_type: "url" | "api" | "profile" | "previous" | "template";
-	success: boolean;
+	created_at: string;
 	error_message?: string;
 	execution_time_ms: number;
-	created_at: string;
+	field_id: string;
+	form_id: string;
+	id: string;
+	source_type: "url" | "api" | "profile" | "previous" | "template";
+	success: boolean;
 }
 
 export interface PrivacySettings {
-	requireConsent: boolean;
-	consentMessage: string;
-	dataRetentionDays: number;
 	allowOptOut: boolean;
 	anonymizeData: boolean;
+	consentMessage: string;
+	dataRetentionDays: number;
+	requireConsent: boolean;
 }
 
 export interface PrepopulationResult {
+	error?: string;
+	executionTime: number;
+	source: string;
 	success: boolean;
 	value?: any;
-	error?: string;
-	source: string;
-	executionTime: number;
 }
 
 export interface FieldMapping {
@@ -82,15 +82,15 @@ export interface FieldMapping {
 }
 
 export interface ApiEngineConfig extends PrepopulationConfig {
+	cacheTTL?: number;
 	retryAttempts?: number;
 	retryDelay?: number;
 	timeout?: number;
-	cacheTTL?: number;
 }
 
 export interface PreviousSubmissionConfig extends PrepopulationConfig {
-	matchCriteria: "email" | "ip" | "custom";
 	customMatchField?: string;
+	matchCriteria: "email" | "ip" | "custom";
 	prioritizeRecent?: boolean;
 }
 

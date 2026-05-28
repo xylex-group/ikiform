@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { refreshSignedUrls } from "@/lib/storage/supabase-storage";
+// Migration: now using Vercel Blob storage adapter
+import { refreshSignedUrls } from "@/lib/storage/vercel-blob";
 
 export async function POST(request: NextRequest) {
 	try {

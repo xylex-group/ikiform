@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import type { FormSchema } from "@/lib/ai-builder/types";
 
 interface PreviewPanelHeaderProps {
-	forms: FormSchema[];
-	activeFormId: string | null;
-	setActiveFormId: (id: string) => void;
 	activeForm: FormSchema | undefined;
-	setShowJsonModal: (show: boolean) => void;
-	onUseForm: () => void;
+	activeFormId: string | null;
+	forms: FormSchema[];
 	isMobile?: boolean;
+	onUseForm: () => void;
+	setActiveFormId: (id: string) => void;
+	setShowJsonModal: (show: boolean) => void;
 }
 
 export function PreviewPanelHeader({

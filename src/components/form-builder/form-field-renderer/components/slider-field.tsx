@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/ui";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { Badge } from "@/components/ui";
 import {
 	isRangeSliderMode,
 	normalizeRangeSliderValue,
@@ -31,7 +31,12 @@ export function SliderField({
 			isRangeMode
 				? [incomingRangeValue.min, incomingRangeValue.max]
 				: [incomingSingleValue],
-		[isRangeMode, incomingRangeValue.min, incomingRangeValue.max, incomingSingleValue]
+		[
+			isRangeMode,
+			incomingRangeValue.min,
+			incomingRangeValue.max,
+			incomingSingleValue,
+		]
 	);
 	const [uiValue, setUiValue] = useState<number[]>(incomingUiValue);
 
@@ -39,7 +44,9 @@ export function SliderField({
 		setUiValue((previousValue) => {
 			if (
 				previousValue.length === incomingUiValue.length &&
-				previousValue.every((current, index) => current === incomingUiValue[index])
+				previousValue.every(
+					(current, index) => current === incomingUiValue[index]
+				)
 			) {
 				return previousValue;
 			}
@@ -51,7 +58,10 @@ export function SliderField({
 		field.settings,
 		uiValue[0]
 	);
-	const normalizedUiRangeValue = normalizeRangeSliderValue(field.settings, uiValue);
+	const normalizedUiRangeValue = normalizeRangeSliderValue(
+		field.settings,
+		uiValue
+	);
 
 	const handleSliderValueChange = (values: number[]) => {
 		if (isRangeMode) {
@@ -61,7 +71,10 @@ export function SliderField({
 			return;
 		}
 
-		const nextSingleValue = normalizeSingleSliderValue(field.settings, values[0]);
+		const nextSingleValue = normalizeSingleSliderValue(
+			field.settings,
+			values[0]
+		);
 		setUiValue([nextSingleValue]);
 		onChange(nextSingleValue);
 	};
