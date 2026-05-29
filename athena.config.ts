@@ -1,4 +1,8 @@
-import { defineGeneratorConfig } from "@xylex-group/athena";
+import {
+	type BackendType,
+	createClient,
+	defineGeneratorConfig,
+} from "@xylex-group/athena";
 
 /**
  * Athena JS code generator configuration.
@@ -6,29 +10,49 @@ import { defineGeneratorConfig } from "@xylex-group/athena";
  *
  * Use mode: "gateway" in CI where direct Postgres connections are unavailable.
  */
-export default defineGeneratorConfig({
+export const generatorConfig = defineGeneratorConfig({
 	provider: {
 		kind: "postgres",
-		mode: "gateway", // Use "direct" locally if you have a DATABASE_URL
-		gatewayUrl: process.env.ATHENA_URL || "",
-		apiKey: process.env.ATHENA_API_KEY || "",
-		database: process.env.ATHENA_DATABASE || "ikiform",
-		schemas: ["public"],
+		mode: "direct", // Use "direct" locally if you have a DATABASE_URL
+		connectionString:
+			process.env.DATABASE_URL ||
+			"postgresql://postgres:vZGVNgzTOrDwgXFIXRSuVcbonnqbPzFL@trolley.proxy.rlwy.net:40040/railway",
+		database: process.env.ATHENA_DATABASE || "railway",
+		schemas: ["public", "athena", "payload"],
+		backend: "athena" as const satisfies BackendType,
+		client: process.env.ATHENA_CLIENT || "the-ark-of-floris",
 	},
 	output: {
 		targets: {
-			model: "src/lib/athena/models/{schema}/{model}.ts",
-			schema: "src/lib/athena/schemas/{schema}.ts",
-			database: "src/lib/athena/database.ts",
-			registry: "src/lib/athena/registry.ts",
+			model: "athena/models/{schema}/{model_kebab}.ts",
+			schema: "athena/{schema}/schema.ts",
+			database: "athena/{schema}/relations.ts",
+			registry: "athena/{schema}/config.ts",
 		},
 		placeholderMap: {
-			schema: "schema",
-			model: "model",
+			namespace: "athena",
 		},
+	},
+	naming: {
+		modelType: "pascal",
+		modelConst: "camel",
+		schemaConst: "camel",
+		databaseConst: "camel",
+		registryConst: "camel",
 	},
 	features: {
 		emitRegistry: true,
 		emitRelations: true,
 	},
+	experimental: {
+		postgresGatewayIntrospection: false,
+		scyllaProviderContracts: true,
+	},
 });
+
+export const athena = createClient(
+	"https://mirror3.athena-db.com",
+	"ath_4614c5f0ff3248a8.d77b3f974b974df1aac8a9a77e4264bb929bf3967f984717a4de4486a7e43f6d"
+);
+
+export default generatorConfig;
