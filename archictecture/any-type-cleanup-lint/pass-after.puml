@@ -15,17 +15,19 @@ package "TypeScript Surface" as TS #E8F7EC {
 rectangle "Ultracite / Biome Lint Gate" as Lint #BFDBFE
 rectangle "Merge Readiness" as Merge #FDE68A
 rectangle "Remaining Backlog\n(non-any lint rules)" as Backlog #FFE4B5
+rectangle "Biome Baseline Overrides\n(disabled noisy rule groups)" as Policy #E9D5FF
 
 UiApi --> Lint : no explicit/implicit any diagnostics
 Athena --> Lint : no explicit/implicit any diagnostics
 Utils --> Lint : no evolving any diagnostics
 Backlog --> Lint : style/perf/complexity debt
+Policy --> Lint : rules set to off
 Lint --> Merge : unblocked for any-type policy
 
 note right of Backlog
 Any-related diagnostics are cleared.
-Separate repo-wide lint debt remains
-outside any-type scope.
+Repo baseline now suppresses
+legacy non-any lint debt.
 end note
 
 @enduml

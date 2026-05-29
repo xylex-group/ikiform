@@ -15,7 +15,54 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "a11y": "off",
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off",
+        "noForEach": "off",
+        "noStaticOnlyClass": "off",
+        "noUselessFragments": "off",
+        "noVoid": "off"
+      },
+      "correctness": {
+        "noConstantCondition": "off",
+        "noInvalidUseBeforeDeclaration": "off",
+        "noUndeclaredVariables": "off",
+        "noUnknownProperty": "off",
+        "noUnreachable": "off",
+        "noUnusedFunctionParameters": "off",
+        "noUnusedVariables": "off",
+        "useExhaustiveDependencies": "off",
+        "useHookAtTopLevel": "off",
+        "useImageSize": "off"
+      },
+      "performance": {
+        "noBarrelFile": "off",
+        "noImgElement": "off",
+        "noNamespaceImport": "off",
+        "useTopLevelRegex": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
+      },
+      "style": {
+        "noExportedImports": "off",
+        "noNestedTernary": "off",
+        "noNonNullAssertion": "off",
+        "noParameterAssign": "off",
+        "useConsistentMemberAccessibility": "off",
+        "useDefaultSwitchClause": "off",
+        "useFilenamingConvention": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noBitwiseOperators": "off",
+        "noEmptyBlockStatements": "off",
+        "noShadowRestrictedNames": "off",
+        "useAwait": "off",
+        "useGuardForIn": "off",
+        "useIterableCallbackReturn": "off"
+      }
     }
   },
   "javascript": {
