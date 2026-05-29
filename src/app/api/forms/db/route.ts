@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/athena/server";
 import { formsDb } from "@/lib/database";
+import { createClient } from "@/utils/athena/server";
 
 interface FormDbActionBody {
 	action: string;

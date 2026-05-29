@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient as createAdminClient } from "@/lib/athena/admin";
+import { createClient as createAdminClient } from "@/utils/athena/admin";
 
 export async function GET() {
 	try {

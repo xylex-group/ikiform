@@ -1,10 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/athena/server";
 import {
 	sendNewLoginEmail,
 	sendWelcomeEmail,
 } from "@/lib/services/notifications";
 import { sanitizeString } from "@/lib/utils/sanitize";
+import { createClient } from "@/utils/athena/server";
 
 const userCache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_TTL = 30_000;

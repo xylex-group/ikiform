@@ -1,6 +1,6 @@
 import { Webhooks } from "@polar-sh/nextjs";
-import { createClient as createAdminClient } from "@/lib/athena/admin";
 import { sanitizeString } from "@/lib/utils/sanitize";
+import { createClient as createAdminClient } from "@/utils/athena/admin";
 
 const webhookSecret = process.env.POLAR_WEBHOOK_SECRET;
 if (!webhookSecret) {

@@ -1,13 +1,20 @@
-import {
-	type AthenaAuthSdkClient,
-	createAuthClient as createAthenaAuthSdkClient,
-} from "@xylex-group/athena";
+import { type AthenaAuthBindings, createClient } from "@xylex-group/athena";
+
+interface CreateAthenaAuthClientOptions {
+	fetch?: typeof fetch;
+	headers?: Record<string, string>;
+}
 
 /**
  * Athena Auth client factory.
  * Central place for all email, social, session, and password operations.
  */
-export function createAthenaAuthClient(): AthenaAuthSdkClient {
+export function createAthenaAuthClient(
+	options: CreateAthenaAuthClientOptions = {}
+): AthenaAuthBindings {
+	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
+	const apiKey =
+		process.env.ATHENA_API_KEY || process.env.NEXT_PUBLIC_ATHENA_API_KEY;
 	const baseUrl =
 		process.env.ATHENA_AUTH_URL ||
 		process.env.NEXT_PUBLIC_ATHENA_AUTH_URL ||
@@ -22,11 +29,23 @@ export function createAthenaAuthClient(): AthenaAuthSdkClient {
 		);
 	}
 
-	return createAthenaAuthSdkClient({
-		baseUrl,
-		credentials: "include", // cookie-based sessions
-		...(bearerToken ? { bearerToken } : {}),
-	});
+	if (!(url && apiKey)) {
+		throw new Error(
+			"Missing Athena environment variables. Please check ATHENA_URL / NEXT_PUBLIC_ATHENA_URL and ATHENA_API_KEY / NEXT_PUBLIC_ATHENA_API_KEY."
+		);
+	}
+
+	return createClient(url, apiKey, {
+		client: process.env.ATHENA_CLIENT || "ikiform-auth",
+		backend: { type: "athena" },
+		...(options.headers ? { headers: options.headers } : {}),
+		auth: {
+			baseUrl,
+			credentials: "include",
+			...(bearerToken ? { bearerToken } : {}),
+			...(options.fetch ? { fetch: options.fetch } : {}),
+		},
+	}).auth;
 }
 
-export type { AthenaAuthSdkClient } from "@xylex-group/athena";
+export type { AthenaAuthBindings as AthenaAuthSdkClient } from "@xylex-group/athena";

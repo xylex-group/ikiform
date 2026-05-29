@@ -1,8 +1,8 @@
 "use server";
 
-// @ts-nocheck -- Temporary during Supabase → Athena migration (loose row shapes + complex queries)
-import { createClient as createAdminClient } from "@/lib/athena/admin";
 import { sendFormNotification } from "@/lib/services/notifications";
+// @ts-nocheck -- Temporary during Supabase → Athena migration (loose row shapes + complex queries)
+import { createClient as createAdminClient } from "@/utils/athena/admin";
 
 const EMAIL_SEPARATOR_REGEX = /[\n,]/;
 

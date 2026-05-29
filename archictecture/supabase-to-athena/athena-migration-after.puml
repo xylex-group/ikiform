@@ -4,7 +4,7 @@ skinparam defaultTextColor Black
 skinparam titleFontStyle bold
 skinparam arrowThickness 1.2
 
-title Migration Target: Athena-First Runtime (After)
+title Migration Target: Athena-First Runtime (After V2 Auth Consolidation)
 
 skinparam component {
   BackgroundColor #EAF2FF
@@ -34,9 +34,12 @@ rectangle "Next.js App Layer" as Next {
 
 rectangle "Athena Runtime" as AthLayer {
   component "src/utils/athena/server.ts" as AthServer #DCFCE7
+  component "src/utils/athena/admin.ts" as AthAdmin #DCFCE7
   component "src/utils/athena/client.ts" as AthClient #DCFCE7
+  component "src/utils/athena/auth-client.ts\n(createClient(...).auth)" as AthAuthFactory #CFFAFE
   component "src/lib/forms/api-keys.ts\n(server-only)" as ApiKeys #CCFBF1
   component "src/lib/auth/athena-browser-auth.ts" as AuthCompat #FEF3C7
+  component "src/app/api/auth/[action]/route.ts\n(cookie bridge for auth actions)" as AuthRoute #EDE9FE
 }
 
 cloud "Athena Gateway\n(process.env.ATHENA_URL)" as Gateway
@@ -52,9 +55,12 @@ ApiRoutes --> Gateway : query form + submission checks
 ApiRoutes --> Gateway : count/protection helpers
 
 AppRoutes --> AthServer : server actions + user-bound API updates
+AppRoutes --> AthAdmin : admin/cron/user stats operations
 AthServer --> Gateway : forms table ownership+auth checks
-AthServer --> AthenaAuth : session validation (cookies)
-AuthCompat --> AthenaAuth : signIn/signUp/password/verify
+AthServer --> AthAuthFactory : auth bindings + session checks
+AuthRoute --> AthAuthFactory : createAthenaAuthClient(fetch cookie bridge)
+AthAuthFactory --> AthenaAuth : signIn/signUp/password/verify/session
+AuthCompat --> AuthRoute : browser auth requests
 AthClient --> Gateway : client reads/updates form schema
 Gateway --> DB : SQL execution and auth checks
 
@@ -65,6 +71,7 @@ end note
 
 note left of AuthCompat
   auth contract remains compatible with legacy
-  code paths while using Athena Auth APIs.
+  code paths while using Athena Auth APIs via
+  `createClient(...).auth` bindings.
 end note
 @enduml

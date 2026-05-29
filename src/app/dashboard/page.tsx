@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { createClient } from "@/lib/athena/server";
 import { ensureDefaultFormSettings } from "@/lib/forms";
+import { createClient } from "@/utils/athena/server";
 import DashboardClient from "./dashboard-client";
 
 // Skeleton components for streaming

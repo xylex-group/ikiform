@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/athena/server";
 import {
 	createInboundMapping,
 	getInboundMappings,
 } from "@/lib/webhooks/inbound";
+import { createClient } from "@/utils/athena/server";
 
 export async function GET(req: NextRequest) {
 	const startTime = Date.now();

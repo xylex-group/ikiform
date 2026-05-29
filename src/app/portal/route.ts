@@ -1,6 +1,6 @@
 import { CustomerPortal } from "@polar-sh/nextjs";
 import type { NextRequest } from "next/server";
-import { createClient } from "@/lib/athena/server";
+import { createClient } from "@/utils/athena/server";
 
 export const GET = CustomerPortal({
 	accessToken: process.env.POLAR_ACCESS_TOKEN!,

@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient as createAdminClient } from "@/lib/athena/admin";
-import { createClient } from "@/lib/athena/server";
+import { createClient as createAdminClient } from "@/utils/athena/admin";
+import { createClient } from "@/utils/athena/server";
 
 export async function GET(request: NextRequest) {
 	try {

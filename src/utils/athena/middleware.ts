@@ -1,5 +1,5 @@
-import { createAuthClient } from "@xylex-group/athena";
 import { type NextRequest, NextResponse } from "next/server";
+import { createAthenaAuthClient } from "./auth-client";
 
 /**
  * Athena Auth powered session middleware.
@@ -13,16 +13,15 @@ export async function updateAthenaSession(
 ): Promise<NextResponse> {
 	const athenaResponse = NextResponse.next({ request });
 
-	const authBaseUrl =
-		process.env.ATHENA_AUTH_URL ||
-		process.env.NEXT_PUBLIC_ATHENA_AUTH_URL ||
-		process.env.ATHENA_AUTH_BASE_URL ||
-		process.env.NEXT_PUBLIC_ATHENA_AUTH_BASE_URL ||
-		"http://localhost:3001/api/auth"; // sensible dev default
-
-	const auth = createAuthClient({
-		baseUrl: authBaseUrl,
-		credentials: "include",
+	const auth = createAthenaAuthClient({
+		fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+			const headers = new Headers(init?.headers as HeadersInit | undefined);
+			const incomingCookie = request.headers.get("cookie");
+			if (incomingCookie) {
+				headers.set("cookie", incomingCookie);
+			}
+			return fetch(input, { ...init, headers });
+		},
 	});
 
 	// Forward the request's cookies so the auth server can read the session cookie

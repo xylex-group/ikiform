@@ -1,4 +1,7 @@
-import { type AthenaClient, createClient } from "@xylex-group/athena";
+import {
+	type AthenaSdkClientWithAuth,
+	createClient as createAthenaSdkClient,
+} from "@xylex-group/athena";
 import { createAthenaAuthClient } from "./auth-client";
 
 /**
@@ -16,7 +19,7 @@ export function createAthenaClient() {
 		);
 	}
 
-	const dbClient: AthenaClient = createClient(url, apiKey, {
+	const dbClient: AthenaSdkClientWithAuth = createAthenaSdkClient(url, apiKey, {
 		client: process.env.ATHENA_CLIENT || "ikiform-web",
 		backend: { type: "athena" },
 	});
@@ -26,7 +29,7 @@ export function createAthenaClient() {
 	type SignUpEmailInput = Parameters<typeof authClient.signUp.email>[0];
 	type SignInSocialInput = Parameters<typeof authClient.signIn.social>[0];
 	type ForgetPasswordInput = Parameters<typeof authClient.forgetPassword>[0];
-	type UpdateUserInput = Parameters<typeof authClient.updateUser>[0];
+	type UpdateUserInput = Parameters<typeof authClient.user.update>[0];
 	type ForgetPasswordOptions = Omit<ForgetPasswordInput, "email">;
 
 	// Composite object preserving the existing Athena runtime call pattern used across the app
@@ -67,7 +70,7 @@ export function createAthenaClient() {
 				authClient.forgetPassword({ email, ...options }),
 			setSession: (session: unknown) =>
 				Promise.resolve({ data: { session }, error: null }),
-			updateUser: (data: UpdateUserInput) => authClient.updateUser(data),
+			updateUser: (data: UpdateUserInput) => authClient.user.update(data),
 			exchangeCodeForSession: async () => {
 				const session = await authClient.getSession();
 				return {
@@ -78,3 +81,6 @@ export function createAthenaClient() {
 		},
 	};
 }
+
+// Backward-compatible export used by legacy imports.
+export const createClient = createAthenaClient;

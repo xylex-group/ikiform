@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@xylex-group/athena";
+import { createClient as createAthenaSdkClient } from "@xylex-group/athena";
 import { cookies } from "next/headers";
 import { createAthenaAuthClient } from "./auth-client";
 
@@ -25,17 +25,19 @@ export async function createAthenaServerClient() {
 		.map((c) => `${c.name}=${c.value}`)
 		.join("; ");
 
-	const dbClient = createClient(url, apiKey, {
+	const dbClient = createAthenaSdkClient(url, apiKey, {
 		client: process.env.ATHENA_CLIENT || "ikiform-server",
 		backend: { type: "athena" },
 		headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
 	});
 
-	const authClient = createAthenaAuthClient();
+	const authClient = createAthenaAuthClient({
+		...(cookieHeader ? { headers: { Cookie: cookieHeader } } : {}),
+	});
 
 	return {
-		from: (dbClient as unknown).from.bind(dbClient),
-		rpc: (dbClient as unknown).rpc?.bind(dbClient),
+		from: dbClient.from.bind(dbClient),
+		rpc: dbClient.rpc.bind(dbClient),
 
 		auth: {
 			getUser: async () => {
@@ -59,3 +61,6 @@ export async function createAthenaServerClient() {
 		},
 	};
 }
+
+// Backward-compatible export used by legacy imports.
+export const createClient = createAthenaServerClient;

@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/athena/server";
 import { formsDbServer } from "@/lib/database/database.server";
 import { requirePremium } from "@/lib/utils/premium-check";
 import {
@@ -7,6 +6,7 @@ import {
 	validateMessageRole,
 } from "@/lib/utils/prompt-injection";
 import { sanitizeString } from "@/lib/utils/sanitize";
+import { createClient } from "@/utils/athena/server";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
 	try {

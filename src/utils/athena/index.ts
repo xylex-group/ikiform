@@ -1,8 +1,8 @@
 /**
  * Low-level Athena client factories.
  *
- * Most application code should import from `@/lib/athena` instead,
- * which provides the centralized and recommended client APIs.
+ * Most application code should import from `@/utils/athena/*`
+ * entrypoints to keep Athena gateway/auth usage consistent.
  */
 
 export { createAthenaAdminClient } from "./admin";

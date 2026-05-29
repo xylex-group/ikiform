@@ -1,5 +1,5 @@
-import { createAuthClient } from "@xylex-group/athena";
 import { type NextRequest, NextResponse } from "next/server";
+import { createAthenaAuthClient } from "@/utils/athena/auth-client";
 
 interface ActionParam {
 	params: { action: string };
@@ -16,13 +16,6 @@ type AuthAction =
 	| "verify-email";
 
 type AuthPayload = Record<string, unknown>;
-
-const resolveAuthBaseUrl = () =>
-	process.env.ATHENA_AUTH_URL ||
-	process.env.NEXT_PUBLIC_ATHENA_AUTH_URL ||
-	process.env.ATHENA_AUTH_BASE_URL ||
-	process.env.NEXT_PUBLIC_ATHENA_AUTH_BASE_URL ||
-	"http://localhost:3001/api/auth";
 
 const resolveStatus = (result: { ok: boolean; status: number }) =>
 	result.ok ? 200 : result.status || 500;
@@ -66,9 +59,7 @@ const createAuthRouteClient = (request: NextRequest) => {
 		return response;
 	};
 
-	const client = createAuthClient({
-		baseUrl: resolveAuthBaseUrl(),
-		credentials: "include",
+	const client = createAthenaAuthClient({
 		fetch: fetchWithCapture,
 	});
 
@@ -85,6 +76,9 @@ const parsePayload = async (request: NextRequest): Promise<AuthPayload> => {
 		return {};
 	}
 };
+
+const asString = (value: unknown): string =>
+	typeof value === "string" ? value : "";
 
 const dispatchAuthAction = async (
 	action: AuthAction,
@@ -108,8 +102,26 @@ const dispatchAuthAction = async (
 		"sign-in-social": (input) =>
 			client.signIn.social(input as { provider: string; redirectTo: string }),
 		"sign-out": () => client.signOut(),
-		"sign-up-email": (input) =>
-			client.signUp.email(input as { email: string; password: string }),
+		"sign-up-email": (input) => {
+			const parsed = input as {
+				email?: string;
+				password?: string;
+				name?: string;
+				full_name?: string;
+				data?: Record<string, unknown>;
+			};
+			const email = asString(parsed.email);
+			const password = asString(parsed.password);
+			const rawName = asString(parsed.name || parsed.full_name);
+			const defaultName = email.includes("@") ? email.split("@")[0] : "User";
+
+			return client.signUp.email({
+				email,
+				password,
+				name: rawName || defaultName,
+				...(parsed.data ? { data: parsed.data } : {}),
+			});
+		},
 		"forget-password": (input) =>
 			client.forgetPassword(input as { email: string; redirectTo?: string }),
 		"reset-password": (input) =>

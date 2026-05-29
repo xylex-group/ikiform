@@ -1,8 +1,8 @@
 // @ts-nocheck -- Temporary during Athena migration
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { createClient as createAdminClient } from "@/lib/athena/admin";
-import { createClient } from "@/lib/athena/server";
+import { createClient as createAdminClient } from "@/utils/athena/admin";
+import { createClient } from "@/utils/athena/server";
 import { ClientAnnouncementForm } from "./client-announcement-form";
 import { ExpireTrialsControl } from "./expire-trials-control";
 import { UsersTable } from "./users-table";
