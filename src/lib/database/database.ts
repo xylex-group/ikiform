@@ -6,7 +6,7 @@ import type { Database, FormSchema } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 
 const db = createClient(
-	"https://mirror3.athena-db.com",
+	"https://mirror4.athena-cluster.com",
 	"ath_4614c5f0ff3248a8.d77b3f974b974df1aac8a9a77e4264bb929bf3967f984717a4de4486a7e43f6d",
 	{
 		client: "the-ark-of-floris",
