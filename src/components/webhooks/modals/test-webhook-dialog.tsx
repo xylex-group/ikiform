@@ -22,9 +22,7 @@ interface TestWebhookDialogProps {
 	webhook: WebhookConfig | null;
 }
 
-const isTestMode = (
-	value: string
-): value is "real" | "success" | "failure" =>
+const isTestMode = (value: string): value is "real" | "success" | "failure" =>
 	value === "real" || value === "success" || value === "failure";
 
 export function TestWebhookDialog({

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient as createAdminClient } from "@/utils/athena/admin";
 
 interface UserNameRow {
+	created_at: string;
 	name: string | null;
 }
 

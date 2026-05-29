@@ -110,10 +110,10 @@ interface AnalyticsRequestBody {
 const isChatMessage = (value: unknown): value is ChatMessage =>
 	typeof value === "object" &&
 	value !== null &&
-	(value as ChatMessage).role !== undefined &&
-	(value as ChatMessage).role !== null &&
-	(value as ChatMessage).role !== "" &&
-	typeof (value as ChatMessage).content === "string";
+	((value as Record<string, unknown>).role === "assistant" ||
+		(value as Record<string, unknown>).role === "system" ||
+		(value as Record<string, unknown>).role === "user") &&
+	typeof (value as Record<string, unknown>).content === "string";
 
 function createErrorResponse(message: string, status = 500) {
 	return new Response(JSON.stringify({ success: false, message }), {
@@ -139,7 +139,8 @@ function validateAndSanitizeMessages(
 		throw new Error("Invalid messages array");
 	}
 
-	const filtered = filterSystemMessages(messages);
+	const typedMessages = messages.filter(isChatMessage);
+	const filtered = filterSystemMessages(typedMessages);
 
 	return filtered.map((msg) => {
 		if (!isChatMessage(msg)) {
@@ -454,10 +455,12 @@ export async function POST(req: NextRequest): Promise<Response> {
 			(submission) => new Date(submission.submitted_at) >= today
 		).length;
 
-		const yesterdaySubmissions = contextData.submissions.filter((submission) => {
-			const subDate = new Date(submission.submitted_at);
-			return subDate >= yesterday && subDate < today;
-		}).length;
+		const yesterdaySubmissions = contextData.submissions.filter(
+			(submission) => {
+				const subDate = new Date(submission.submitted_at);
+				return subDate >= yesterday && subDate < today;
+			}
+		).length;
 
 		const thisWeekSubmissions = contextData.submissions.filter(
 			(submission) => new Date(submission.submitted_at) >= weekAgo
@@ -534,9 +537,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     - Updated: ${contextData.form.updated_at}
     - Total Fields: ${contextData.form.schema.fields?.length || 0}
     - Form Type: ${
-			contextData.form.schema.settings?.multiStep
-				? "Multi-Step"
-				: "Single Page"
+			contextData.form.schema.settings?.multiStep ? "Multi-Step" : "Single Page"
 		}
     
     FORM SCHEMA:

@@ -8,7 +8,7 @@ import DashboardClient from "./dashboard-client";
 
 type UserPremiumRow = Pick<
 	Database["public"]["Tables"]["users"]["Row"],
-	"has_premium" | "polar_customer_id"
+	"has_premium" | "polar_customer_id" | "uid"
 >;
 
 // Skeleton components for streaming

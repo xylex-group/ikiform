@@ -60,9 +60,8 @@ const toRecord = (value: unknown): JsonRecord | null =>
 const getErrorMessage = (error: unknown): string =>
 	error instanceof Error ? error.message : "Unknown error";
 
-const isPayloadViewMode = (
-	value: string
-): value is "formatted" | "raw" => value === "formatted" || value === "raw";
+const isPayloadViewMode = (value: string): value is "formatted" | "raw" =>
+	value === "formatted" || value === "raw";
 
 function CodeBlock({
 	code,
@@ -204,13 +203,18 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 					const fieldRecord = toRecord(field);
 					const normalizedField: PayloadField | null = fieldRecord
 						? {
-								id: typeof fieldRecord.id === "string" ? fieldRecord.id : undefined,
+								id:
+									typeof fieldRecord.id === "string"
+										? fieldRecord.id
+										: undefined,
 								label:
 									typeof fieldRecord.label === "string"
 										? fieldRecord.label
 										: undefined,
 								type:
-									typeof fieldRecord.type === "string" ? fieldRecord.type : undefined,
+									typeof fieldRecord.type === "string"
+										? fieldRecord.type
+										: undefined,
 								value: fieldRecord.value,
 							}
 						: null;
@@ -307,7 +311,6 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 
 		return (
 			<div className="flex flex-col gap-6">
-				{}
 				<div className="rounded-xl border bg-card p-4">
 					<h4 className="mb-4 flex items-center gap-2 font-semibold text-sm">
 						<Activity className="size-4" />
@@ -352,16 +355,12 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 						)}
 					</div>
 				</div>
-
-				{}
 				{fields && (
 					<div className="rounded-xl border bg-card p-4">
 						<h4 className="mb-4 font-semibold text-sm">Form Fields</h4>
 						{formatFormFields(fields)}
 					</div>
 				)}
-
-				{}
 				{rawData && (
 					<div className="rounded-xl border bg-card p-4">
 						<h4 className="mb-4 font-semibold text-sm">Raw Form Data</h4>
@@ -382,8 +381,6 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 						</div>
 					</div>
 				)}
-
-				{}
 				{additionalKeys.length > 0 && (
 					<div className="rounded-xl border bg-card p-4">
 						<h4 className="mb-4 font-semibold text-sm">Additional Data</h4>
@@ -722,12 +719,10 @@ export function WebhookLogDialog({
 						</div>
 					)}
 				</div>
-
-				{}
-				{viewPayload && (
+				{viewPayload !== null && (
 					<Dialog
 						onOpenChange={() => setViewPayload(null)}
-						open={!!viewPayload}
+						open={viewPayload !== null}
 					>
 						<DialogContent className="max-h-[80vh] w-full max-w-3xl overflow-hidden">
 							<DialogHeader>

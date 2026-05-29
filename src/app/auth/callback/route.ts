@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
+import type { Database } from "@/lib/database/database.types";
 import {
 	sendNewLoginEmail,
 	sendWelcomeEmail,
 } from "@/lib/services/notifications";
-import type { Database } from "@/lib/database/database.types";
 
 import { createAthenaAuthClient } from "@/utils/athena/auth-client";
 import { createAthenaServerClient } from "@/utils/athena/server";
@@ -14,7 +14,9 @@ type UserRow = UserTable["Row"];
 type UserUpdate = UserTable["Update"];
 
 const toRecord = (value: unknown): Record<string, unknown> | null =>
-	typeof value === "object" && value !== null ? (value as Record<string, unknown>) : null;
+	typeof value === "object" && value !== null
+		? (value as Record<string, unknown>)
+		: null;
 
 export async function GET(request: NextRequest) {
 	const { searchParams, origin } = new URL(request.url);
@@ -31,7 +33,8 @@ export async function GET(request: NextRequest) {
 			const sessionData = sessionResult.data as
 				| { session?: { user?: unknown }; user?: unknown }
 				| undefined;
-			const sessionUser = sessionData?.session?.user ?? sessionData?.user ?? null;
+			const sessionUser =
+				sessionData?.session?.user ?? sessionData?.user ?? null;
 
 			if (sessionUser) {
 				const sessionUserRecord = toRecord(sessionUser);

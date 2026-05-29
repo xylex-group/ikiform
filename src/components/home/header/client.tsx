@@ -47,6 +47,23 @@ interface AuthAction {
 	user: AppAuthUser | null;
 }
 
+const getUserMetadataString = (
+	user: AppAuthUser,
+	key: string
+): string | undefined => {
+	const value = user.user_metadata?.[key];
+	return typeof value === "string" ? value : undefined;
+};
+
+const getUserDisplayName = (user: AppAuthUser): string =>
+	getUserMetadataString(user, "name") ??
+	getUserMetadataString(user, "full_name") ??
+	user.email ??
+	"Account";
+
+const getUserAvatarUrl = (user: AppAuthUser): string | undefined =>
+	getUserMetadataString(user, "avatar_url");
+
 const INITIAL_AUTH_STATE: AuthState = {
 	user: null,
 	loading: true,
@@ -69,8 +86,8 @@ interface UserAvatarProps {
 }
 
 const UserAvatar = React.memo(function UserAvatar({ user }: UserAvatarProps) {
-	const nameOrEmail = user.user_metadata?.name ?? user.email ?? "User";
-	const avatarUrl = user.user_metadata?.avatar_url ?? undefined;
+	const nameOrEmail = getUserDisplayName(user);
+	const avatarUrl = getUserAvatarUrl(user);
 	const fallback = (nameOrEmail ?? "U").slice(0, 2).toUpperCase();
 
 	return (
@@ -92,8 +109,7 @@ const UserDropdownMenu = React.memo(function UserDropdownMenu({
 	user,
 	signOut,
 }: UserDropdownMenuProps) {
-	const name =
-		user.user_metadata?.name ?? user.user_metadata?.full_name ?? "Account";
+	const name = getUserDisplayName(user);
 	const email = user.email ?? "";
 
 	const handleSignOut = useCallback(
@@ -128,10 +144,7 @@ const UserDropdownMenu = React.memo(function UserDropdownMenu({
 			>
 				<DropdownMenuLabel className="flex items-start gap-3 px-2 py-2">
 					<Avatar className="size-9">
-						<AvatarImage
-							alt={name}
-							src={user.user_metadata?.avatar_url ?? undefined}
-						/>
+						<AvatarImage alt={name} src={getUserAvatarUrl(user)} />
 						<AvatarFallback>
 							{(name ?? "U").slice(0, 2).toUpperCase()}
 						</AvatarFallback>
@@ -184,7 +197,7 @@ UserDropdownMenu.displayName = "UserDropdownMenu";
 interface DesktopActionsProps {
 	loading: boolean;
 	signOut: () => Promise<void>;
-	user: User | null;
+	user: AppAuthUser | null;
 }
 
 const DesktopActionsSkeleton = React.memo(function DesktopActionsSkeleton() {
@@ -261,7 +274,7 @@ DrawerLinks.displayName = "DrawerLinks";
 
 interface DrawerProfileSectionProps {
 	signOut: () => Promise<void>;
-	user: User | null;
+	user: AppAuthUser | null;
 }
 
 const DrawerProfileSection = React.memo(function DrawerProfileSection({
@@ -280,18 +293,14 @@ const DrawerProfileSection = React.memo(function DrawerProfileSection({
 		return null;
 	}
 
-	const name =
-		user.user_metadata?.name ?? user.user_metadata?.full_name ?? "Account";
+	const name = getUserDisplayName(user);
 	const email = user.email ?? "";
 
 	return (
 		<section aria-label="User profile" className="flex flex-col gap-3">
 			<div className="flex items-center justify-start gap-3">
 				<Avatar className="size-9">
-					<AvatarImage
-						alt={name}
-						src={user.user_metadata?.avatar_url ?? undefined}
-					/>
+					<AvatarImage alt={name} src={getUserAvatarUrl(user)} />
 					<AvatarFallback>
 						{(name ?? "U").slice(0, 2).toUpperCase()}
 					</AvatarFallback>
@@ -325,7 +334,7 @@ interface MobileDrawerProps {
 	loading: boolean;
 	primaryLinks: NavLink[];
 	signOut: () => Promise<void>;
-	user: User | null;
+	user: AppAuthUser | null;
 }
 
 const MobileDrawerButtonSkeleton = React.memo(
