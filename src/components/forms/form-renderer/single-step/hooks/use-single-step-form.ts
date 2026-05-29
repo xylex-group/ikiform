@@ -289,8 +289,7 @@ export const useSingleStepForm = (
 				);
 			} else if (submitError.error === "Response limit reached") {
 				toast.error(
-					submitError.message ||
-						"This form is no longer accepting responses."
+					submitError.message || "This form is no longer accepting responses."
 				);
 			} else if (submitError.error === "Content validation failed") {
 				toast.error(

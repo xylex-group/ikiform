@@ -1,0 +1,27 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "After: Server Utilities Without Action Directive" {
+  rectangle "app/f/[slug]/page.tsx" as page
+  rectangle "lib/database/database.server.ts\n(no \"use server\")\nexport const formsDbServer = { ... }" as dbserver
+  rectangle "utils/athena/server.ts\n(no \"use server\")\nexport async function createAthenaServerClient()" as athenaserver
+  rectangle "app/admin/actions.ts\n\"use server\" (async action exports only)" as actions
+
+  page --> dbserver
+  dbserver --> athenaserver
+  actions --> athenaserver
+}
+
+note right of actions
+"use server" remains only where server actions are defined.
+Route/page data collection succeeds.
+end note
+@enduml

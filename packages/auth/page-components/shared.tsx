@@ -206,7 +206,7 @@ export function SocialButton({
 }) {
 	return (
 		<Button
-			className={AUTH_PRIMARY_BUTTON_CLASS + "justify-start"}
+			className={`${AUTH_PRIMARY_BUTTON_CLASS} justify-start`}
 			fullWidth
 			isDisabled={disabled}
 			onPress={onPress}

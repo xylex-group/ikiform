@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { formsDbServer } from "@/lib/database/database.server";
+import * as formsDbServer from "@/lib/database/database.server";
 import { requirePremium } from "@/lib/utils/premium-check";
 import {
 	detectPromptInjection,

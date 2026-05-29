@@ -18,6 +18,7 @@ import {
 	FormSettingsDesktopLayout,
 	FormSettingsMobileLayout,
 } from "./components";
+import type { FormSettingsContentProps } from "./components/form-settings-content";
 import { useFormSettings } from "./hooks";
 import type { FormSettingsModalProps, FormSettingsSection } from "./types";
 
@@ -70,7 +71,7 @@ export function FormSettingsModal({
 		}
 	}, [formId, user]);
 
-	const sectionProps = {
+	const sectionProps: Omit<FormSettingsContentProps, "section"> = {
 		localSettings,
 		updateSettings,
 		updateRateLimit,

@@ -1,5 +1,3 @@
-"use server";
-
 import { createClient as createAthenaSdkClient } from "@xylex-group/athena";
 import { cookies } from "next/headers";
 import { createAthenaAuthClient } from "./auth-client";

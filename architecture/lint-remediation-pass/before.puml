@@ -1,0 +1,22 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "Before" {
+  rectangle "Generated Athena model\nArray<T> style" as m1
+  rectangle "Auth shared button\nstring concat className" as m2
+  rectangle "Profile initials util\narray length indexing" as m3
+  rectangle "Field group settings\nArray<tuple> cast style" as m4
+}
+
+note right of m4
+Ultracite check fails with style gate errors.
+end note
+@enduml

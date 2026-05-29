@@ -1,0 +1,23 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "After" {
+  rectangle "resource-forms.ts\nstring[]" as m1
+  rectangle "shared.tsx\n`${AUTH_PRIMARY_BUTTON_CLASS} justify-start`" as m2
+  rectangle "profile-card util\nwords.at(-1)" as m3
+  rectangle "field-group-settings.tsx\n[Tuple][] cast" as m4
+  rectangle "test gating\nbiome ignore for intentional test.skip" as m5
+}
+
+note right of m5
+Ultracite check and build both pass.
+end note
+@enduml

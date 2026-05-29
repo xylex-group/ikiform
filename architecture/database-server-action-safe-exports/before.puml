@@ -1,0 +1,23 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "Before" {
+  rectangle "database.server.ts\nexport const formsDbServer = { ... }" as db
+  rectangle "route/api/webhook\nimport { formsDbServer }" as route
+  route --> db
+}
+
+note right of db
+If module is interpreted as a server-action file,
+exporting an object violates Next's rule:
+only async function exports are allowed.
+end note
+@enduml

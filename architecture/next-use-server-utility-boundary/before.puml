@@ -1,0 +1,26 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "Before: Invalid use server Boundary" {
+  rectangle "app/f/[slug]/page.tsx" as page
+  rectangle "lib/database/database.server.ts\n\"use server\" + export const formsDbServer = { ... }" as dbserver
+  rectangle "utils/athena/server.ts\n\"use server\" + export const createClient = ..." as athenaserver
+
+  page --> dbserver
+  dbserver --> athenaserver
+}
+
+note right of dbserver
+Next.js action-file rule violated:
+"use server" files must only export async functions.
+Object/const exports trigger page-data collection failure.
+end note
+@enduml

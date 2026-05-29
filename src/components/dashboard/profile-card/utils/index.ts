@@ -30,6 +30,6 @@ export function getUserInitials(name: string): string {
 	}
 
 	const firstInitial = words[0]?.charAt(0) || "";
-	const lastInitial = words[words.length - 1]?.charAt(0) || "";
+	const lastInitial = words.at(-1)?.charAt(0) || "";
 	return (firstInitial + lastInitial || "U").toUpperCase();
 }

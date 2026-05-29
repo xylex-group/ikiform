@@ -11,7 +11,7 @@ User-agent: *
 Disallow: /e2e-ui
 
 # Host
-Host: https://www.ikiform.com
+Host: http://localhost:3000
 
 # Sitemaps
-Sitemap: https://www.ikiform.com/sitemap.xml
+Sitemap: http://localhost:3000/sitemap.xml

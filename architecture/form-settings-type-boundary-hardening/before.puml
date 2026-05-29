@@ -1,0 +1,28 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "Before: Inferred Type Boundary" {
+  rectangle "FormSettingsModal\nsectionProps inferred" as modal
+  rectangle "useFormSettings\nimplicit return type" as hook
+  rectangle "FormSettingsContent\nwide callback signatures" as content
+  rectangle "Section components\nexpect LocalSettings + typed update fns" as sections
+
+  modal --> hook
+  modal --> content
+  content --> sections
+}
+
+note right of modal
+When editor/project-service inference drifts,
+section props can degrade to unknown-like hints,
+producing noisy assignability errors in section calls.
+end note
+@enduml

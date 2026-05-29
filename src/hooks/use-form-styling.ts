@@ -57,7 +57,7 @@ export function useFormStyling(schema: FormSchema) {
 				const styles = await getFormCustomStyles(schema);
 				setCustomStyles(styles);
 
-				const fontFamily = (schema.settings as unknown)?.typography?.fontFamily;
+				const fontFamily = schema.settings.typography?.fontFamily;
 				if (fontFamily && typeof window !== "undefined") {
 					await loadGoogleFont(fontFamily);
 					setFontLoaded(true);
@@ -78,8 +78,8 @@ export function useFormStyling(schema: FormSchema) {
 			return;
 		}
 
-		const colors = (schema.settings as unknown)?.colors;
-		const typography = (schema.settings as unknown)?.typography;
+		const colors = schema.settings.colors;
+		const typography = schema.settings.typography;
 		const root = document.documentElement;
 
 		if (colors) {
@@ -95,8 +95,14 @@ export function useFormStyling(schema: FormSchema) {
 			if (colors.border) {
 				root.style.setProperty("--form-border-color", colors.border);
 			}
-			if (colors.websiteBackground) {
-				const hslValues = hexToHsl(colors.websiteBackground);
+			const websiteBackground =
+				typeof colors === "object" &&
+				colors !== null &&
+				"websiteBackground" in colors
+					? (colors as { websiteBackground?: string }).websiteBackground
+					: undefined;
+			if (websiteBackground) {
+				const hslValues = hexToHsl(websiteBackground);
 				root.style.setProperty("--hu-background", hslValues);
 
 				root.style.setProperty("--color-background", `hsl(${hslValues})`);
@@ -135,10 +141,7 @@ export function useFormStyling(schema: FormSchema) {
 			root.style.removeProperty("--form-font-size");
 			root.style.removeProperty("--form-font-weight");
 		};
-	}, [
-		(schema.settings as unknown)?.colors,
-		(schema.settings as unknown)?.typography,
-	]);
+	}, [schema.settings.colors, schema.settings.typography]);
 
 	const getFormClasses = () => {
 		const classes = ["ikiform-customized", "w-full", "ikiform-minimal"];
@@ -146,7 +149,7 @@ export function useFormStyling(schema: FormSchema) {
 	};
 
 	const getFieldStyles = () => {
-		const colors = (schema.settings as unknown)?.colors;
+		const colors = schema.settings.colors;
 		return {
 			borderColor: colors?.border || undefined,
 			fontFamily: customStyles.formStyle.fontFamily || undefined,
@@ -154,7 +157,7 @@ export function useFormStyling(schema: FormSchema) {
 	};
 
 	const getButtonStyles = (isPrimary = false) => {
-		const colors = (schema.settings as unknown)?.colors;
+		const colors = schema.settings.colors;
 		if (isPrimary && colors?.primary) {
 			return {
 				backgroundColor: colors.primary,

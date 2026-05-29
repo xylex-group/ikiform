@@ -1,5 +1,6 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import {
 	Brush,
 	ChevronRightCircle,
@@ -11,7 +12,6 @@ import {
 	ShieldBan,
 	ShieldCheck,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui";
@@ -144,11 +144,7 @@ export default function PricingClient({ products }: PricingClientProps) {
 		);
 	}
 
-	function PlanFeatures({
-		features,
-	}: {
-		features: PlanFeature[];
-	}) {
+	function PlanFeatures({ features }: { features: PlanFeature[] }) {
 		return (
 			<ul className="mb-8 flex list-none flex-col gap-3 p-0">
 				{features.map(({ label, icon: Icon }) => (

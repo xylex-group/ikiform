@@ -16,7 +16,7 @@ export interface PublicResourceFormsRow {
 	source_schema?: Record<string, unknown> | null;
 	source_schema_provider?: string | null;
 	source_schema_url?: string | null;
-	tags?: Array<string> | null;
+	tags?: string[] | null;
 	updated_at: string;
 	version?: number | null;
 }

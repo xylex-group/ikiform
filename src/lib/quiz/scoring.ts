@@ -68,11 +68,23 @@ export function calculateQuizScore(
 			totalScore += points;
 		}
 
+		const normalizedUserAnswer: string | string[] = Array.isArray(userAnswer)
+			? userAnswer.map((answer) => String(answer))
+			: userAnswer === undefined || userAnswer === null
+				? ""
+				: String(userAnswer);
+		const normalizedCorrectAnswer: string | string[] =
+			typeof correctAnswer === "string"
+				? correctAnswer
+				: Array.isArray(correctAnswer)
+					? correctAnswer.map((answer) => String(answer))
+					: "";
+
 		fieldResults.push({
 			fieldId: field.id,
 			fieldLabel: field.label,
-			userAnswer: userAnswer || "",
-			correctAnswer: correctAnswer || "",
+			userAnswer: normalizedUserAnswer,
+			correctAnswer: normalizedCorrectAnswer,
 			isCorrect,
 			points: isCorrect ? points : 0,
 			maxPoints: points,

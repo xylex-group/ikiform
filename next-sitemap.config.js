@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
 	siteUrl: process.env.SITE_URL || "https://www.ikiform.com",
 	generateRobotsTxt: true,
 	exclude: ["/e2e-ui"],
@@ -10,3 +10,5 @@ module.exports = {
 		],
 	},
 };
+
+export default config;

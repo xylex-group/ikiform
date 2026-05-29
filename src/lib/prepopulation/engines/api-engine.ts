@@ -142,6 +142,9 @@ export class ApiEngine implements PrepopulationEngine {
 	}
 
 	private evaluateJsonPath(data: unknown, path: string): unknown {
+		const isRecord = (value: unknown): value is Record<string, unknown> =>
+			typeof value === "object" && value !== null && !Array.isArray(value);
+
 		if (path === "$") {
 			return data;
 		}
@@ -161,6 +164,9 @@ export class ApiEngine implements PrepopulationEngine {
 			const arrayMatch = part.match(/^([^[]+)\[(\d+|\*)\]$/);
 			if (arrayMatch) {
 				const [, fieldName, indexOrWildcard] = arrayMatch;
+				if (!isRecord(current)) {
+					return null;
+				}
 				current = current[fieldName];
 
 				if (Array.isArray(current)) {
@@ -173,6 +179,9 @@ export class ApiEngine implements PrepopulationEngine {
 					return null;
 				}
 			} else {
+				if (!isRecord(current)) {
+					return null;
+				}
 				current = current[part];
 			}
 		}

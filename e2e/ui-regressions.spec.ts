@@ -67,7 +67,8 @@ function assertSvgRendered(locator: ReturnType<Page["locator"]>) {
 }
 
 async function loginToDashboard(page: Page) {
-	test(
+	// biome-ignore lint/suspicious/noSkippedTests: Authenticated dashboard checks are intentionally gated by CI/local credentials.
+	test.skip(
 		!(TEST_EMAIL && TEST_PASSWORD),
 		"Set E2E_TEST_EMAIL and E2E_TEST_PASSWORD to run authenticated dashboard icon checks."
 	);

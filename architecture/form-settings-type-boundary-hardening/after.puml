@@ -1,0 +1,27 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "After: Explicit Type Boundary" {
+  rectangle "FormSettingsModal\nsectionProps: Omit<FormSettingsContentProps, \"section\">" as modal
+  rectangle "useFormSettings\nUseFormSettingsResult + typed update aliases" as hook
+  rectangle "FormSettingsContent\nnormalized notification updater type" as content
+  rectangle "Section components\nstable LocalSettings + callback contracts" as sections
+
+  modal --> hook
+  modal --> content
+  content --> sections
+}
+
+note right of hook
+Boundary contracts are explicit, so editor and CI
+resolve identical types without unknown fallback hints.
+end note
+@enduml

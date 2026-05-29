@@ -1,0 +1,23 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "After" {
+  rectangle "database.server.ts\nexports only async functions" as db
+  rectangle "callers\nimport * as formsDbServer" as route
+  route --> db
+}
+
+note right of db
+No exported object value remains.
+Even if action-validation runs on the module,
+exports satisfy the async-function contract.
+end note
+@enduml

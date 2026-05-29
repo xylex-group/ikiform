@@ -14,7 +14,7 @@ export async function checkPremiumStatus(userId: string): Promise<boolean> {
 			return false;
 		}
 
-		return data.has_premium;
+		return data.has_premium === true;
 	} catch (error) {
 		console.error("Error checking premium status:", error);
 		return false;

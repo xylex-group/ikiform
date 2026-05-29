@@ -2,7 +2,7 @@ import { createGroq } from "@ai-sdk/groq";
 import { streamText } from "ai";
 import type { NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import { formsDbServer } from "@/lib/database/database.server";
+import * as formsDbServer from "@/lib/database/database.server";
 import { checkRateLimit, type RateLimitSettings } from "@/lib/forms/server";
 import { requirePremium } from "@/lib/utils/premium-check";
 import {

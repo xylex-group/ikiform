@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { formsDbServer } from "@/lib/database/database.server";
+import * as formsDbServer from "@/lib/database/database.server";
 import type {
 	Database,
 	WebhookConfig,

@@ -40,7 +40,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
-import { formsDb, type FormSubmission } from "@/lib/database";
+import { type FormSubmission, formsDb } from "@/lib/database";
 
 import {
 	AnalyticsCards,

@@ -1,10 +1,10 @@
-import { Ratelimit } from "@upstash/ratelimit";
+import { type Duration, Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
 interface RateLimitSettings {
 	enabled: boolean;
 	maxSubmissions: number;
-	window: string;
+	window: Duration;
 }
 
 let redis: Redis | null = null;
@@ -51,10 +51,7 @@ function getRateLimiter(
 		const redisClient = getRedisClient();
 		const limiter = new Ratelimit({
 			redis: redisClient,
-			limiter: Ratelimit.fixedWindow(
-				settings.maxSubmissions,
-				settings.window as unknown
-			),
+			limiter: Ratelimit.fixedWindow(settings.maxSubmissions, settings.window),
 			analytics: true,
 			prefix,
 		});
@@ -141,7 +138,7 @@ export async function checkFormRateLimit(
 	const rateLimitSettings: RateLimitSettings = {
 		enabled: settings.enabled,
 		maxSubmissions: settings.maxSubmissions,
-		window: `${settings.timeWindow} m`,
+		window: `${settings.timeWindow} m` as Duration,
 	};
 
 	const prefix = `form-${formId}`;

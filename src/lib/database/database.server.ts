@@ -1,5 +1,3 @@
-"use server";
-
 import type { AthenaSdkClientWithAuth } from "@xylex-group/athena";
 import type { Database } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
@@ -56,7 +54,7 @@ const fromAIAnalyticsChat = (athena: AthenaFromClient) =>
 const fromUsers = (athena: AthenaFromClient) =>
 	athena.from<User, UserInsert, UserUpdate>("users");
 
-export const formsDbServer = {
+const formsDbServer = {
 	async getPublicForm(identifier: string) {
 		const athena = await createAthenaServerClient();
 		const { isUUID } = await import("@/lib/utils/slug");
@@ -427,3 +425,133 @@ export const formsDbServer = {
 		return count || 0;
 	},
 };
+
+export async function getPublicForm(identifier: string) {
+	return formsDbServer.getPublicForm(identifier);
+}
+
+export async function verifyFormOwnership(formId: string, userId: string) {
+	return formsDbServer.verifyFormOwnership(formId, userId);
+}
+
+export async function submitForm(
+	formId: string,
+	submissionData: Record<string, unknown>,
+	ipAddress?: string
+) {
+	return formsDbServer.submitForm(formId, submissionData, ipAddress);
+}
+
+export async function saveAIBuilderMessage(
+	userId: string,
+	sessionId: string,
+	role: "user" | "assistant" | "system",
+	content: string,
+	metadata: Record<string, unknown> = {}
+) {
+	return formsDbServer.saveAIBuilderMessage(
+		userId,
+		sessionId,
+		role,
+		content,
+		metadata
+	);
+}
+
+export async function getAIBuilderChatHistory(
+	userId: string,
+	sessionId: string
+) {
+	return formsDbServer.getAIBuilderChatHistory(userId, sessionId);
+}
+
+export async function getAIBuilderSessions(userId: string, limit = 10) {
+	return formsDbServer.getAIBuilderSessions(userId, limit);
+}
+
+export async function saveAIAnalyticsMessage(
+	userId: string,
+	formId: string,
+	sessionId: string,
+	role: "user" | "assistant" | "system",
+	content: string,
+	metadata: Record<string, unknown> = {}
+) {
+	return formsDbServer.saveAIAnalyticsMessage(
+		userId,
+		formId,
+		sessionId,
+		role,
+		content,
+		metadata
+	);
+}
+
+export async function getAIAnalyticsChatHistory(
+	userId: string,
+	formId: string,
+	sessionId: string
+) {
+	return formsDbServer.getAIAnalyticsChatHistory(userId, formId, sessionId);
+}
+
+export async function getAIAnalyticsSessions(
+	userId: string,
+	formId: string,
+	limit = 10
+) {
+	return formsDbServer.getAIAnalyticsSessions(userId, formId, limit);
+}
+
+export async function getUser(email: string) {
+	return formsDbServer.getUser(email);
+}
+
+export async function createOrUpdateUser(
+	uid: string,
+	email: string,
+	name: string,
+	hasPremium?: boolean,
+	polarCustomerId?: string | null
+) {
+	return formsDbServer.createOrUpdateUser(
+		uid,
+		email,
+		name,
+		hasPremium,
+		polarCustomerId
+	);
+}
+
+export async function updateUserPremiumStatus(
+	email: string,
+	hasPremium: boolean
+) {
+	return formsDbServer.updateUserPremiumStatus(email, hasPremium);
+}
+
+export async function getUserByEmail(email: string) {
+	return formsDbServer.getUserByEmail(email);
+}
+
+export async function updatePremiumStatus(email: string, hasPremium: boolean) {
+	return formsDbServer.updatePremiumStatus(email, hasPremium);
+}
+
+export async function updatePolarCustomerId(
+	email: string,
+	polarCustomerId: string
+) {
+	return formsDbServer.updatePolarCustomerId(email, polarCustomerId);
+}
+
+export async function updateUserProfile(
+	email: string,
+	updates: { name?: string }
+) {
+	return formsDbServer.updateUserProfile(email, updates);
+}
+
+export async function countFormSubmissions(formId: string) {
+	return formsDbServer.countFormSubmissions(formId);
+}

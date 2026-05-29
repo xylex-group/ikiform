@@ -50,7 +50,11 @@ interface CustomTooltipProps {
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 	if (active && payload && payload.length) {
 		const labelValue =
-			typeof label === "string" ? label : label !== undefined ? String(label) : "";
+			typeof label === "string"
+				? label
+				: label !== undefined
+					? String(label)
+					: "";
 		return (
 			<div className="rounded-xl border border-border bg-card px-3 py-2">
 				<p className="mb-1 font-semibold text-foreground">

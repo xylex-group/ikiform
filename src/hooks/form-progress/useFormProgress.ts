@@ -60,30 +60,6 @@ export function useFormProgress(
 		}
 	}, [finalConfig, formId]);
 
-	const debouncedSave = useCallback(
-		async (
-			formData: Record<string, unknown>,
-			currentStep = 0,
-			totalSteps = 1
-		) => {
-			if (!finalOptions.enableAutoSave) {
-				return;
-			}
-
-			if (saveTimeoutRef.current) {
-				clearTimeout(saveTimeoutRef.current);
-			}
-
-			return new Promise<void>((resolve) => {
-				saveTimeoutRef.current = setTimeout(async () => {
-					await saveProgress(formData, currentStep, totalSteps);
-					resolve();
-				}, finalOptions.debounceMs);
-			});
-		},
-		[finalOptions.debounceMs, finalOptions.enableAutoSave, saveProgress]
-	);
-
 	const saveProgress = useCallback(
 		async (
 			formData: Record<string, unknown>,
@@ -133,7 +109,31 @@ export function useFormProgress(
 				}));
 			}
 		},
-		[formId, finalConfig.enabled, finalOptions.skipFields?.forEach]
+		[formId, finalConfig.enabled, finalOptions.skipFields]
+	);
+
+	const debouncedSave = useCallback(
+		async (
+			formData: Record<string, unknown>,
+			currentStep = 0,
+			totalSteps = 1
+		) => {
+			if (!finalOptions.enableAutoSave) {
+				return;
+			}
+
+			if (saveTimeoutRef.current) {
+				clearTimeout(saveTimeoutRef.current);
+			}
+
+			return new Promise<void>((resolve) => {
+				saveTimeoutRef.current = setTimeout(async () => {
+					await saveProgress(formData, currentStep, totalSteps);
+					resolve();
+				}, finalOptions.debounceMs);
+			});
+		},
+		[finalOptions.debounceMs, finalOptions.enableAutoSave, saveProgress]
 	);
 
 	const loadProgress = useCallback(async () => {

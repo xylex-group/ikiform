@@ -34,8 +34,7 @@ export const validateSingleStepForm = (
 			errors[field.id] =
 				field.validation?.requiredMessage || "This field is required";
 		} else if (field.type === "email" && value) {
-			const emailValue =
-				typeof value === "string" ? value : String(value);
+			const emailValue = typeof value === "string" ? value : String(value);
 			const emailValidation = validateEmail(
 				emailValue,
 				field.settings?.emailValidation
@@ -47,8 +46,7 @@ export const validateSingleStepForm = (
 					"Please enter a valid email address";
 			}
 		} else if (["text", "textarea", "email"].includes(field.type) && value) {
-			const textValue =
-				typeof value === "string" ? value : String(value);
+			const textValue = typeof value === "string" ? value : String(value);
 			if (
 				field.validation?.minLength &&
 				textValue.length < field.validation.minLength
@@ -66,8 +64,7 @@ export const validateSingleStepForm = (
 					`Must be no more than ${field.validation.maxLength} characters`;
 			}
 		} else if (field.type === "number" && value) {
-			const numberText =
-				typeof value === "string" ? value : String(value);
+			const numberText = typeof value === "string" ? value : String(value);
 			const numValue = Number.parseFloat(numberText);
 			if (Number.isNaN(numValue)) {
 				errors[field.id] =
@@ -91,8 +88,7 @@ export const validateSingleStepForm = (
 				}
 			}
 		} else if (field.type === "phone" && value) {
-			const phoneValue =
-				typeof value === "string" ? value : String(value);
+			const phoneValue = typeof value === "string" ? value : String(value);
 			const phoneValidation =
 				require("@/lib/validation/phone-validation").validatePhoneNumber(
 					phoneValue
@@ -102,8 +98,7 @@ export const validateSingleStepForm = (
 					phoneValidation.message || "Please enter a valid phone number";
 			}
 		} else if (field.type === "link" && value) {
-			const linkValue =
-				typeof value === "string" ? value : String(value);
+			const linkValue = typeof value === "string" ? value : String(value);
 			const urlValidation =
 				require("@/lib/validation/url-validation").validateUrl(linkValue);
 			if (!urlValidation.isValid) {

@@ -31,7 +31,7 @@ export interface FormSettingsContentProps {
 		updates: Partial<NonNullable<LocalSettings["duplicatePrevention"]>>
 	) => void;
 	updateNotifications: (
-		updates: Partial<LocalSettings["notifications"]>
+		updates: Partial<NonNullable<LocalSettings["notifications"]>>
 	) => void;
 	updatePasswordProtection: (
 		updates: Partial<NonNullable<LocalSettings["passwordProtection"]>>

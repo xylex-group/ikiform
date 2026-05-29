@@ -510,8 +510,7 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 				value !== null &&
 				value !== ""
 			) {
-				const emailValue =
-					typeof value === "string" ? value : String(value);
+				const emailValue = typeof value === "string" ? value : String(value);
 				const emailValidation = validateEmail(
 					emailValue,
 					field.settings?.emailValidation
@@ -528,8 +527,7 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 				value !== null &&
 				value !== ""
 			) {
-				const textValue =
-					typeof value === "string" ? value : String(value);
+				const textValue = typeof value === "string" ? value : String(value);
 				if (
 					field.validation?.minLength &&
 					textValue.length < field.validation.minLength

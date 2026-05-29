@@ -49,9 +49,10 @@ export function FieldGroupSettings({
 	const [expandedFields, setExpandedFields] = useState<{
 		[id: string]: boolean;
 	}>({});
-	const categoryEntries = Object.entries(FIELD_CATEGORIES) as Array<
-		[FieldTypeConfig["category"], string]
-	>;
+	const categoryEntries = Object.entries(FIELD_CATEGORIES) as [
+		FieldTypeConfig["category"],
+		string,
+	][];
 
 	const addFieldToGroup = (fieldType: FormField["type"]) => {
 		const newField = createFieldFromType(fieldType);

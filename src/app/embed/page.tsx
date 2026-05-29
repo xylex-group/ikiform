@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formsDbServer } from "@/lib/database/database.server";
+import * as formsDbServer from "@/lib/database/database.server";
 import EmbedCustomizer from "./components/embed-customizer";
 
 interface EmbedPageProps {
