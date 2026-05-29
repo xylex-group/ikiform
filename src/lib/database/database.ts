@@ -1,15 +1,15 @@
+import { createClient } from "@xylex-group/athena";
 import type { FormSchema } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 
-// Dynamic imports are used inside methods to avoid pulling @xylex-group/athena
-// (which has server-only deps like 'pg') into client bundles.
-// Keep this file client-compatible and delegate all server/admin usage to
-// `src/lib/database/database.server.ts`.
-
-const getAthenaClient = async () => {
-	const mod = await import("@/utils/athena/client");
-	return mod.createAthenaClient();
-};
+const db = createClient(
+	"https://mirror3.athena-db.com",
+	"ath_4614c5f0ff3248a8.d77b3f974b974df1aac8a9a77e4264bb929bf3967f984717a4de4486a7e43f6d",
+	{
+		client: "the-ark-of-floris",
+		backend: { type: "athena" },
+	}
+);
 
 /**
  * Legacy type aliases (derived from old Supabase Database type).
@@ -47,7 +47,6 @@ function setCache(key: string, data: unknown): void {
 
 export const formsDb = {
 	async createForm(userId: string, title: string, schema: FormSchema) {
-		const athena = await getAthenaClient();
 		const schemaWithDefaults = ensureDefaultFormSettings(schema);
 		const { generateUniqueSlug } = await import("@/lib/utils/slug");
 
@@ -60,7 +59,7 @@ export const formsDb = {
 		//   .select()
 		//   .single();
 
-		const { data, error } = await athena
+		const { data, error } = await db
 			.from("forms")
 			.insert({
 				user_id: userId,
@@ -554,8 +553,7 @@ export const formsDb = {
 				content,
 				metadata,
 			})
-			.select()
-			.single();
+			.select();
 
 		if (error) {
 			throw error;
@@ -655,8 +653,7 @@ export const formsDb = {
 				content,
 				metadata,
 			})
-			.select()
-			.single();
+			.select();
 
 		if (error) {
 			throw error;

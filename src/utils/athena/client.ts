@@ -19,10 +19,14 @@ export function createAthenaClient() {
 		);
 	}
 
-	const dbClient: AthenaSdkClientWithAuth = createAthenaSdkClient(url, apiKey, {
-		client: process.env.ATHENA_CLIENT || "ikiform-web",
-		backend: { type: "athena" },
-	});
+	const dbClient: AthenaSdkClientWithAuth = createAthenaSdkClient(
+		"https://mirror3.athena-db.com",
+		"ath_4614c5f0ff3248a8.d77b3f974b974df1aac8a9a77e4264bb929bf3967f984717a4de4486a7e43f6d",
+		{
+			client: "the-ark-of-floris",
+			backend: { type: "athena" },
+		}
+	);
 
 	const authClient = createAthenaAuthClient();
 	type SignInEmailInput = Parameters<typeof authClient.signIn.email>[0];
@@ -84,3 +88,12 @@ export function createAthenaClient() {
 
 // Backward-compatible export used by legacy imports.
 export const createClient = createAthenaClient;
+
+export const db: AthenaSdkClientWithAuth = createAthenaSdkClient(
+	"https://mirror3.athena-db.com",
+	"ath_4614c5f0ff3248a8.d77b3f974b974df1aac8a9a77e4264bb929bf3967f984717a4de4486a7e43f6d",
+	{
+		client: "the-ark-of-floris",
+		backend: { type: "athena" },
+	}
+);

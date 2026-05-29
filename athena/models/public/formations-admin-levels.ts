@@ -1,33 +1,27 @@
-import { defineModel } from "@xylex-group/athena";
+import { defineModel } from '@xylex-group/athena'
 
 export interface PublicFormationsAdminLevelsRow {
-	description?: string | null;
-	id: number;
-	name: string;
-	permissions?: Record<string, unknown> | null;
+  id: number
+  name: string
+  description?: string | null
+  permissions?: Record<string, unknown> | null
 }
 
-export type PublicFormationsAdminLevelsInsert =
-	Partial<PublicFormationsAdminLevelsRow>;
-export type PublicFormationsAdminLevelsUpdate =
-	Partial<PublicFormationsAdminLevelsInsert>;
+export type PublicFormationsAdminLevelsInsert = Partial<PublicFormationsAdminLevelsRow>
+export type PublicFormationsAdminLevelsUpdate = Partial<PublicFormationsAdminLevelsInsert>
 
-export const publicFormationsAdminLevelsModel = defineModel<
-	PublicFormationsAdminLevelsRow,
-	PublicFormationsAdminLevelsInsert,
-	PublicFormationsAdminLevelsUpdate
->({
-	meta: {
-		database: "railway",
-		schema: "public",
-		model: "formations_admin_levels",
-		tableName: "public.formations_admin_levels",
-		primaryKey: ["id"],
-		nullable: {
-			id: false,
-			name: false,
-			description: true,
-			permissions: true,
-		},
-	},
-});
+export const publicFormationsAdminLevelsModel = defineModel<PublicFormationsAdminLevelsRow, PublicFormationsAdminLevelsInsert, PublicFormationsAdminLevelsUpdate>({
+  meta: {
+    database: 'railway',
+    schema: 'public',
+    model: 'formations_admin_levels',
+    tableName: 'public.formations_admin_levels',
+    primaryKey: ['id'],
+    nullable: {
+      id: false,
+      name: false,
+      description: true,
+      permissions: true
+    }
+  }
+})

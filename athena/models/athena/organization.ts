@@ -1,447 +1,443 @@
-import { defineModel } from "@xylex-group/athena";
+import { defineModel } from '@xylex-group/athena'
 
 export interface AthenaOrganizationRow {
-	chatroom?: string | null;
-	created_at: string;
-	id: string;
-	logo?: string | null;
-	metadata: Record<string, unknown>;
-	name: string;
-	slug: string;
-	updated_at: string;
+  id: string
+  name: string
+  slug: string
+  logo?: string | null
+  metadata: Record<string, unknown>
+  created_at: string
+  updated_at: string
+  chatroom?: string | null
 }
 
-export type AthenaOrganizationInsert = Partial<AthenaOrganizationRow>;
-export type AthenaOrganizationUpdate = Partial<AthenaOrganizationInsert>;
+export type AthenaOrganizationInsert = Partial<AthenaOrganizationRow>
+export type AthenaOrganizationUpdate = Partial<AthenaOrganizationInsert>
 
-export const athenaOrganizationModel = defineModel<
-	AthenaOrganizationRow,
-	AthenaOrganizationInsert,
-	AthenaOrganizationUpdate
->({
-	meta: {
-		database: "railway",
-		schema: "athena",
-		model: "organization",
-		tableName: "athena.organization",
-		primaryKey: ["id"],
-		nullable: {
-			id: false,
-			name: false,
-			slug: false,
-			logo: true,
-			metadata: false,
-			created_at: false,
-			updated_at: false,
-			chatroom: true,
-		},
-		relations: {
-			invitation: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "athena",
-				targetModel: "invitation",
-				targetColumns: ["organization_id"],
-			},
-			member: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "athena",
-				targetModel: "member",
-				targetColumns: ["organization_id"],
-			},
-			addresses: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "addresses",
-				targetColumns: ["organization_id"],
-			},
-			appointments: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "appointments",
-				targetColumns: ["organization_id"],
-			},
-			audit_log: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "audit_log",
-				targetColumns: ["organization_id"],
-			},
-			audit_log_auth: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "audit_log_auth",
-				targetColumns: ["organization_id"],
-			},
-			calendar_events: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "calendar_events",
-				targetColumns: ["organization_id"],
-			},
-			case_scopes: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "case_scopes",
-				targetColumns: ["organization_id"],
-			},
-			case_tasks: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "case_tasks",
-				targetColumns: ["organization_id"],
-			},
-			cases: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "cases",
-				targetColumns: ["organization_id"],
-			},
-			chat_subscriptions: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "chat_subscriptions",
-				targetColumns: ["organization_id"],
-			},
-			connect_client_status: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "connect_client_status",
-				targetColumns: ["organization_id"],
-			},
-			contact_persons: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "contact_persons",
-				targetColumns: ["organization_id"],
-			},
-			contacts: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "contacts",
-				targetColumns: ["organization_id"],
-			},
-			customer_jurisdictions: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "customer_jurisdictions",
-				targetColumns: ["organization_id"],
-			},
-			customer_messages: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "customer_messages",
-				targetColumns: ["organization_id"],
-			},
-			customer_settings: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "customer_settings",
-				targetColumns: ["organization_id"],
-			},
-			customer_types: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "customer_types",
-				targetColumns: ["organization_id"],
-			},
-			customers: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "customers",
-				targetColumns: ["organization_id"],
-			},
-			dashboard_config: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "dashboard_config",
-				targetColumns: ["organization_id"],
-			},
-			document_folders: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "document_folders",
-				targetColumns: ["organization_id"],
-			},
-			documents: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "documents",
-				targetColumns: ["organization_id"],
-			},
-			emails: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "emails",
-				targetColumns: ["organization_id"],
-			},
-			event_log: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "event_log",
-				targetColumns: ["organization_id"],
-			},
-			event_log_api: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "event_log_api",
-				targetColumns: ["organization_id"],
-			},
-			event_log_connect_ios: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "event_log_connect_ios",
-				targetColumns: ["organization_id"],
-			},
-			files: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "files",
-				targetColumns: ["organization_id"],
-			},
-			form_sessions: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "form_sessions",
-				targetColumns: ["organization_id"],
-			},
-			formations: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "formations",
-				targetColumns: ["organization_id"],
-			},
-			gl_accounts: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "gl_accounts",
-				targetColumns: ["organization_id"],
-			},
-			incoming_emails: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "incoming_emails",
-				targetColumns: ["organization_id"],
-			},
-			integration: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "integration",
-				targetColumns: ["organizationId"],
-			},
-			invitation_2: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "invitation",
-				targetColumns: ["organization_id"],
-			},
-			invoice_logs: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "invoice_logs",
-				targetColumns: ["organization_id"],
-			},
-			invoice_settings: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "invoice_settings",
-				targetColumns: ["organization_id"],
-			},
-			invoice_templates: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "invoice_templates",
-				targetColumns: ["organization_id"],
-			},
-			invoices: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "invoices",
-				targetColumns: ["organization_id"],
-			},
-			kanban_initiatives: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "kanban_initiatives",
-				targetColumns: ["organization_id"],
-			},
-			kanban_labels: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "kanban_labels",
-				targetColumns: ["organization_id"],
-			},
-			kanban_parent_projects: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "kanban_parent_projects",
-				targetColumns: ["organization_id"],
-			},
-			kanban_projects: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "kanban_projects",
-				targetColumns: ["organization_id"],
-			},
-			logs_auth: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "logs_auth",
-				targetColumns: ["organization_id"],
-			},
-			member_2: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "member",
-				targetColumns: ["organization_id"],
-			},
-			notification_settings: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "notification_settings",
-				targetColumns: ["organization_id"],
-			},
-			notifications: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "notifications",
-				targetColumns: ["organization_id"],
-			},
-			organization_case_counters: {
-				kind: "one-to-one",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "organization_case_counters",
-				targetColumns: ["organization_id"],
-			},
-			organization_customer: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "organization_customer",
-				targetColumns: ["organization_id"],
-			},
-			organization_messages: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "organization_messages",
-				targetColumns: ["organization_id"],
-			},
-			payment_methods: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "payment_methods",
-				targetColumns: ["organization_id"],
-			},
-			prices: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "prices",
-				targetColumns: ["organization_id"],
-			},
-			products: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "products",
-				targetColumns: ["organization_id"],
-			},
-			resource_forms: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "resource_forms",
-				targetColumns: ["organization_id"],
-			},
-			settings_formations: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "settings_formations",
-				targetColumns: ["organization_id"],
-			},
-			settings_notifications: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "settings_notifications",
-				targetColumns: ["organization_id"],
-			},
-			sf_formations_cases: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "sf_formations_cases",
-				targetColumns: ["organization_id"],
-			},
-			sso_provider: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "sso_provider",
-				targetColumns: ["organization_id"],
-			},
-			tickets: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "tickets",
-				targetColumns: ["organization_id"],
-			},
-			user_permission_scopes: {
-				kind: "one-to-many",
-				sourceColumns: ["id"],
-				targetSchema: "public",
-				targetModel: "user_permission_scopes",
-				targetColumns: ["organization_id"],
-			},
-		},
-	},
-});
+export const athenaOrganizationModel = defineModel<AthenaOrganizationRow, AthenaOrganizationInsert, AthenaOrganizationUpdate>({
+  meta: {
+    database: 'railway',
+    schema: 'athena',
+    model: 'organization',
+    tableName: 'athena.organization',
+    primaryKey: ['id'],
+    nullable: {
+      id: false,
+      name: false,
+      slug: false,
+      logo: true,
+      metadata: false,
+      created_at: false,
+      updated_at: false,
+      chatroom: true
+    },
+    relations: {
+      invitation: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'athena',
+      targetModel: 'invitation',
+      targetColumns: ['organization_id']
+    },
+      member: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'athena',
+      targetModel: 'member',
+      targetColumns: ['organization_id']
+    },
+      addresses: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'addresses',
+      targetColumns: ['organization_id']
+    },
+      appointments: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'appointments',
+      targetColumns: ['organization_id']
+    },
+      audit_log: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'audit_log',
+      targetColumns: ['organization_id']
+    },
+      audit_log_auth: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'audit_log_auth',
+      targetColumns: ['organization_id']
+    },
+      calendar_events: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'calendar_events',
+      targetColumns: ['organization_id']
+    },
+      case_scopes: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'case_scopes',
+      targetColumns: ['organization_id']
+    },
+      case_tasks: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'case_tasks',
+      targetColumns: ['organization_id']
+    },
+      cases: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'cases',
+      targetColumns: ['organization_id']
+    },
+      chat_subscriptions: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'chat_subscriptions',
+      targetColumns: ['organization_id']
+    },
+      connect_client_status: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'connect_client_status',
+      targetColumns: ['organization_id']
+    },
+      contact_persons: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'contact_persons',
+      targetColumns: ['organization_id']
+    },
+      contacts: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'contacts',
+      targetColumns: ['organization_id']
+    },
+      customer_jurisdictions: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'customer_jurisdictions',
+      targetColumns: ['organization_id']
+    },
+      customer_messages: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'customer_messages',
+      targetColumns: ['organization_id']
+    },
+      customer_settings: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'customer_settings',
+      targetColumns: ['organization_id']
+    },
+      customer_types: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'customer_types',
+      targetColumns: ['organization_id']
+    },
+      customers: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'customers',
+      targetColumns: ['organization_id']
+    },
+      dashboard_config: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'dashboard_config',
+      targetColumns: ['organization_id']
+    },
+      document_folders: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'document_folders',
+      targetColumns: ['organization_id']
+    },
+      documents: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'documents',
+      targetColumns: ['organization_id']
+    },
+      emails: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'emails',
+      targetColumns: ['organization_id']
+    },
+      event_log: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'event_log',
+      targetColumns: ['organization_id']
+    },
+      event_log_api: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'event_log_api',
+      targetColumns: ['organization_id']
+    },
+      event_log_connect_ios: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'event_log_connect_ios',
+      targetColumns: ['organization_id']
+    },
+      files: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'files',
+      targetColumns: ['organization_id']
+    },
+      form_sessions: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'form_sessions',
+      targetColumns: ['organization_id']
+    },
+      formations: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'formations',
+      targetColumns: ['organization_id']
+    },
+      gl_accounts: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'gl_accounts',
+      targetColumns: ['organization_id']
+    },
+      incoming_emails: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'incoming_emails',
+      targetColumns: ['organization_id']
+    },
+      integration: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'integration',
+      targetColumns: ['organizationId']
+    },
+      invitation_2: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'invitation',
+      targetColumns: ['organization_id']
+    },
+      invoice_logs: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'invoice_logs',
+      targetColumns: ['organization_id']
+    },
+      invoice_settings: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'invoice_settings',
+      targetColumns: ['organization_id']
+    },
+      invoice_templates: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'invoice_templates',
+      targetColumns: ['organization_id']
+    },
+      invoices: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'invoices',
+      targetColumns: ['organization_id']
+    },
+      kanban_initiatives: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'kanban_initiatives',
+      targetColumns: ['organization_id']
+    },
+      kanban_labels: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'kanban_labels',
+      targetColumns: ['organization_id']
+    },
+      kanban_parent_projects: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'kanban_parent_projects',
+      targetColumns: ['organization_id']
+    },
+      kanban_projects: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'kanban_projects',
+      targetColumns: ['organization_id']
+    },
+      logs_auth: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'logs_auth',
+      targetColumns: ['organization_id']
+    },
+      member_2: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'member',
+      targetColumns: ['organization_id']
+    },
+      notification_settings: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'notification_settings',
+      targetColumns: ['organization_id']
+    },
+      notifications: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'notifications',
+      targetColumns: ['organization_id']
+    },
+      organization_case_counters: {
+      kind: 'one-to-one',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'organization_case_counters',
+      targetColumns: ['organization_id']
+    },
+      organization_customer: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'organization_customer',
+      targetColumns: ['organization_id']
+    },
+      organization_messages: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'organization_messages',
+      targetColumns: ['organization_id']
+    },
+      payment_methods: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'payment_methods',
+      targetColumns: ['organization_id']
+    },
+      prices: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'prices',
+      targetColumns: ['organization_id']
+    },
+      products: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'products',
+      targetColumns: ['organization_id']
+    },
+      resource_forms: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'resource_forms',
+      targetColumns: ['organization_id']
+    },
+      settings_formations: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'settings_formations',
+      targetColumns: ['organization_id']
+    },
+      settings_notifications: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'settings_notifications',
+      targetColumns: ['organization_id']
+    },
+      sf_formations_cases: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'sf_formations_cases',
+      targetColumns: ['organization_id']
+    },
+      sso_provider: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'sso_provider',
+      targetColumns: ['organization_id']
+    },
+      tickets: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'tickets',
+      targetColumns: ['organization_id']
+    },
+      user_permission_scopes: {
+      kind: 'one-to-many',
+      sourceColumns: ['id'],
+      targetSchema: 'public',
+      targetModel: 'user_permission_scopes',
+      targetColumns: ['organization_id']
+    }
+    }
+  }
+})
