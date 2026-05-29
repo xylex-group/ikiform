@@ -17,7 +17,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import type { FormField } from "@/lib/database";
 import type { FieldSettingsProps } from "./types";
+
+type SchedulerProvider = NonNullable<
+	NonNullable<FormField["settings"]>["schedulerProvider"]
+>;
+
+const isSchedulerProvider = (value: string): value is SchedulerProvider =>
+	value === "calcom" || value === "calendly" || value === "tidycal";
 
 export function SchedulerFieldSettings({
 	field,
@@ -38,9 +46,11 @@ export function SchedulerFieldSettings({
 						Scheduler Provider
 					</Label>
 					<Select
-						onValueChange={(val) =>
-							onUpdateSettings({ schedulerProvider: val as unknown })
-						}
+						onValueChange={(val) => {
+							if (isSchedulerProvider(val)) {
+								onUpdateSettings({ schedulerProvider: val });
+							}
+						}}
 						value={field.settings?.schedulerProvider || ""}
 					>
 						<SelectTrigger className="w-full" id="scheduler-provider">

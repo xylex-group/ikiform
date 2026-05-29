@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { BaseFieldProps } from "../types";
 
 import { getErrorRingClasses } from "../utils";
-import { sanitizeOptions } from "../utils/sanitizeOptions";
+import { remapOptionsByKeys, sanitizeOptions } from "../utils/sanitizeOptions";
 
 interface QuizFieldProps extends BaseFieldProps {
 	isSubmitted?: boolean;
@@ -27,6 +27,7 @@ export function QuizField({
 	isSubmitted = false,
 }: QuizFieldProps) {
 	const errorRingClasses = getErrorRingClasses(error);
+	const selectedValue = typeof value === "string" ? value : "";
 	const [apiOptions, setApiOptions] = React.useState<Array<
 		string | { value: string; label?: string }
 	> | null>(null);
@@ -53,14 +54,7 @@ export function QuizField({
 				options = data.options;
 			}
 
-			if (field.valueKey || field.labelKey) {
-				options = options.map((item: unknown) => ({
-					value: field.valueKey ? item[field.valueKey] : item.value,
-					label: field.labelKey
-						? item[field.labelKey]
-						: item.label || item.value,
-				}));
-			}
+			options = remapOptionsByKeys(options, field.valueKey, field.labelKey);
 
 			setApiOptions(sanitizeOptions(options));
 		} catch (_error) {
@@ -205,7 +199,7 @@ export function QuizField({
 				className={`flex flex-col gap-2 ${errorRingClasses}`}
 				disabled={disabled || isLoading}
 				onValueChange={handleValueChange}
-				value={value || ""}
+				value={selectedValue}
 			>
 				{fetchError && (
 					<div className="p-2 text-destructive text-sm" role="alert">

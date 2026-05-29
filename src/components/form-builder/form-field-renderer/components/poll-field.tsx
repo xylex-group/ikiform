@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import type { BaseFieldProps } from "../types";
 
-import { sanitizeOptions } from "../utils/sanitizeOptions";
+import { remapOptionsByKeys, sanitizeOptions } from "../utils/sanitizeOptions";
 
 export function PollField({
 	field,
@@ -43,14 +43,7 @@ export function PollField({
 				options = data.options;
 			}
 
-			if (field.valueKey || field.labelKey) {
-				options = options.map((item: unknown) => ({
-					value: field.valueKey ? item[field.valueKey] : item.value,
-					label: field.labelKey
-						? item[field.labelKey]
-						: item.label || item.value,
-				}));
-			}
+			options = remapOptionsByKeys(options, field.valueKey, field.labelKey);
 
 			setApiOptions(sanitizeOptions(options));
 		} catch (_error) {
@@ -76,6 +69,8 @@ export function PollField({
 		option: string | { value: string; label?: string }
 	): string =>
 		typeof option === "string" ? option : option.label || option.value;
+
+	const getSelectedValue = () => (typeof value === "string" ? value : "");
 
 	const generateFakeResults = () => {
 		const options = getPollOptions();
@@ -104,7 +99,7 @@ export function PollField({
 						className="flex flex-col gap-2"
 						disabled={disabled || isLoading}
 						onValueChange={handleValueChange}
-						value={value || ""}
+						value={getSelectedValue()}
 					>
 						{fetchError && (
 							<div

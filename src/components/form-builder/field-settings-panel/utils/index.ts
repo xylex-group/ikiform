@@ -3,8 +3,14 @@ import type { FormField } from "@/lib/database";
 import { FIELD_TYPES } from "../constants";
 
 export const getFieldHelpers = (field: FormField) => ({
-	hasOptions: FIELD_TYPES.OPTION_TYPES.includes(field.type as unknown),
-	isTextType: FIELD_TYPES.TEXT_TYPES.includes(field.type as unknown),
+	hasOptions:
+		field.type === "radio" ||
+		field.type === "checkbox" ||
+		field.type === "select",
+	isTextType:
+		field.type === "text" ||
+		field.type === "email" ||
+		field.type === "textarea",
 	isNumberType: field.type === FIELD_TYPES.NUMBER_TYPE,
 	isTextareaType: field.type === FIELD_TYPES.TEXTAREA_TYPE,
 	isSliderType: field.type === FIELD_TYPES.SLIDER_TYPE,

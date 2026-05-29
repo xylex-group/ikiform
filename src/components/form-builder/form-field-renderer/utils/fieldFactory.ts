@@ -78,7 +78,11 @@ export function createFieldComponent(
 		case "date":
 			return React.createElement(DateInputField, props);
 		case "signature":
-			return React.createElement(SignatureField, props);
+			return React.createElement(SignatureField, {
+				disabled,
+				onChange: (nextValue: string) => onChange(nextValue),
+				value: typeof value === "string" ? value : "",
+			});
 		case "poll":
 			return React.createElement(PollField, props);
 		case "rating":

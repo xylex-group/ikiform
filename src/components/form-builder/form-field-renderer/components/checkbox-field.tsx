@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { BaseFieldProps } from "../types";
 
 import { getBuilderMode } from "../utils";
-import { sanitizeOptions } from "../utils/sanitizeOptions";
+import { remapOptionsByKeys, sanitizeOptions } from "../utils/sanitizeOptions";
 
 export function CheckboxField(props: BaseFieldProps) {
 	const { field, value, onChange, error, disabled } = props;
@@ -40,14 +40,7 @@ export function CheckboxField(props: BaseFieldProps) {
 				options = data.options;
 			}
 
-			if (field.valueKey || field.labelKey) {
-				options = options.map((item: unknown) => ({
-					value: field.valueKey ? item[field.valueKey] : item.value,
-					label: field.labelKey
-						? item[field.labelKey]
-						: item.label || item.value,
-				}));
-			}
+			options = remapOptionsByKeys(options, field.valueKey, field.labelKey);
 
 			setApiOptions(sanitizeOptions(options));
 		} catch (_error) {
@@ -72,8 +65,13 @@ export function CheckboxField(props: BaseFieldProps) {
 	): string =>
 		typeof option === "string" ? option : option.label || option.value;
 
+	const getSelectedValues = (): string[] =>
+		Array.isArray(value)
+			? value.filter((item): item is string => typeof item === "string")
+			: [];
+
 	const handleCheckboxChange = (optionValue: string, checked: boolean) => {
-		const currentValues = value || [];
+		const currentValues = getSelectedValues();
 		if (checked) {
 			onChange([...currentValues, optionValue]);
 		} else {
@@ -103,7 +101,7 @@ export function CheckboxField(props: BaseFieldProps) {
 						{options.map((option, index) => {
 							const optionValue = getOptionValue(option);
 							const optionLabel = getOptionLabel(option);
-							const isChecked = (value || []).includes(optionValue);
+							const isChecked = getSelectedValues().includes(optionValue);
 
 							return (
 								<div

@@ -3,6 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import type { FormBlock } from "@/lib/database";
 
+import type { DragEndResult } from "../types";
 import { canDeleteBlock, handleBlockReorder } from "../utils";
 import { BlockItem } from "./block-item";
 
@@ -47,7 +48,7 @@ export function BlocksList({
 	onSaveEdit,
 	onCancelEdit,
 }: BlocksListProps) {
-	const handleDragEnd = (result: unknown) => {
+	const handleDragEnd = (result: DragEndResult) => {
 		handleBlockReorder(blocks, result, onBlocksUpdate);
 	};
 

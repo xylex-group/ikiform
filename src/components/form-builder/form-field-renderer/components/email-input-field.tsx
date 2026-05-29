@@ -11,7 +11,9 @@ export function EmailInputField(props: BaseFieldProps) {
 	const { field, value, onChange, error, disabled } = props;
 	const builderMode = getBuilderMode(props);
 	const baseClasses = getBaseClasses(field, error);
-	const [inputValue, setInputValue] = useState(value || "");
+	const getInputValue = (nextValue: unknown): string =>
+		typeof nextValue === "string" ? nextValue : "";
+	const [inputValue, setInputValue] = useState(getInputValue(value));
 	const [showAutoComplete, setShowAutoComplete] = useState(false);
 	const [isValidating, setIsValidating] = useState(false);
 
@@ -195,7 +197,7 @@ export function EmailInputField(props: BaseFieldProps) {
 	};
 
 	useEffect(() => {
-		setInputValue(value || "");
+		setInputValue(getInputValue(value));
 	}, [value]);
 
 	const inputProps = applyBuilderMode(

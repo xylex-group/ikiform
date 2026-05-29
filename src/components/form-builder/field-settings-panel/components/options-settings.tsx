@@ -22,6 +22,19 @@ export const OptionsSettings: React.FC<OptionsSettingsProps> = ({
 		sanitizeOptions,
 	} = require("@/components/form-builder/form-field-renderer/utils/sanitizeOptions");
 
+	const getOptionValue = (option: unknown): string => {
+		if (typeof option === "string") {
+			return option;
+		}
+
+		if (option && typeof option === "object" && "value" in option) {
+			const value = (option as { value?: unknown }).value;
+			return typeof value === "string" ? value : "";
+		}
+
+		return "";
+	};
+
 	return (
 		<Card className="gap-2 p-4 shadow-none">
 			<CardHeader className="p-0">
@@ -51,16 +64,7 @@ export const OptionsSettings: React.FC<OptionsSettingsProps> = ({
 				<div className="flex flex-col gap-2">
 					{sanitizeOptions(field.options || []).map(
 						(option: unknown, index: number) => {
-							let value = "";
-							if (typeof option === "string") {
-								value = option;
-							} else if (
-								option &&
-								typeof option === "object" &&
-								"value" in option
-							) {
-								value = option.value;
-							}
+							const value = getOptionValue(option);
 							return (
 								<div className="flex items-center gap-2" key={index}>
 									<Input

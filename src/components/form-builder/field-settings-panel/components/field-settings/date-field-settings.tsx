@@ -30,6 +30,19 @@ export function DateFieldSettings({
 	const getDateValue = (timestamp?: number) =>
 		timestamp ? new Date(timestamp) : undefined;
 
+	const getDateFromUnknown = (value: unknown): Date | undefined => {
+		if (
+			typeof value !== "string" &&
+			typeof value !== "number" &&
+			!(value instanceof Date)
+		) {
+			return undefined;
+		}
+
+		const parsedDate = new Date(value);
+		return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate;
+	};
+
 	const getFormattedDate = (date: Date) => format(date, "PPP");
 
 	const handleDateSelect = (
@@ -49,9 +62,7 @@ export function DateFieldSettings({
 
 	const minDate = getDateValue(field.settings?.min);
 	const maxDate = getDateValue(field.settings?.max);
-	const defaultDate = field.settings?.defaultValue
-		? new Date(field.settings.defaultValue)
-		: undefined;
+	const defaultDate = getDateFromUnknown(field.settings?.defaultValue);
 
 	return (
 		<Card className="gap-2 p-4 shadow-none">

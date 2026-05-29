@@ -206,6 +206,7 @@ export function ActualFormPreview({
 		...schema,
 		settings: localSettings,
 	};
+	const formDescription = schema.settings.description || localSettings.description;
 
 	const isMultiStep = schema.settings.multiStep || schema.blocks?.length > 1;
 	const currentStep = 0;
@@ -287,11 +288,9 @@ export function ActualFormPreview({
 									<h1 className="font-semibold text-2xl">
 										{getPublicFormTitle(schema)}
 									</h1>
-									{((schema as unknown).description ||
-										localSettings.description) && (
+									{formDescription && (
 										<p className="text-muted-foreground">
-											{(schema as unknown).description ||
-												localSettings.description}
+											{formDescription}
 										</p>
 									)}
 								</div>
@@ -389,9 +388,7 @@ export function ActualFormPreview({
 
 							{}
 							{Boolean(
-								localSettings.branding &&
-									(localSettings.branding as unknown).showIkiformBranding !==
-										false
+								localSettings.branding?.showIkiformBranding !== false
 							) && (
 								<p className="text-muted-foreground text-sm">
 									Powered by{" "}

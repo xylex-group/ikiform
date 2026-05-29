@@ -52,12 +52,6 @@ export function ShareFormModal({
 		? `${typeof window !== "undefined" ? window.location.origin : ""}/f/${formSlug || formId}`
 		: "";
 
-	useEffect(() => {
-		if (isOpen && isPublished && shareUrl && showQr && !qrCodeDataUrl) {
-			generateQrCode();
-		}
-	}, [isOpen, isPublished, shareUrl, showQr, qrCodeDataUrl, generateQrCode]);
-
 	const generateQrCode = async () => {
 		if (!shareUrl) {
 			return;
@@ -107,6 +101,12 @@ export function ShareFormModal({
 			setGeneratingQr(false);
 		}
 	};
+
+	useEffect(() => {
+		if (isOpen && isPublished && shareUrl && showQr && !qrCodeDataUrl) {
+			generateQrCode();
+		}
+	}, [isOpen, isPublished, shareUrl, showQr, qrCodeDataUrl, generateQrCode]);
 
 	const handleCopyLink = async () => {
 		if (!shareUrl) {

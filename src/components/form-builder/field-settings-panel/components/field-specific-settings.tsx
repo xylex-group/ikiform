@@ -22,6 +22,7 @@ import {
 	TextFieldSettings,
 	TimeFieldSettings,
 } from "./field-settings";
+import type { FieldSettingsProps } from "./field-settings/types";
 
 interface FieldSpecificSettingsProps {
 	field: FormField;
@@ -34,7 +35,9 @@ export function FieldSpecificSettings({
 	onUpdateSettings,
 	onFieldUpdate,
 }: FieldSpecificSettingsProps) {
-	const fieldSettingsMap: Record<string, React.ComponentType<unknown>> = {
+	const fieldSettingsMap: Partial<
+		Record<FormField["type"], React.ComponentType<FieldSettingsProps>>
+	> = {
 		text: TextFieldSettings,
 		number: NumberFieldSettings,
 		date: DateFieldSettings,

@@ -643,7 +643,8 @@ export interface FormSchema {
 			letterSpacing?: "tight" | "normal" | "wide";
 		};
 		layout?: {
-			maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
+			maxWidth?: "sm" | "md" | "lg" | "xl" | "full" | "custom";
+			customWidth?: string;
 			padding?: "none" | "sm" | "md" | "lg";
 			margin?: "none" | "sm" | "md" | "lg";
 			borderRadius?: "none" | "sm" | "md" | "lg" | "xl";
@@ -652,6 +653,7 @@ export interface FormSchema {
 		};
 		branding?: {
 			showPoweredBy?: boolean;
+			showIkiformBranding?: boolean;
 			customFooter?: string;
 			logoUrl?: string;
 			logoPosition?: "top" | "header" | "footer";

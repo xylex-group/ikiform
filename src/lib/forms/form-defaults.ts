@@ -74,8 +74,8 @@ export const DEFAULT_BOT_PROTECTION_SETTINGS = {
 export const DEFAULT_SOCIAL_MEDIA_SETTINGS = {
 	enabled: true,
 	platforms: {
-		github: "https://github.com/preetsuthar17",
-		twitter: "https://x.com/preetsuthar17",
+		github: "https://github.com/suitsfinance",
+		twitter: "https://x.com/suitsfinance",
 	},
 	showIcons: true,
 	iconSize: "md" as const,

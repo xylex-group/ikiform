@@ -1,8 +1,15 @@
 import { Label } from "@/components/ui/label";
 
 import type { FieldWrapperProps } from "../types";
+import type { FieldWidth } from "../types";
 
 import { getWidthClass } from "../utils";
+
+const isFieldWidth = (value: unknown): value is FieldWidth =>
+	value === "half" ||
+	value === "third" ||
+	value === "quarter" ||
+	value === "full";
 
 export function FieldWrapper({
 	field,
@@ -23,7 +30,9 @@ export function FieldWrapper({
 	const getFieldHelpText = () => field.settings?.helpText;
 
 	const getFieldWidthClass = () =>
-		getWidthClass(field.settings?.width as unknown);
+		getWidthClass(
+			isFieldWidth(field.settings?.width) ? field.settings.width : undefined
+		);
 
 	const getContainerClassName = () => {
 		const baseClasses = "flex flex-col gap-2";

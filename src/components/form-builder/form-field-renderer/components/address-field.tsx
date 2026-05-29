@@ -15,23 +15,46 @@ const ADDRESS_FIELD_CONFIGS = [
 	{ key: "state", label: "State", required: true },
 	{ key: "zip", label: "Zip Code", required: true },
 	{ key: "country", label: "Country", required: true },
-];
+] as const;
+
+type AddressFieldConfig = (typeof ADDRESS_FIELD_CONFIGS)[number];
+type AddressFieldKey = AddressFieldConfig["key"];
+type AddressValue = Partial<Record<AddressFieldKey, string>>;
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
+
+const toAddressValue = (value: unknown): AddressValue => {
+	if (!isRecord(value)) {
+		return {};
+	}
+
+	const normalized: AddressValue = {};
+	for (const config of ADDRESS_FIELD_CONFIGS) {
+		const nextValue = value[config.key];
+		if (typeof nextValue === "string") {
+			normalized[config.key] = nextValue;
+		}
+	}
+
+	return normalized;
+};
 
 export function AddressField(props: BaseFieldProps) {
 	const { field, value, onChange, error, disabled } = props;
 	const builderMode = getBuilderMode(props);
 	const baseClasses = getBaseClasses(field, error);
-	const [address, setAddress] = useState(value || {});
+	const [address, setAddress] = useState<AddressValue>(() => toAddressValue(value));
 
 	const getAddressFields = () => ADDRESS_FIELD_CONFIGS;
 
-	const getAddressValue = (key: string) => address[key] || "";
+	const getAddressValue = (key: AddressFieldKey) => address[key] || "";
 
-	const getFieldId = (key: string) => `${field.id}-${key}`;
+	const getFieldId = (key: AddressFieldKey) => `${field.id}-${key}`;
 
 	const getFieldPlaceholder = (label: string) => label;
 
-	const handleAddressFieldChange = (key: string, newValue: string) => {
+	const handleAddressFieldChange = (key: AddressFieldKey, newValue: string) => {
 		const trimmedValue = newValue.trim();
 		const updated = { ...address, [key]: trimmedValue };
 		setAddress(updated);
@@ -39,7 +62,7 @@ export function AddressField(props: BaseFieldProps) {
 	};
 
 	const handleAddressInputChange =
-		(key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+		(key: AddressFieldKey) => (e: React.ChangeEvent<HTMLInputElement>) => {
 			handleAddressFieldChange(key, e.target.value);
 		};
 
@@ -51,7 +74,7 @@ export function AddressField(props: BaseFieldProps) {
 		}
 	};
 
-	const renderAddressField = (fieldConfig: unknown) => {
+	const renderAddressField = (fieldConfig: AddressFieldConfig) => {
 		const fieldId = getFieldId(fieldConfig.key);
 		const fieldValue = getAddressValue(fieldConfig.key);
 		const placeholder = getFieldPlaceholder(fieldConfig.label);
@@ -89,8 +112,8 @@ export function AddressField(props: BaseFieldProps) {
 		);
 	};
 
-	const getAutoCompleteValue = (key: string) => {
-		const autoCompleteMap: Record<string, string> = {
+	const getAutoCompleteValue = (key: AddressFieldKey) => {
+		const autoCompleteMap: Record<AddressFieldKey, string> = {
 			line1: "address-line1",
 			line2: "address-line2",
 			city: "address-level2",
@@ -102,7 +125,7 @@ export function AddressField(props: BaseFieldProps) {
 	};
 
 	useEffect(() => {
-		setAddress(value || {});
+		setAddress(toAddressValue(value));
 	}, [value]);
 
 	const addressFields = getAddressFields();

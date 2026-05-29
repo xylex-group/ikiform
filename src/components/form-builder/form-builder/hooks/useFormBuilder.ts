@@ -194,7 +194,7 @@ export const useFormBuilder = (formId?: string) => {
 		}
 	}, [actions.setFormSchema, actions.setHasUnsavedChanges]);
 
-	const loadForm = async () => {
+	async function loadForm() {
 		if (!(formId && user) || isFormLoaded.current) {
 			return;
 		}
@@ -224,7 +224,7 @@ export const useFormBuilder = (formId?: string) => {
 		} finally {
 			actions.setLoading(false);
 		}
-	};
+	}
 
 	const debouncedAutoSave = async (schema: FormSchema) => {
 		if (!(formId && user) || state.saving || state.autoSaving) {

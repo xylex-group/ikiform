@@ -1,14 +1,18 @@
+import type { FormSchema as DatabaseFormSchema } from "@/lib/database";
+
 export interface ChatMessage {
 	content: string;
 	role: "user" | "assistant";
-	schema?: unknown;
+	schema?: DatabaseFormSchema;
 }
 
 export interface FormSchema {
 	id: string;
 	prompt: string;
-	schema: unknown;
+	schema: DatabaseFormSchema;
 }
+
+type AppRouter = ReturnType<typeof import("next/navigation").useRouter>;
 
 export interface ChatPanelProps {
 	handleSend: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -33,7 +37,7 @@ export interface PreviewPanelProps {
 	activeForm: FormSchema | undefined;
 	activeFormId: string | null;
 	forms: FormSchema[];
-	router: unknown;
+	router: AppRouter;
 	setActiveFormId: (id: string) => void;
 	setShowJsonModal: (v: boolean) => void;
 }

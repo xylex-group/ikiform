@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { formsDb } from "@/lib/database";
+import type { FormSchema } from "@/lib/database/database.types";
 import { createClient } from "@/utils/athena/server";
 
 interface FormDbActionBody {
@@ -39,6 +40,18 @@ function enforceCallerUser(
 		throw new Error(`Forbidden: ${field} does not match current user`);
 	}
 	return targetUserId;
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
+
+function isFormSchema(value: unknown): value is FormSchema {
+	return (
+		isRecord(value) &&
+		Array.isArray(value.blocks) &&
+		Array.isArray(value.fields) &&
+		isRecord(value.settings)
+	);
 }
 
 export async function POST(request: NextRequest) {
@@ -81,10 +94,13 @@ export async function POST(request: NextRequest) {
 				enforceCallerUser(user.id, userId, "userId");
 				const title = ensureStringArg(args, 1, "title");
 				const schema = args[2];
+				if (!isFormSchema(schema)) {
+					throw new Error("Invalid schema");
+				}
 				data = await formsDb.createForm(
 					userId,
 					title,
-					schema as Record<string, unknown>
+					schema
 				);
 				break;
 			}

@@ -108,7 +108,7 @@ function filterAndSortForms(
 	return sorted;
 }
 
-function useFormsManagementController(initialForms: Form[], user: User) {
+function useFormsManagementController(initialForms: Form[], user: AppAuthUser) {
 	const router = useRouter();
 	const [formsOverride, setFormsOverride] = useState<Form[] | null>(null);
 	const [deleteModal, setDeleteModal] = useState<DeleteModalState>(

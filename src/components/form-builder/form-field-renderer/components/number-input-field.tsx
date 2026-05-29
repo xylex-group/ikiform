@@ -19,6 +19,13 @@ export function NumberInputField(props: BaseFieldProps) {
 
 	const getNumberStepValue = () => field.settings?.step || 1;
 
+	const getInputValue = () => {
+		if (typeof value === "number" || typeof value === "string") {
+			return value;
+		}
+		return "";
+	};
+
 	const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newValue = e.target.value;
 		onChange(newValue);
@@ -47,7 +54,7 @@ export function NumberInputField(props: BaseFieldProps) {
 			onKeyDown: handleNumberInputKeyDown,
 			placeholder: getNumberPlaceholder(),
 			type: "number",
-			value: value || "",
+			value: getInputValue(),
 		},
 		builderMode
 	);

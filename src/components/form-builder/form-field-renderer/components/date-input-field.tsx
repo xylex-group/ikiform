@@ -34,7 +34,18 @@ export function DateInputField({
 		}
 	}, []);
 
-	const getDateValue = () => (value ? new Date(value) : undefined);
+	const getDateValue = () => {
+		if (value instanceof Date) {
+			return Number.isNaN(value.getTime()) ? undefined : value;
+		}
+
+		if (typeof value !== "string" && typeof value !== "number") {
+			return undefined;
+		}
+
+		const parsedDate = new Date(value);
+		return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate;
+	};
 
 	const getDatePlaceholder = () => field.placeholder || "Pick a date";
 

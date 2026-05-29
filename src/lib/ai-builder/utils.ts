@@ -1,7 +1,9 @@
+import type { FormSchema as DatabaseFormSchema } from "@/lib/database";
+
 export const generateSessionId = () =>
 	`ai-builder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-export const extractJsonFromText = (text: string) => {
+export const extractJsonFromText = (text: string): unknown => {
 	try {
 		const match = text.match(/\{[\s\S]*\}/);
 		if (match) {
@@ -13,7 +15,27 @@ export const extractJsonFromText = (text: string) => {
 	return null;
 };
 
-export const checkForDuplicateSchema = (forms: unknown[], schema: unknown) =>
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
+
+export const isDatabaseFormSchema = (
+	value: unknown
+): value is DatabaseFormSchema => {
+	if (!isRecord(value)) {
+		return false;
+	}
+
+	return (
+		Array.isArray(value.blocks) &&
+		Array.isArray(value.fields) &&
+		isRecord(value.settings)
+	);
+};
+
+export const checkForDuplicateSchema = <T extends { schema: DatabaseFormSchema }>(
+	forms: T[],
+	schema: DatabaseFormSchema
+) =>
 	forms.find((f) => JSON.stringify(f.schema) === JSON.stringify(schema));
 
 export const initializeScrollbarStyles = () => {

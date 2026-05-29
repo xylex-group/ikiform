@@ -1,4 +1,9 @@
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import {
+	DragDropContext,
+	Draggable,
+	Droppable,
+	type DropResult,
+} from "@hello-pangea/dnd";
 import { GripVertical, Plus, Trash2 } from "lucide-react";
 import * as React from "react";
 
@@ -38,7 +43,7 @@ export function FormFieldsContainer({
 	const itemRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
 	const addButtonRef = React.useRef<HTMLButtonElement | null>(null);
 
-	const handleDragEnd = (result: unknown) => {
+	const handleDragEnd = (result: DropResult) => {
 		if (!(result.destination && onFieldsReorder)) {
 			return;
 		}

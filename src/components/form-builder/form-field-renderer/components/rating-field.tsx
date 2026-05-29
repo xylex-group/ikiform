@@ -21,6 +21,8 @@ export function RatingField({
 	error,
 	disabled,
 }: BaseFieldProps) {
+	const selectedRating = typeof value === "number" ? value : 0;
+
 	const getRatingCount = () =>
 		field.settings?.starCount || DEFAULT_RATING_COUNT;
 
@@ -41,7 +43,7 @@ export function RatingField({
 		}
 	};
 
-	const isRatingActive = (index: number) => value && value > index;
+	const isRatingActive = (index: number) => selectedRating > index;
 
 	const getIconClassName = (index: number) =>
 		isRatingActive(index)
@@ -59,10 +61,10 @@ export function RatingField({
 		const itemRefs = useRef<HTMLButtonElement[]>([]);
 
 		const getTabIndex = (i: number) => {
-			if (!value) {
+			if (!selectedRating) {
 				return i === 0 ? 0 : -1;
 			}
-			return value === i + 1 ? 0 : -1;
+			return selectedRating === i + 1 ? 0 : -1;
 		};
 
 		const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
@@ -70,7 +72,7 @@ export function RatingField({
 				return;
 			}
 			const count = ratingCount;
-			const current = typeof value === "number" && value > 0 ? value : 0;
+			const current = selectedRating > 0 ? selectedRating : 0;
 			let next = current;
 			if (e.key === "ArrowRight" || e.key === "ArrowUp") {
 				e.preventDefault();

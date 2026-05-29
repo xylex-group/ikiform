@@ -7,6 +7,11 @@ export function NumberFieldSettings({
 	field,
 	onUpdateSettings,
 }: FieldSettingsProps) {
+	const defaultValue =
+		typeof field.settings?.defaultValue === "number"
+			? field.settings.defaultValue
+			: "";
+
 	return (
 		<Card className="gap-2 p-4 shadow-none">
 			<CardHeader className="p-0">
@@ -36,7 +41,7 @@ export function NumberFieldSettings({
 						}}
 						placeholder="No minimum"
 						type="number"
-						value={field.settings?.min || ""}
+						value={field.settings?.min ?? ""}
 					/>
 					<p className="text-muted-foreground text-xs" id="number-min-help">
 						Minimum numeric value allowed
@@ -63,7 +68,7 @@ export function NumberFieldSettings({
 						}}
 						placeholder="No maximum"
 						type="number"
-						value={field.settings?.max || ""}
+						value={field.settings?.max ?? ""}
 					/>
 					<p className="text-muted-foreground text-xs" id="number-max-help">
 						Maximum numeric value allowed
@@ -91,7 +96,7 @@ export function NumberFieldSettings({
 						}}
 						placeholder="1"
 						type="number"
-						value={field.settings?.step || 1}
+						value={field.settings?.step ?? 1}
 					/>
 					<p className="text-muted-foreground text-xs" id="number-step-help">
 						Increment/decrement step size for the number input
@@ -118,7 +123,7 @@ export function NumberFieldSettings({
 						}}
 						placeholder="No default"
 						type="number"
-						value={field.settings?.defaultValue || ""}
+						value={defaultValue}
 					/>
 					<p className="text-muted-foreground text-xs" id="number-default-help">
 						Pre-filled value when the form loads

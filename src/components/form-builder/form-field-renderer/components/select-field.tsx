@@ -14,13 +14,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { BaseFieldProps } from "../types";
 
 import { applyBuilderMode, getBuilderMode, getErrorClasses } from "../utils";
-import { sanitizeOptions } from "../utils/sanitizeOptions";
+import { remapOptionsByKeys, sanitizeOptions } from "../utils/sanitizeOptions";
 
 export function SelectField(props: BaseFieldProps) {
 	const { field, value, onChange, error, disabled } = props;
 	const builderMode = getBuilderMode(props);
 	const errorClasses = getErrorClasses(error);
-	const [apiOptions, setApiOptions] = React.useState<string[] | null>(null);
+	const [apiOptions, setApiOptions] = React.useState<Array<
+		string | { value: string; label?: string }
+	> | null>(null);
 	const [isLoading, setIsLoading] = React.useState(false);
 	const [fetchError, setFetchError] = React.useState<string | null>(null);
 
@@ -44,14 +46,7 @@ export function SelectField(props: BaseFieldProps) {
 				options = data.options;
 			}
 
-			if (field.valueKey || field.labelKey) {
-				options = options.map((item: unknown) => ({
-					value: field.valueKey ? item[field.valueKey] : item.value,
-					label: field.labelKey
-						? item[field.labelKey]
-						: item.label || item.value,
-				}));
-			}
+			options = remapOptionsByKeys(options, field.valueKey, field.labelKey);
 
 			setApiOptions(sanitizeOptions(options));
 		} catch (_error) {
@@ -78,12 +73,14 @@ export function SelectField(props: BaseFieldProps) {
 		onChange(newValue);
 	};
 
+	const getSelectedValue = () => (typeof value === "string" ? value : "");
+
 	const renderSelectField = () => {
 		const selectProps = applyBuilderMode(
 			{
 				disabled: disabled || isLoading,
 				onValueChange: handleValueChange,
-				value: value || "",
+				value: getSelectedValue(),
 			},
 			builderMode
 		);

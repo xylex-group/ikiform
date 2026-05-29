@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { BaseFieldProps } from "../types";
 
 import { getBuilderMode, getErrorRingClasses } from "../utils";
-import { sanitizeOptions } from "../utils/sanitizeOptions";
+import { remapOptionsByKeys, sanitizeOptions } from "../utils/sanitizeOptions";
 
 export function RadioField(props: BaseFieldProps) {
 	const { field, value, onChange, error, disabled } = props;
@@ -33,6 +33,7 @@ export function RadioField(props: BaseFieldProps) {
 	const labelId = `${field.id}-label`;
 	const descId = `${field.id}-description`;
 	const errorId = `${field.id}-error`;
+	const selectedValue = typeof value === "string" ? value : "";
 
 	const fetchApiOptions = async () => {
 		if (!field.optionsApi) {
@@ -54,14 +55,7 @@ export function RadioField(props: BaseFieldProps) {
 				options = data.options;
 			}
 
-			if (field.valueKey || field.labelKey) {
-				options = options.map((item: unknown) => ({
-					value: field.valueKey ? item[field.valueKey] : item.value,
-					label: field.labelKey
-						? item[field.labelKey]
-						: item.label || item.value,
-				}));
-			}
+			options = remapOptionsByKeys(options, field.valueKey, field.labelKey);
 
 			setApiOptions(sanitizeOptions(options));
 		} catch (_error) {
@@ -121,7 +115,7 @@ export function RadioField(props: BaseFieldProps) {
 						className={`flex flex-col gap-2 ${errorRingClasses}`}
 						disabled={disabled || isLoading}
 						onValueChange={handleValueChange}
-						value={value || ""}
+						value={selectedValue}
 					>
 						{fetchError && (
 							<div

@@ -13,11 +13,13 @@ export function PhoneInputField({
 	disabled,
 }: BaseFieldProps) {
 	const baseClasses = getBaseClasses(field, error);
-	const [inputValue, setInputValue] = useState(value || "");
+	const getInputValue = (nextValue: unknown): string =>
+		typeof nextValue === "string" ? nextValue : "";
+	const [inputValue, setInputValue] = useState(getInputValue(value));
 	const [isValidating, setIsValidating] = useState(false);
 
 	useEffect(() => {
-		setInputValue(value || "");
+		setInputValue(getInputValue(value));
 	}, [value]);
 
 	const getPhoneValidation = () => validatePhoneNumber(inputValue);

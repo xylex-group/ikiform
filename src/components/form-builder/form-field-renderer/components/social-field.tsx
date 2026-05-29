@@ -14,6 +14,24 @@ interface SocialPlatformConfig {
 	platform: string;
 }
 
+type SocialData = Record<string, string>;
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
+
+const toSocialData = (value: unknown): SocialData => {
+	if (!isRecord(value)) {
+		return {};
+	}
+
+	return Object.entries(value).reduce<SocialData>((acc, [key, entry]) => {
+		if (typeof entry === "string") {
+			acc[key] = entry;
+		}
+		return acc;
+	}, {});
+};
+
 const AVAILABLE_SOCIAL_PLATFORMS: SocialPlatformConfig[] = [
 	{
 		platform: "linkedin",
@@ -61,7 +79,7 @@ const AVAILABLE_SOCIAL_PLATFORMS: SocialPlatformConfig[] = [
 
 export function SocialField({ field, value, onChange, error }: BaseFieldProps) {
 	const baseClasses = getBaseClasses(field, error);
-	const socialData = value || {};
+	const socialData = toSocialData(value);
 
 	const handlePlatformUrlChange = (platform: string, url: string) => {
 		const trimmedUrl = url.trim();
@@ -96,6 +114,20 @@ export function SocialField({ field, value, onChange, error }: BaseFieldProps) {
 
 	const getCustomLinks = () => field.settings?.customLinks || [];
 
+	const getSocialValue = (key: string) => socialData[key] || "";
+
+	const getPreviewPlatforms = () =>
+		AVAILABLE_SOCIAL_PLATFORMS.reduce<Record<string, string>>(
+			(acc, platform) => {
+				const url = socialData[platform.platform];
+				if (url) {
+					acc[platform.platform] = url;
+				}
+				return acc;
+			},
+			{}
+		);
+
 	const shouldShowPreview = field.settings?.showIcons;
 	const previewIconSize = field.settings?.iconSize || "md";
 
@@ -122,7 +154,7 @@ export function SocialField({ field, value, onChange, error }: BaseFieldProps) {
 								onKeyDown={handleInputKeyDown}
 								placeholder={platform.placeholder}
 								type="url"
-								value={socialData[platform.platform] || ""}
+								value={getSocialValue(platform.platform)}
 							/>
 						</div>
 					))}
@@ -144,7 +176,7 @@ export function SocialField({ field, value, onChange, error }: BaseFieldProps) {
 								onKeyDown={handleInputKeyDown}
 								placeholder={link.placeholder || "https://example.com"}
 								type="url"
-								value={socialData[`custom_${index}`] || ""}
+								value={getSocialValue(`custom_${index}`)}
 							/>
 						</div>
 					))}
@@ -165,7 +197,7 @@ export function SocialField({ field, value, onChange, error }: BaseFieldProps) {
 					<SocialMediaIcons
 						className="justify-center"
 						iconSize={previewIconSize}
-						platforms={socialData}
+						platforms={getPreviewPlatforms()}
 					/>
 				</CardContent>
 			</Card>

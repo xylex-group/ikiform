@@ -20,7 +20,8 @@ export function getLivePatternError(field: FormField, value: string) {
 export function TextInputField(props: BaseFieldProps) {
 	const { field, value, onChange, error, fieldRef, disabled } = props;
 	const baseClasses = getBaseClasses(field, error);
-	const livePatternError = getLivePatternError(field, value);
+	const inputValue = typeof value === "string" ? value : "";
+	const livePatternError = getLivePatternError(field, inputValue);
 	const builderMode = getBuilderMode(props);
 
 	const inputProps = applyBuilderMode(
@@ -38,9 +39,9 @@ export function TextInputField(props: BaseFieldProps) {
 				}
 			},
 			placeholder: field.placeholder,
-			ref: fieldRef,
+			ref: fieldRef as React.RefObject<HTMLInputElement | null> | undefined,
 			type: "text",
-			value: value || "",
+			value: inputValue,
 		},
 		builderMode
 	);

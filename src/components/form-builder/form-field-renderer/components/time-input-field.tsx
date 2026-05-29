@@ -6,20 +6,23 @@ import type { BaseFieldProps } from "../types";
 import { applyBuilderMode, getBuilderMode } from "../utils";
 
 export function TimeInputField(props: BaseFieldProps) {
-	const { value, onChange, error, disabled } = props;
+	const { field, value, onChange, error, disabled } = props;
 	const builderMode = getBuilderMode(props);
-	const showCurrentTimeButton =
-		(value?.field?.settings?.showCurrentTimeButton ??
-			value?.settings?.showCurrentTimeButton) === true;
+	const showCurrentTimeButton = field.settings?.showCurrentTimeButton === true;
+	const timeValue = typeof value === "string" ? value : undefined;
+
+	const handleTimeChange = (nextValue: string) => {
+		onChange(nextValue);
+	};
 
 	const timePickerProps = applyBuilderMode(
 		{
 			className: cn("w-full", error && "rounded border border-red-500 p-2"),
 			disabled,
 			error: !!error,
-			onChange,
+			onChange: handleTimeChange,
 			showCurrentTimeButton,
-			value,
+			value: timeValue,
 		},
 		builderMode
 	);

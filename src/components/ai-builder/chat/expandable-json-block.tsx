@@ -10,8 +10,10 @@ interface ExpandableJsonBlockProps {
 	schema: unknown;
 }
 
-let highlighterInstance: unknown = null;
-let highlighterPromise: Promise<unknown> | null = null;
+type ShikiHighlighter = Awaited<ReturnType<typeof createHighlighter>>;
+
+let highlighterInstance: ShikiHighlighter | null = null;
+let highlighterPromise: Promise<ShikiHighlighter> | null = null;
 
 const getHighlighter = async () => {
 	if (highlighterInstance) {

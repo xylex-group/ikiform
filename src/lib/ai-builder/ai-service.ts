@@ -1,5 +1,6 @@
+import type { FormSchema as DatabaseFormSchema } from "@/lib/database";
 import type { ChatMessage } from "./types";
-import { extractJsonFromText } from "./utils";
+import { extractJsonFromText, isDatabaseFormSchema } from "./utils";
 
 export class AIBuilderService {
 	static async sendMessage(
@@ -7,7 +8,7 @@ export class AIBuilderService {
 		sessionId: string,
 		onStream: (content: string) => void,
 		onError: (error: string) => void
-	): Promise<{ fullText: string; foundJson: unknown }> {
+	): Promise<{ fullText: string; foundJson: DatabaseFormSchema | null }> {
 		try {
 			const response = await fetch("/api/ai-builder", {
 				method: "POST",
@@ -22,7 +23,7 @@ export class AIBuilderService {
 
 			const reader = response.body.getReader();
 			let fullText = "";
-			let foundJson: unknown = null;
+			let foundJson: DatabaseFormSchema | null = null;
 
 			while (true) {
 				const { value, done } = await reader.read();
@@ -35,7 +36,10 @@ export class AIBuilderService {
 				onStream(fullText);
 
 				if (!foundJson) {
-					foundJson = extractJsonFromText(fullText);
+					const extractedJson = extractJsonFromText(fullText);
+					if (isDatabaseFormSchema(extractedJson)) {
+						foundJson = extractedJson;
+					}
 				}
 			}
 

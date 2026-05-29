@@ -8,14 +8,17 @@ export function applyBuilderMode<T extends Record<string, unknown>>(
 		return props;
 	}
 
+	const safeStyle =
+		typeof props.style === "object" && props.style !== null
+			? (props.style as Record<string, unknown>)
+			: {};
+
 	return {
 		...props,
 		disabled: props.disabled || builderMode,
 		readOnly: builderMode,
 		tabIndex: builderMode ? -1 : props.tabIndex,
-		style: builderMode
-			? { ...props.style, pointerEvents: "none" }
-			: props.style,
+		style: builderMode ? { ...safeStyle, pointerEvents: "none" } : props.style,
 
 		onChange: builderMode ? undefined : props.onChange,
 		onBlur: builderMode ? undefined : props.onBlur,
@@ -23,7 +26,7 @@ export function applyBuilderMode<T extends Record<string, unknown>>(
 		onClick: builderMode ? undefined : props.onClick,
 		onKeyDown: builderMode ? undefined : props.onKeyDown,
 		onKeyUp: builderMode ? undefined : props.onKeyUp,
-	};
+	} as T;
 }
 
 export function getBuilderMode(props: BaseFieldProps): boolean {

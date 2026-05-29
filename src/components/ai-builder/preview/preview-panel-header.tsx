@@ -24,6 +24,11 @@ export function PreviewPanelHeader({
 	onUseForm,
 	isMobile = false,
 }: PreviewPanelHeaderProps) {
+	const hasActiveFormSchema =
+		activeForm !== undefined &&
+		activeForm.schema !== undefined &&
+		activeForm.schema !== null;
+
 	if (!forms || forms.length === 0) {
 		return null;
 	}
@@ -56,7 +61,7 @@ export function PreviewPanelHeader({
 						</Button>
 					))}
 				</div>
-				{activeForm?.schema && (
+				{hasActiveFormSchema && (
 					<div className="hidden px-3 pb-3 max-sm:flex">
 						<Button
 							className="w-full rounded-2xl py-3 font-semibold text-base"
@@ -84,7 +89,7 @@ export function PreviewPanelHeader({
 					</Button>
 				))}
 			</div>
-			{activeForm?.schema && (
+			{hasActiveFormSchema && (
 				<div className="flex items-center gap-2">
 					<Button
 						onClick={() => setShowJsonModal(true)}

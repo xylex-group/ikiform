@@ -30,6 +30,8 @@ import {
 	FIELD_CATEGORIES,
 	FIELD_TYPE_CONFIGS,
 } from "@/lib/fields/field-config";
+import type { FieldTypeConfig } from "@/lib/fields/field-config";
+import type { FormField } from "@/lib/database";
 import { FieldSpecificSettings } from "../field-specific-settings";
 import type { FieldSettingsProps } from "./types";
 
@@ -47,9 +49,12 @@ export function FieldGroupSettings({
 	const [expandedFields, setExpandedFields] = useState<{
 		[id: string]: boolean;
 	}>({});
+	const categoryEntries = Object.entries(FIELD_CATEGORIES) as Array<
+		[FieldTypeConfig["category"], string]
+	>;
 
-	const addFieldToGroup = (fieldType: string) => {
-		const newField = createFieldFromType(fieldType as unknown);
+	const addFieldToGroup = (fieldType: FormField["type"]) => {
+		const newField = createFieldFromType(fieldType);
 		const updatedGroupFields = [...groupFields, newField];
 		onUpdateSettings({
 			groupFields: updatedGroupFields,
@@ -68,7 +73,7 @@ export function FieldGroupSettings({
 		});
 	};
 
-	const updateGroupField = (fieldId: string, updates: unknown) => {
+	const updateGroupField = (fieldId: string, updates: Partial<FormField>) => {
 		const updatedGroupFields = groupFields.map((f) =>
 			f.id === fieldId ? { ...f, ...updates } : f
 		);
@@ -213,14 +218,14 @@ export function FieldGroupSettings({
 								</DialogHeader>
 								<ScrollArea className="max-h-[70vh] p-4 pt-2">
 									<div className="grid grid-cols-1 gap-6">
-										{Object.entries(FIELD_CATEGORIES).map(([key, title]) => (
-											<div className="flex flex-col gap-3" key={key}>
+										{categoryEntries.map(([categoryKey, title]) => (
+											<div className="flex flex-col gap-3" key={categoryKey}>
 												<div className="px-1 text-muted-foreground text-xs uppercase tracking-wide">
 													{title}
 												</div>
 												<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
 													{FIELD_TYPE_CONFIGS.filter(
-														(f) => f.category === (key as unknown)
+														(f) => f.category === categoryKey
 													).map((f) => (
 														<Button
 															className="h-19 w-full items-center justify-start text-left"

@@ -42,10 +42,13 @@ export function FormCustomizePage({ formId, schema }: FormCustomizePageProps) {
 
 	const [localSettings, setLocalSettings] = useState<LocalSettings>(() => ({
 		...schema.settings,
-		layout: (schema.settings as unknown).layout || {},
-		colors: (schema.settings as unknown).colors || {},
-		typography: (schema.settings as unknown).typography || {},
-		branding: (schema.settings as unknown).branding || {},
+		layout: schema.settings.layout || {},
+		colors: schema.settings.colors || {},
+		typography: schema.settings.typography || {},
+		branding: {
+			...(schema.settings.branding || {}),
+			showIkiformBranding: schema.settings.branding?.showPoweredBy ?? true,
+		},
 	}));
 
 	const updateSettings = (updates: Partial<LocalSettings>) => {
@@ -59,9 +62,20 @@ export function FormCustomizePage({ formId, schema }: FormCustomizePageProps) {
 		}
 		try {
 			setSaving(true);
-			const newSchema = { ...schema, settings: localSettings };
+			const nextSettings: FormSchema["settings"] = {
+				...schema.settings,
+				...localSettings,
+				branding: {
+					...(schema.settings.branding || {}),
+					...(localSettings.branding || {}),
+					showPoweredBy:
+						localSettings.branding?.showIkiformBranding ??
+						schema.settings.branding?.showPoweredBy,
+				},
+			};
+			const newSchema: FormSchema = { ...schema, settings: nextSettings };
 			await formsDb.updateForm(formId, user.id, {
-				schema: newSchema as unknown,
+				schema: newSchema,
 			});
 			toast.success("Saved customization");
 		} catch (_error) {

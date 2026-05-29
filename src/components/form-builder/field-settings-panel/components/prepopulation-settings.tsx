@@ -1,5 +1,5 @@
 import { Copy, ExternalLink, Globe, History, User, Zap } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,50 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import type { FormField } from "@/lib/database";
 
+type Prepopulation = NonNullable<FormField["prepopulation"]>;
+type PrepopulationConfig = Prepopulation["config"];
+type PrepopulationSource = Prepopulation["source"];
+
+const DEFAULT_PREPOPULATION: Prepopulation = {
+	enabled: false,
+	source: "url",
+	config: {},
+};
+
+const isPrepopulationSource = (value: string): value is PrepopulationSource =>
+	value === "url" ||
+	value === "api" ||
+	value === "profile" ||
+	value === "previous" ||
+	value === "template";
+
+const tryParseHeaders = (value: string): Record<string, string> | undefined => {
+	if (!value.trim()) {
+		return undefined;
+	}
+
+	try {
+		const parsed = JSON.parse(value);
+		if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+			return undefined;
+		}
+
+		const normalized = Object.entries(parsed).reduce<Record<string, string>>(
+			(acc, [key, entryValue]) => {
+				if (typeof entryValue === "string") {
+					acc[key] = entryValue;
+				}
+				return acc;
+			},
+			{}
+		);
+
+		return normalized;
+	} catch {
+		return undefined;
+	}
+};
+
 interface PrepopulationSettingsProps {
 	field: FormField;
 	onFieldUpdate: (field: FormField) => void;
@@ -26,23 +70,24 @@ export function PrepopulationSettings({
 	onFieldUpdate,
 }: PrepopulationSettingsProps) {
 	const [previewUrl, setPreviewUrl] = useState("");
+	const [apiHeadersText, setApiHeadersText] = useState("{}");
 
-	const prepopulation = field.prepopulation || {
-		enabled: false,
-		source: "url" as const,
-		config: {},
-	};
+	const prepopulation: Prepopulation = field.prepopulation ?? DEFAULT_PREPOPULATION;
 
-	const updatePrepopulation = (updates: Partial<typeof prepopulation>) => {
+	useEffect(() => {
+		setApiHeadersText(
+			JSON.stringify(prepopulation.config.apiHeaders || {}, null, 2)
+		);
+	}, [prepopulation.config.apiHeaders]);
+
+	const updatePrepopulation = (updates: Partial<Prepopulation>) => {
 		onFieldUpdate({
 			...field,
 			prepopulation: { ...prepopulation, ...updates },
 		});
 	};
 
-	const updateConfig = (
-		configUpdates: Partial<typeof prepopulation.config>
-	) => {
+	const updateConfig = (configUpdates: Partial<PrepopulationConfig>) => {
 		updatePrepopulation({
 			config: { ...prepopulation.config, ...configUpdates },
 		});
@@ -139,9 +184,11 @@ export function PrepopulationSettings({
 								Data Source
 							</Label>
 							<Select
-								onValueChange={(source) =>
-									updatePrepopulation({ source: source as unknown })
-								}
+								onValueChange={(source) => {
+									if (isPrepopulationSource(source)) {
+										updatePrepopulation({ source });
+									}
+								}}
 								value={prepopulation.source}
 							>
 								<SelectTrigger className="w-full" id="data-source">
@@ -227,7 +274,11 @@ export function PrepopulationSettings({
 										}}
 										placeholder="Default value if parameter is missing"
 										type="text"
-										value={prepopulation.config.fallbackValue || ""}
+										value={
+											typeof prepopulation.config.fallbackValue === "string"
+												? prepopulation.config.fallbackValue
+												: ""
+										}
 									/>
 									<p
 										className="text-muted-foreground text-xs"
@@ -354,9 +405,14 @@ export function PrepopulationSettings({
 										className="resize-none"
 										id="api-headers"
 										name="api-headers"
-										onChange={(e) =>
-											updateConfig({ apiHeaders: e.target.value as unknown })
-										}
+										onChange={(e) => {
+											const nextValue = e.target.value;
+											setApiHeadersText(nextValue);
+											const parsedHeaders = tryParseHeaders(nextValue);
+											if (parsedHeaders !== undefined || !nextValue.trim()) {
+												updateConfig({ apiHeaders: parsedHeaders });
+											}
+										}}
 										onKeyDown={(e) => {
 											if (e.key === "Escape") {
 												e.currentTarget.blur();
@@ -372,15 +428,7 @@ export function PrepopulationSettings({
 											'{\n  "Authorization": "Bearer token",\n  "Content-Type": "application/json"\n}'
 										}
 										rows={3}
-										value={
-											typeof prepopulation.config.apiHeaders === "string"
-												? prepopulation.config.apiHeaders
-												: JSON.stringify(
-														prepopulation.config.apiHeaders || {},
-														null,
-														2
-													)
-										}
+										value={apiHeadersText}
 									/>
 									<p
 										className="text-muted-foreground text-xs"

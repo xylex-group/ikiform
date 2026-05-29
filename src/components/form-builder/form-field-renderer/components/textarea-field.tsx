@@ -10,6 +10,7 @@ export function TextareaField(props: BaseFieldProps) {
 	const { field, value, onChange, error, fieldRef, disabled } = props;
 	const baseClasses = getBaseClasses(field, error);
 	const builderMode = getBuilderMode(props);
+	const inputValue = typeof value === "string" ? value : "";
 
 	const handleValueChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		onChange(e.target.value);
@@ -35,9 +36,9 @@ export function TextareaField(props: BaseFieldProps) {
 			onChange: handleValueChange,
 			onKeyDown: handleKeyDown,
 			placeholder: field.placeholder,
-			ref: fieldRef,
+			ref: fieldRef as React.RefObject<HTMLTextAreaElement | null> | undefined,
 			rows: field.settings?.rows || 4,
-			value: value || "",
+			value: inputValue,
 		},
 		builderMode
 	);

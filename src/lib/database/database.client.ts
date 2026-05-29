@@ -1,4 +1,5 @@
 import type { Form, FormSubmission, User } from "@/lib/database/database";
+import type { FormSchema } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 
 type AnyRecord = Record<string, unknown>;
@@ -62,7 +63,7 @@ async function callDb<T>(action: string, args: unknown[] = []): Promise<T> {
 }
 
 export const formsDb = {
-	async createForm(userId: string, title: string, schema: AnyRecord) {
+	async createForm(userId: string, title: string, schema: FormSchema) {
 		const created = await callDb<Form>("createForm", [userId, title, schema]);
 		return created;
 	},

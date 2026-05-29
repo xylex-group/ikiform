@@ -10,11 +10,13 @@ export function LinkInputField(props: BaseFieldProps) {
 	const { field, value, onChange, error, disabled } = props;
 	const builderMode = getBuilderMode(props);
 	const baseClasses = getBaseClasses(field, error);
-	const [inputValue, setInputValue] = useState(value || "");
+	const getInputValue = (nextValue: unknown): string =>
+		typeof nextValue === "string" ? nextValue : "";
+	const [inputValue, setInputValue] = useState(getInputValue(value));
 	const [isValidating, setIsValidating] = useState(false);
 
 	useEffect(() => {
-		setInputValue(value || "");
+		setInputValue(getInputValue(value));
 	}, [value]);
 
 	const getUrlValidation = () => validateUrl(inputValue);

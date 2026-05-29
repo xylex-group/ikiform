@@ -8,23 +8,22 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
 import type { FormField } from "@/lib/database";
+import type { FieldSettingsProps } from "./field-settings/types";
 
-interface EmailValidationSettingsProps {
-	field: FormField;
-	onUpdateSettings: (settings: unknown) => void;
-}
+type FieldSettings = NonNullable<FormField["settings"]>;
+type EmailValidation = NonNullable<FieldSettings["emailValidation"]>;
 
 export function EmailValidationSettings({
 	field,
 	onUpdateSettings,
-}: EmailValidationSettingsProps) {
+}: FieldSettingsProps) {
 	const [newAllowedDomain, setNewAllowedDomain] = useState("");
 	const [newBlockedDomain, setNewBlockedDomain] = useState("");
 	const [newAutoCompleteDomain, setNewAutoCompleteDomain] = useState("");
 
-	const emailSettings = field.settings?.emailValidation || {};
+	const emailSettings: EmailValidation = field.settings?.emailValidation || {};
 
-	const updateEmailSettings = (updates: unknown) => {
+	const updateEmailSettings = (updates: Partial<EmailValidation>) => {
 		onUpdateSettings({
 			...field.settings,
 			emailValidation: {

@@ -1,8 +1,12 @@
 import { Label } from "@/components/ui/label";
+import type { FormField } from "@/lib/database";
 
 import type { BaseFieldProps } from "../types";
 
 import { createFieldComponent } from "../utils/fieldFactory";
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null;
 
 export function FieldGroupField({
 	field,
@@ -56,24 +60,27 @@ export function FieldGroupField({
 		return `${layoutClass} ${spacingClass}`;
 	};
 
-	const getFieldValue = (fieldId: string) => value?.[fieldId];
+	const getValueRecord = (): Record<string, unknown> =>
+		isRecord(value) ? value : {};
+
+	const getFieldValue = (fieldId: string) => getValueRecord()[fieldId];
 
 	const getFieldError = (fieldId: string) => {
-		if (typeof error === "object" && error !== null && fieldId in error) {
+		if (isRecord(error) && fieldId in error) {
 			return (error as Record<string, string | undefined>)[fieldId];
 		}
 		return;
 	};
 
 	const handleGroupFieldChange = (fieldId: string, fieldValue: unknown) => {
-		const currentValues = value || {};
+		const currentValues = getValueRecord();
 		onChange({
 			...currentValues,
 			[fieldId]: fieldValue,
 		});
 	};
 
-	const renderGroupFieldLabel = (groupField: unknown) => {
+	const renderGroupFieldLabel = (groupField: FormField) => {
 		if (!groupField.label) {
 			return null;
 		}
@@ -88,7 +95,7 @@ export function FieldGroupField({
 		);
 	};
 
-	const renderGroupField = (groupField: unknown) => {
+	const renderGroupField = (groupField: FormField) => {
 		const fieldValue = getFieldValue(groupField.id);
 		const fieldError = getFieldError(groupField.id);
 
