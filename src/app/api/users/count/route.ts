@@ -9,10 +9,7 @@ export async function GET() {
 			.select("*", { count: "exact", head: true });
 
 		if (error) {
-			return NextResponse.json(
-				{ count: null, error: error.message },
-				{ status: 500 }
-			);
+			return NextResponse.json({ count: null, error }, { status: 500 });
 		}
 
 		return new NextResponse(JSON.stringify({ count: count ?? 0 }), {

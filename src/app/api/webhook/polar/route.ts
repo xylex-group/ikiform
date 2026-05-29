@@ -2,14 +2,33 @@ import { Webhooks } from "@polar-sh/nextjs";
 import { sanitizeString } from "@/lib/utils/sanitize";
 import { createClient as createAdminClient } from "@/utils/athena/admin";
 
+interface PremiumUserRow {
+	email: string;
+	has_premium: boolean;
+	polar_customer_id?: string | null;
+	uid: string;
+}
+
+interface PremiumUserUpdate {
+	customer_name?: string | null;
+	has_premium?: boolean;
+	polar_customer_id?: string | null;
+}
+
+type AdminAthenaClient = ReturnType<typeof createAdminClient>;
+
+const fromUsers = (athena: AdminAthenaClient) =>
+	athena.from<PremiumUserRow, Partial<PremiumUserRow>, PremiumUserUpdate>(
+		"users"
+	);
+
 const webhookSecret = process.env.POLAR_WEBHOOK_SECRET;
 if (!webhookSecret) {
 	throw new Error("POLAR_WEBHOOK_SECRET environment variable is not set");
 }
 
-const findUserByEmail = async (athena: unknown, email: string) => {
-	const { data: userData, error: lookupError } = await athena
-		.from("users")
+const findUserByEmail = async (athena: AdminAthenaClient, email: string) => {
+	const { data: userData, error: lookupError } = await fromUsers(athena)
 		.select("uid, email")
 		.eq("email", email)
 		.single();
@@ -23,14 +42,14 @@ const findUserByEmail = async (athena: unknown, email: string) => {
 };
 
 const updateUserPremiumStatus = async (
-	athena: unknown,
+	athena: AdminAthenaClient,
 	uid: string,
 	_email: string,
 	hasPremium: boolean,
 	polarCustomerId?: string,
 	customerName?: string
 ) => {
-	const updateData: unknown = { has_premium: hasPremium };
+	const updateData: PremiumUserUpdate = { has_premium: hasPremium };
 
 	if (polarCustomerId) {
 		updateData.polar_customer_id = polarCustomerId;
@@ -40,8 +59,7 @@ const updateUserPremiumStatus = async (
 		updateData.customer_name = customerName;
 	}
 
-	const { data, error } = await athena
-		.from("users")
+	const { data, error } = await fromUsers(athena)
 		.update(updateData)
 		.eq("uid", uid)
 		.select();

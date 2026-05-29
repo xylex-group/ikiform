@@ -1,0 +1,30 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "API / DB Layer (Before)" {
+  rectangle "Route & Service Modules\n- api/user\n- api/forms/[id]/api-submit\n- webhooks/inbound|outbound\n- admin/actions" as modules
+
+  rectangle "Athena Client Calls\nfrom(\"table\") with implicit AthenaRowShape" as implicit
+  rectangle "Legacy Chains\nupdate().select().single()\ninsert().select().single()" as legacy
+  rectangle "Loose Shapes\nunknown casts\noptional form object\nstring error.message access" as loose
+
+  modules --> implicit
+  implicit --> legacy
+  implicit --> loose
+}
+
+note right of loose
+Result:
+- frequent TS overload mismatches
+- implicit any/unknown access
+- weak narrowing around form payloads
+end note
+@enduml

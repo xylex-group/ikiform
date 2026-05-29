@@ -6,6 +6,7 @@ import {
 	DEFAULT_RATE_LIMIT_SETTINGS,
 } from "@/lib";
 import { formsDbServer } from "@/lib/database/database.server";
+import type { FormField } from "@/lib/database/database.types";
 import { validateFormApiAccess } from "@/lib/forms/api-keys";
 import {
 	checkDuplicateSubmission,
@@ -24,9 +25,9 @@ function sanitizeObjectStrings(obj: unknown): unknown {
 		return obj.map(sanitizeObjectStrings);
 	}
 	if (obj && typeof obj === "object") {
-		const result: unknown = {};
-		for (const key in obj) {
-			result[key] = sanitizeObjectStrings(obj[key]);
+		const result: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(obj)) {
+			result[key] = sanitizeObjectStrings(value);
 		}
 		return result;
 	}
@@ -39,8 +40,19 @@ export async function POST(
 ) {
 	try {
 		const { id: formId } = await params;
-		const body = await request.json();
+		const body = (await request.json()) as { data?: unknown };
 		const { data: submissionData } = body;
+		if (
+			!submissionData ||
+			typeof submissionData !== "object" ||
+			Array.isArray(submissionData)
+		) {
+			return NextResponse.json(
+				{ error: "Invalid submission payload" },
+				{ status: 400 }
+			);
+		}
+		const submissionDataRecord = submissionData as Record<string, unknown>;
 
 		const authHeader = request.headers.get("authorization");
 		if (!authHeader?.startsWith("Bearer ")) {
@@ -134,7 +146,7 @@ export async function POST(
 		if (profanityFilter.enabled) {
 			const profanityFilterService = createProfanityFilter(profanityFilter);
 			const result =
-				profanityFilterService.filterSubmissionData(submissionData);
+				profanityFilterService.filterSubmissionData(submissionDataRecord);
 			if (!result.isValid) {
 				return NextResponse.json(
 					{
@@ -150,9 +162,9 @@ export async function POST(
 
 		const duplicatePrevention = form.schema.settings.duplicatePrevention;
 		if (duplicatePrevention?.enabled) {
-			const email = extractEmailFromSubmissionData(submissionData);
+			const email = extractEmailFromSubmissionData(submissionDataRecord);
 			const identifier = generateIdentifier(
-				duplicatePrevention.strategy,
+				duplicatePrevention.strategy ?? "ip",
 				ipAddress,
 				email
 			);
@@ -176,7 +188,10 @@ export async function POST(
 			}
 		}
 
-		const sanitizedData = sanitizeObjectStrings(submissionData);
+		const sanitizedData = sanitizeObjectStrings(submissionDataRecord) as Record<
+			string,
+			unknown
+		>;
 
 		try {
 			const submissionResult = await formsDbServer.submitForm(
@@ -242,7 +257,7 @@ export async function GET(
 
 		const form = validationResult.form;
 
-		const fields = form.schema.fields.map((field: unknown) => ({
+		const fields = form.schema.fields.map((field: FormField) => ({
 			id: field.id,
 			type: field.type,
 			label: field.label,

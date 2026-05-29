@@ -15,27 +15,68 @@ type WebhookUpdate = Database["public"]["Tables"]["webhooks"]["Update"];
 
 type WebhookLogRow = Database["public"]["Tables"]["webhook_logs"]["Row"];
 type WebhookLogInsert = Database["public"]["Tables"]["webhook_logs"]["Insert"];
+type FormRow = Database["public"]["Tables"]["forms"]["Row"];
+type FormInsert = Database["public"]["Tables"]["forms"]["Insert"];
+type FormUpdate = Database["public"]["Tables"]["forms"]["Update"];
+
+type WebhookInput = Partial<WebhookConfig> & {
+	form_id?: string | null;
+	account_id?: string | null;
+	payload_template?: string | null;
+	notification_email?: string | null;
+	notify_on_success?: boolean;
+	notify_on_failure?: boolean;
+	secret?: string | null;
+};
+
+function toStringRecord(value: unknown): Record<string, string> | undefined {
+	if (!value || typeof value !== "object" || Array.isArray(value)) {
+		return undefined;
+	}
+	const result: Record<string, string> = {};
+	for (const [key, entry] of Object.entries(value)) {
+		if (typeof entry === "string") {
+			result[key] = entry;
+		}
+	}
+	return result;
+}
 
 function mapWebhookRow(row: Omit<WebhookRow, "secret">): WebhookConfig {
 	return {
-		id: (row as unknown).id,
-		formId: (row as unknown).form_id ?? undefined,
-		accountId: (row as unknown).account_id ?? undefined,
-		name: (row as unknown).name ?? null,
-		description: (row as unknown).description ?? null,
-		url: (row as unknown).url,
-		events: (row as unknown).events as unknown,
+		id: row.id,
+		formId: row.form_id ?? undefined,
+		accountId: row.account_id ?? undefined,
+		name: row.name ?? null,
+		description: row.description ?? null,
+		url: row.url,
+		events: row.events as WebhookEventType[],
 		secret: undefined,
-		method: (row as unknown).method as unknown,
-		headers: ((row as unknown).headers as unknown) ?? undefined,
-		payloadTemplate: (row as unknown).payload_template ?? undefined,
-		enabled: (row as unknown).enabled,
-		notificationEmail: (row as unknown).notification_email ?? null,
-		notifyOnSuccess: (row as unknown).notify_on_success ?? false,
-		notifyOnFailure: (row as unknown).notify_on_failure ?? true,
-		createdAt: (row as unknown).created_at,
-		updatedAt: (row as unknown).updated_at,
+		method: (row.method as "POST" | "PUT") ?? "POST",
+		headers: toStringRecord(row.headers) ?? undefined,
+		payloadTemplate: row.payload_template ?? undefined,
+		enabled: row.enabled,
+		notificationEmail: row.notification_email ?? null,
+		notifyOnSuccess: row.notify_on_success ?? false,
+		notifyOnFailure: row.notify_on_failure ?? true,
+		createdAt: row.created_at,
+		updatedAt: row.updated_at,
 	} satisfies WebhookConfig as WebhookConfig;
+}
+
+function mapWebhookLogRow(row: WebhookLogRow): WebhookLog {
+	return {
+		attempt: row.attempt,
+		error: row.error ?? undefined,
+		event: row.event as WebhookEventType,
+		id: row.id,
+		request_payload: row.request_payload,
+		response_body: row.response_body ?? undefined,
+		response_status: row.response_status ?? undefined,
+		status: row.status as "success" | "failed" | "pending",
+		timestamp: row.timestamp,
+		webhook_id: row.webhook_id ?? "",
+	};
 }
 
 export async function getWebhooks({
@@ -48,7 +89,9 @@ export async function getWebhooks({
 	userId?: string;
 }): Promise<WebhookConfig[]> {
 	const athena = createAthenaAdminClient();
-	let query = athena.from("webhooks" as const).select("*");
+	let query = athena
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.select("*");
 
 	const effectiveAccountId = userId || accountId;
 	if (effectiveAccountId) {
@@ -61,7 +104,7 @@ export async function getWebhooks({
 
 	const { data, error } = await query;
 	if (error) {
-		throw new Error(error.message);
+		throw new Error(error);
 	}
 
 	if (userId && data) {
@@ -71,7 +114,7 @@ export async function getWebhooks({
 
 				if (webhookRow.form_id) {
 					const { data: form } = await athena
-						.from("forms")
+						.from<FormRow, FormInsert, FormUpdate>("forms")
 						.select("id, user_id")
 						.eq("id", webhookRow.form_id)
 						.eq("user_id", userId)
@@ -109,11 +152,15 @@ export async function createWebhook(
 	}
 
 	const athena = createAthenaAdminClient();
+	const input = data as WebhookInput;
 
-	if ((data.formId || (data as unknown).form_id) && userId) {
-		const formId = data.formId || (data as unknown).form_id;
+	if ((data.formId || input.form_id) && userId) {
+		const formId = data.formId || input.form_id;
+		if (!formId) {
+			throw new Error("Form ID is required");
+		}
 		const { data: form, error: formError } = await athena
-			.from("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms")
 			.select("id, user_id")
 			.eq("id", formId)
 			.eq("user_id", userId)
@@ -124,7 +171,7 @@ export async function createWebhook(
 		}
 	}
 
-	const accountId = userId || data.accountId || (data as unknown).account_id;
+	const accountId = userId || data.accountId || input.account_id;
 	if (!accountId) {
 		throw new Error("Account ID is required");
 	}
@@ -132,43 +179,33 @@ export async function createWebhook(
 	const now = new Date().toISOString();
 
 	const insertData: WebhookInsert = {
-		name: (data as unknown).name ?? null,
-		description: (data as unknown).description ?? null,
+		name: data.name ?? null,
+		description: data.description ?? null,
 		url: data.url,
 		events: data.events as string[],
 		method: data.method,
-		headers: (data.headers as unknown) ?? {},
-		form_id: (data as unknown).form_id ?? data.formId ?? null,
+		headers: data.headers ?? {},
+		form_id: input.form_id ?? data.formId ?? null,
 		account_id: accountId,
 		enabled: data.enabled ?? true,
-		payload_template:
-			(data as unknown).payload_template ?? data.payloadTemplate ?? null,
-		secret: (data as unknown).secret ?? null,
+		payload_template: input.payload_template ?? data.payloadTemplate ?? null,
+		secret: input.secret ?? null,
 		notification_email:
-			(data as unknown).notification_email ??
-			(data as unknown).notificationEmail ??
-			null,
-		notify_on_success:
-			(data as unknown).notify_on_success ??
-			(data as unknown).notifyOnSuccess ??
-			false,
-		notify_on_failure:
-			(data as unknown).notify_on_failure ??
-			(data as unknown).notifyOnFailure ??
-			true,
+			input.notification_email ?? data.notificationEmail ?? null,
+		notify_on_success: input.notify_on_success ?? data.notifyOnSuccess ?? false,
+		notify_on_failure: input.notify_on_failure ?? data.notifyOnFailure ?? true,
 		created_at: now,
 		updated_at: now,
 	};
 
 	const { data: result, error } = await athena
-		.from("webhooks" as const)
-		.insert([insertData] as unknown)
-		.select("*")
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.insert(insertData)
 		.single();
 
 	if (error || !result) {
 		console.error("Athena error creating webhook:", error, "Data:", insertData);
-		throw new Error(error?.message || "Failed to create webhook");
+		throw new Error(error || "Failed to create webhook");
 	}
 
 	const { secret, ...safeResult } = result as WebhookRow & {
@@ -183,11 +220,15 @@ export async function updateWebhook(
 	userId?: string
 ): Promise<WebhookConfig> {
 	const athena = createAthenaAdminClient();
+	const input = data as WebhookInput;
 
-	if ((data.formId || (data as unknown).form_id) && userId) {
-		const formId = data.formId || (data as unknown).form_id;
+	if ((data.formId || input.form_id) && userId) {
+		const formId = data.formId || input.form_id;
+		if (!formId) {
+			throw new Error("Form ID is required");
+		}
 		const { data: form, error: formError } = await athena
-			.from("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms")
 			.select("id, user_id")
 			.eq("id", formId)
 			.eq("user_id", userId)
@@ -200,41 +241,32 @@ export async function updateWebhook(
 
 	const now = new Date().toISOString();
 	const updateData: WebhookUpdate = {
-		name: (data as unknown).name ?? undefined,
-		description: (data as unknown).description ?? undefined,
+		name: data.name ?? undefined,
+		description: data.description ?? undefined,
 		url: data.url,
-		events: data.events as unknown,
+		events: data.events,
 		method: data.method,
-		headers: data.headers as unknown,
-		form_id: (data as unknown).form_id ?? data.formId ?? null,
+		headers: data.headers,
+		form_id: input.form_id ?? data.formId ?? null,
 
 		account_id: userId
 			? userId
-			: ((data as unknown).account_id ?? data.accountId ?? undefined),
+			: (input.account_id ?? data.accountId ?? undefined),
 		enabled: data.enabled,
-		payload_template:
-			(data as unknown).payload_template ?? data.payloadTemplate ?? null,
-		secret: (data as unknown).secret ?? null,
+		payload_template: input.payload_template ?? data.payloadTemplate ?? null,
+		secret: input.secret ?? null,
 		notification_email:
-			(data as unknown).notification_email ??
-			(data as unknown).notificationEmail ??
-			undefined,
+			input.notification_email ?? data.notificationEmail ?? undefined,
 		notify_on_success:
-			(data as unknown).notify_on_success ??
-			(data as unknown).notifyOnSuccess ??
-			undefined,
+			input.notify_on_success ?? data.notifyOnSuccess ?? undefined,
 		notify_on_failure:
-			(data as unknown).notify_on_failure ??
-			(data as unknown).notifyOnFailure ??
-			undefined,
+			input.notify_on_failure ?? data.notifyOnFailure ?? undefined,
 		updated_at: now,
 	};
-	const { data: result, error } = await (
-		athena.from("webhooks" as const) as unknown
-	)
+	const { data: result, error } = await athena
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
 		.update(updateData)
 		.eq("id", id)
-		.select("*")
 		.single();
 	if (error || !result) {
 		console.error(
@@ -243,7 +275,7 @@ export async function updateWebhook(
 			"Data:",
 			updateData
 		);
-		throw new Error(error?.message || "Failed to update webhook");
+		throw new Error(error || "Failed to update webhook");
 	}
 	const { secret, ...safeResult } = result as WebhookRow & {
 		secret?: string | null;
@@ -259,7 +291,7 @@ export async function deleteWebhook(
 
 	if (userId) {
 		const { data: webhook, error: fetchError } = await athena
-			.from("webhooks")
+			.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
 			.select("id, account_id, form_id")
 			.eq("id", id)
 			.single();
@@ -271,7 +303,7 @@ export async function deleteWebhook(
 		if (webhook.account_id !== userId) {
 			if (webhook.form_id) {
 				const { data: form } = await athena
-					.from("forms")
+					.from<FormRow, FormInsert, FormUpdate>("forms")
 					.select("id, user_id")
 					.eq("id", webhook.form_id)
 					.eq("user_id", userId)
@@ -287,11 +319,11 @@ export async function deleteWebhook(
 	}
 
 	const { error } = await athena
-		.from("webhooks" as const)
-		.delete()
-		.eq("id", id);
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.eq("id", id)
+		.delete();
 	if (error) {
-		throw new Error(error.message);
+		throw new Error(error);
 	}
 }
 
@@ -314,7 +346,7 @@ export async function getWebhookLogs({
 
 	if (webhookId && userId) {
 		const { data: webhook, error: webhookError } = await athena
-			.from("webhooks")
+			.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
 			.select("id, account_id, form_id")
 			.eq("id", webhookId)
 			.single();
@@ -326,7 +358,7 @@ export async function getWebhookLogs({
 		if (webhook.account_id !== userId) {
 			if (webhook.form_id) {
 				const { data: form } = await athena
-					.from("forms")
+					.from<FormRow, FormInsert, FormUpdate>("forms")
 					.select("id, user_id")
 					.eq("id", webhook.form_id)
 					.eq("user_id", userId)
@@ -343,7 +375,7 @@ export async function getWebhookLogs({
 
 	if (formId && userId) {
 		const { data: form, error: formError } = await athena
-			.from("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms")
 			.select("id, user_id")
 			.eq("id", formId)
 			.eq("user_id", userId)
@@ -354,18 +386,18 @@ export async function getWebhookLogs({
 		}
 	}
 
-	let query = athena.from("webhook_logs" as const).select("*");
+	let query = athena.from("webhook_logs").select("*");
 	if (webhookId) {
 		query = query.eq("webhook_id", webhookId);
 	}
 	if (formId) {
-		query = query.eq("form_id", formId as unknown);
+		query = query.eq("form_id", formId);
 	}
-	query = query.eq("account_id", effectiveAccountId as unknown);
+	query = query.eq("account_id", effectiveAccountId);
 	query = query.order("timestamp", { ascending: false });
 	const { data, error } = await query;
 	if (error) {
-		throw new Error(error.message);
+		throw new Error(error);
 	}
 
 	if (!(data && Array.isArray(data))) {
@@ -378,7 +410,7 @@ export async function getWebhookLogs({
 				const logRow = log as WebhookLogRow;
 				if (logRow.webhook_id) {
 					const { data: webhook } = await athena
-						.from("webhooks")
+						.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
 						.select("id, account_id, form_id")
 						.eq("id", logRow.webhook_id)
 						.single();
@@ -393,7 +425,7 @@ export async function getWebhookLogs({
 
 					if (webhook.form_id) {
 						const { data: form } = await athena
-							.from("forms")
+							.from<FormRow, FormInsert, FormUpdate>("forms")
 							.select("id, user_id")
 							.eq("id", webhook.form_id)
 							.eq("user_id", userId)
@@ -410,10 +442,12 @@ export async function getWebhookLogs({
 			})
 		);
 
-		return filteredLogs.filter((log) => log !== null) as WebhookLog[];
+		return filteredLogs
+			.filter((log) => log !== null)
+			.map((log) => mapWebhookLogRow(log as WebhookLogRow));
 	}
 
-	return data as unknown as WebhookLog[];
+	return data.map((log) => mapWebhookLogRow(log as WebhookLogRow));
 }
 
 export async function resendWebhookDelivery(
@@ -423,7 +457,7 @@ export async function resendWebhookDelivery(
 	const athena = createAthenaAdminClient();
 
 	const { data: log, error: logError } = await athena
-		.from("webhook_logs" as const)
+		.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
 		.select("*")
 		.eq("id", body.logId)
 		.single();
@@ -437,7 +471,7 @@ export async function resendWebhookDelivery(
 	}
 
 	const { data: webhook, error: webhookError } = await athena
-		.from("webhooks" as const)
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
 		.select("*")
 		.eq("id", webhookIdFromLog)
 		.single();
@@ -504,7 +538,9 @@ export async function resendWebhookDelivery(
 		attempt: ((log as WebhookLogRow).attempt || 0) + 1,
 	};
 
-	await athena.from("webhook_logs" as const).insert([logInsert] as unknown);
+	await athena
+		.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+		.insert(logInsert);
 	if (errorMsg) {
 		return { status, responseBody, error: errorMsg };
 	}
@@ -518,7 +554,7 @@ export async function testWebhook(
 	const athena = createAthenaAdminClient();
 
 	const { data: webhook, error } = await athena
-		.from("webhooks" as const)
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
 		.select("*")
 		.eq("id", id)
 		.single();
@@ -526,12 +562,17 @@ export async function testWebhook(
 		throw new Error("Webhook not found");
 	}
 
-	const payload = samplePayload || {
-		test: true,
-		message: "This is a test webhook from Ikiform.",
-		timestamp: new Date().toISOString(),
-		webhookId: id,
-	};
+	const payload: Record<string, unknown> =
+		samplePayload &&
+		typeof samplePayload === "object" &&
+		!Array.isArray(samplePayload)
+			? (samplePayload as Record<string, unknown>)
+			: {
+					test: true,
+					message: "This is a test webhook from Ikiform.",
+					timestamp: new Date().toISOString(),
+					webhookId: id,
+				};
 	let body = JSON.stringify(payload);
 	let headers: Record<string, string> = {
 		"Content-Type": "application/json",
@@ -554,12 +595,12 @@ export async function testWebhook(
 		headers = { "Content-Type": "application/json" };
 	}
 
-	if (
-		samplePayload &&
-		typeof samplePayload === "object" &&
-		samplePayload.simulate
-	) {
-		const simulate: "success" | "failure" = samplePayload.simulate;
+	const simulatePayload =
+		samplePayload && typeof samplePayload === "object"
+			? (samplePayload as { simulate?: "success" | "failure" })
+			: null;
+	if (simulatePayload?.simulate) {
+		const simulate: "success" | "failure" = simulatePayload.simulate;
 		const notifyEmail = (webhook as WebhookRow).notification_email;
 		const notifySuccess = (webhook as WebhookRow).notify_on_success ?? false;
 		const notifyFailure = (webhook as WebhookRow).notify_on_failure ?? true;
@@ -575,7 +616,9 @@ export async function testWebhook(
 			timestamp: new Date().toISOString(),
 			attempt: 0,
 		};
-		await athena.from("webhook_logs" as const).insert([logInsert] as unknown);
+		await athena
+			.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+			.insert(logInsert);
 
 		try {
 			if (simulate === "success" && notifyEmail && notifySuccess) {
@@ -632,7 +675,9 @@ export async function testWebhook(
 		attempt: 0,
 	};
 
-	await athena.from("webhook_logs" as const).insert([logInsert] as unknown);
+	await athena
+		.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+		.insert(logInsert);
 
 	const notifyEmail = (webhook as WebhookRow).notification_email;
 	const notifySuccess = (webhook as WebhookRow).notify_on_success ?? false;
@@ -699,10 +744,14 @@ function buildDiscordEmbedPayload(
 	const fields: { name: unknown; value: string; inline: boolean }[] = [];
 
 	if (formData.fields && Array.isArray(formData.fields)) {
-		formData.fields.forEach((field: unknown) => {
+		formData.fields.forEach((field) => {
+			const fieldObj =
+				field && typeof field === "object"
+					? (field as Record<string, unknown>)
+					: {};
 			fields.push({
-				name: field.label || field.id || "Unknown Field",
-				value: formatValue(field.value),
+				name: fieldObj.label || fieldObj.id || "Unknown Field",
+				value: formatValue(fieldObj.value),
 				inline: true,
 			});
 		});
@@ -782,10 +831,14 @@ function buildSlackMessagePayload(formData: Record<string, unknown>) {
 	const fields: { title: unknown; value: string; short: boolean }[] = [];
 
 	if (formData.fields && Array.isArray(formData.fields)) {
-		formData.fields.forEach((field: unknown) => {
+		formData.fields.forEach((field) => {
+			const fieldObj =
+				field && typeof field === "object"
+					? (field as Record<string, unknown>)
+					: {};
 			fields.push({
-				title: field.label || field.id || "Unknown Field",
-				value: formatValue(field.value),
+				title: fieldObj.label || fieldObj.id || "Unknown Field",
+				value: formatValue(fieldObj.value),
 				short: true,
 			});
 		});
@@ -831,9 +884,12 @@ function renderTemplate(
 ): string {
 	return template.replace(/{{\s*(json)?\s*([\w.]+)\s*}}/g, (_, isJson, key) => {
 		const keys = key.split(".");
-		let value = context;
+		let value: unknown = context;
 		for (const k of keys) {
-			value = value?.[k];
+			if (!value || typeof value !== "object") {
+				return "";
+			}
+			value = (value as Record<string, unknown>)[k];
 			if (value === undefined || value === null) {
 				return "";
 			}
@@ -856,10 +912,10 @@ export async function formatHumanFriendlyPayload(
 	const form = await formsDbServer.getPublicForm(formId);
 	const schema = form.schema;
 	const allFields = schema.blocks?.length
-		? schema.blocks.flatMap((block: unknown) => block.fields)
+		? schema.blocks.flatMap((block) => block.fields)
 		: schema.fields || [];
 	const fields = Object.entries(formData).map(([fieldId, value]) => {
-		const field = allFields.find((f: unknown) => f.id === fieldId);
+		const field = allFields.find((f) => f.id === fieldId);
 		return {
 			id: fieldId,
 			label: field?.label || fieldId,
@@ -880,11 +936,25 @@ export async function triggerWebhooks(
 	payload: unknown
 ): Promise<void> {
 	const athena = createAthenaAdminClient();
-
-	const { formId, accountId } = payload;
+	const payloadData =
+		payload && typeof payload === "object"
+			? (payload as Record<string, unknown>)
+			: {};
+	const formId =
+		typeof payloadData.formId === "string" ? payloadData.formId : undefined;
+	const accountId =
+		typeof payloadData.accountId === "string"
+			? payloadData.accountId
+			: undefined;
+	const formPayload =
+		payloadData.formData &&
+		typeof payloadData.formData === "object" &&
+		!Array.isArray(payloadData.formData)
+			? (payloadData.formData as Record<string, unknown>)
+			: undefined;
 
 	const { data: webhooks, error } = await athena
-		.from("webhooks" as const)
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
 		.select("*")
 		.contains("events", [event])
 		.eq("enabled", true)
@@ -897,7 +967,7 @@ export async function triggerWebhooks(
 				.join(",")
 		);
 	if (error) {
-		throw new Error(error.message);
+		throw new Error(error);
 	}
 	if (!webhooks || webhooks.length === 0) {
 		return;
@@ -906,25 +976,22 @@ export async function triggerWebhooks(
 	for (const webhook of webhooks as WebhookRow[]) {
 		let body: string;
 
-		if (event === "form_submitted" && payload.formId && payload.formData) {
-			const formatted = await formatHumanFriendlyPayload(
-				payload.formId,
-				payload.formData
-			);
+		if (event === "form_submitted" && formId && formPayload) {
+			const formatted = await formatHumanFriendlyPayload(formId, formPayload);
 			body = (webhook as WebhookRow).payload_template
-				? renderTemplate((webhook as WebhookRow).payload_template as unknown, {
+				? renderTemplate((webhook as WebhookRow).payload_template ?? "", {
 						event,
-						...payload,
+						...payloadData,
 						formatted,
 					})
-				: JSON.stringify({ event, ...payload, formatted });
+				: JSON.stringify({ event, ...payloadData, formatted });
 		} else {
 			body = (webhook as WebhookRow).payload_template
-				? renderTemplate((webhook as WebhookRow).payload_template as unknown, {
+				? renderTemplate((webhook as WebhookRow).payload_template ?? "", {
 						event,
-						...payload,
+						...payloadData,
 					})
-				: JSON.stringify({ event, ...payload });
+				: JSON.stringify({ event, ...payloadData });
 		}
 
 		const headers: Record<string, string> = {
@@ -1050,7 +1117,9 @@ export async function deliverWithRetry(
 			timestamp: new Date().toISOString(),
 			attempt,
 		};
-		await athena.from("webhook_logs" as const).insert([successLog] as unknown);
+		await athena
+			.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+			.insert(successLog);
 
 		console.log(
 			`[WEBHOOK DELIVERY] Successfully delivered webhook ${webhook.id} in ${duration}ms`
@@ -1070,7 +1139,7 @@ export async function deliverWithRetry(
 		const duration = Date.now() - startTime;
 		console.error(
 			`[WEBHOOK DELIVERY] Failed to deliver webhook ${webhook.id} after ${duration}ms:`,
-			err.message
+			err
 		);
 
 		const failureLog: WebhookLogInsert = {
@@ -1082,7 +1151,9 @@ export async function deliverWithRetry(
 			timestamp: new Date().toISOString(),
 			attempt,
 		};
-		await athena.from("webhook_logs" as const).insert([failureLog] as unknown);
+		await athena
+			.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+			.insert(failureLog);
 
 		const isFinalAttempt = attempt + 1 >= 3;
 		if (

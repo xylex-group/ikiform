@@ -1,8 +1,15 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import type { Form } from "@/lib/database";
+import type { Database } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createClient } from "@/utils/athena/server";
 import DashboardClient from "./dashboard-client";
+
+type UserPremiumRow = Pick<
+	Database["public"]["Tables"]["users"]["Row"],
+	"has_premium" | "polar_customer_id"
+>;
 
 // Skeleton components for streaming
 function DashboardSkeleton() {
@@ -64,20 +71,20 @@ async function DashboardData() {
 	// Parallel fetch: forms and premium status at the same time
 	const [formsResult, premiumResult] = await Promise.all([
 		athena
-			.from("forms")
+			.from<Form>("forms")
 			.select(
 				"id, title, description, is_published, created_at, updated_at, user_id, schema, slug"
 			)
 			.eq("user_id", user.id)
 			.order("updated_at", { ascending: false }),
 		athena
-			.from("users")
+			.from<UserPremiumRow>("users")
 			.select("has_premium, polar_customer_id")
 			.eq("uid", user.id)
 			.single(),
 	]);
 
-	const forms = (formsResult.data || []).map((form) => ({
+	const forms: Form[] = (formsResult.data ?? []).map((form) => ({
 		...form,
 		schema: ensureDefaultFormSettings(form.schema || {}),
 	}));

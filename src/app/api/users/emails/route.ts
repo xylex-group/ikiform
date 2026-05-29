@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { createClient as createAdminClient } from "@/utils/athena/admin";
 import { createClient } from "@/utils/athena/server";
 
+interface UserEmailRow {
+	email: string | null;
+}
+
 export async function GET() {
 	try {
 		const athena = await createClient();
@@ -15,16 +19,15 @@ export async function GET() {
 		}
 
 		const adminAthena = createAdminClient();
-		const { data, error } = await adminAthena.from("users").select("email");
+		const { data, error } = await adminAthena
+			.from<UserEmailRow>("users")
+			.select("email");
 		if (error) {
-			return NextResponse.json(
-				{ emails: [], error: error.message },
-				{ status: 500 }
-			);
+			return NextResponse.json({ emails: [], error }, { status: 500 });
 		}
-		const emails = (data || [])
-			.map((r: { email: string }) => r.email)
-			.filter(Boolean);
+		const emails = (data ?? [])
+			.map((row) => row.email)
+			.filter((email): email is string => Boolean(email));
 		return new NextResponse(JSON.stringify({ emails }), {
 			headers: {
 				"content-type": "application/json",

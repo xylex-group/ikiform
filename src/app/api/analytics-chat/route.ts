@@ -36,6 +36,85 @@ interface ConversationAnalysis {
 	topicsDiscussed: string[];
 }
 
+interface ChatMessage {
+	content: string;
+	role: "assistant" | "system" | "user";
+}
+
+interface AnalyticsFieldPerformance {
+	completionRate: number;
+	label: string;
+	totalResponses: number;
+}
+
+type AnalyticsFieldPerformanceEntry = [string, AnalyticsFieldPerformance];
+
+interface AnalyticsConversionStep {
+	completedCount: number;
+	conversionRate: number;
+	stepName: string;
+}
+
+interface AnalyticsFormContext {
+	created_at: string;
+	description?: string | null;
+	id: string;
+	is_published: boolean;
+	schema: {
+		fields?: unknown[];
+		settings?: {
+			multiStep?: boolean;
+		};
+		[key: string]: unknown;
+	};
+	title: string;
+	updated_at: string;
+}
+
+interface AnalyticsSubmission {
+	submission_data: Record<string, unknown>;
+	submitted_at: string;
+	[key: string]: unknown;
+}
+
+interface AnalyticsSummary {
+	avgSubmissionsPerDay?: number;
+	bounceRate?: number;
+	completionRate: number;
+	conversionFunnel?: AnalyticsConversionStep[];
+	fieldAnalytics?: unknown;
+	lastSubmission?: string | null;
+	mostActiveDay?: string | null;
+	peakHour?: string | null;
+	recentSubmissions: number;
+	submissionTrends?: Record<string, number>;
+	topFields?: AnalyticsFieldPerformanceEntry[];
+	totalSubmissions: number;
+	uniqueResponses?: number;
+	worstFields?: AnalyticsFieldPerformanceEntry[];
+}
+
+interface AnalyticsRequestContext {
+	analytics: AnalyticsSummary;
+	form: AnalyticsFormContext;
+	submissions: AnalyticsSubmission[];
+}
+
+interface AnalyticsRequestBody {
+	context: AnalyticsRequestContext;
+	formId: string;
+	messages: unknown[];
+	sessionId?: string;
+}
+
+const isChatMessage = (value: unknown): value is ChatMessage =>
+	typeof value === "object" &&
+	value !== null &&
+	(value as ChatMessage).role !== undefined &&
+	(value as ChatMessage).role !== null &&
+	(value as ChatMessage).role !== "" &&
+	typeof (value as ChatMessage).content === "string";
+
 function createErrorResponse(message: string, status = 500) {
 	return new Response(JSON.stringify({ success: false, message }), {
 		status,
@@ -63,7 +142,7 @@ function validateAndSanitizeMessages(
 	const filtered = filterSystemMessages(messages);
 
 	return filtered.map((msg) => {
-		if (!msg.role || typeof msg.content !== "string") {
+		if (!isChatMessage(msg)) {
 			throw new Error("Invalid message format");
 		}
 
@@ -289,17 +368,37 @@ export async function POST(req: NextRequest): Promise<Response> {
 			return createErrorResponse("AI service temporarily unavailable", 503);
 		}
 
-		let requestData: unknown;
+		let rawRequestData: unknown;
 		try {
-			requestData = await req.json();
+			rawRequestData = await req.json();
 		} catch {
 			return createErrorResponse("Invalid JSON in request body", 400);
 		}
 
+		if (!rawRequestData || typeof rawRequestData !== "object") {
+			return createErrorResponse("Invalid request body", 400);
+		}
+
+		const requestData = rawRequestData as Partial<AnalyticsRequestBody>;
 		const { messages, formId, context } = requestData;
 
-		if (!(formId && context)) {
+		if (
+			typeof formId !== "string" ||
+			!context ||
+			typeof context !== "object" ||
+			!Array.isArray(messages)
+		) {
 			return createErrorResponse("Missing form ID or context data", 400);
+		}
+
+		const contextData = context as AnalyticsRequestContext;
+		if (
+			!contextData.form ||
+			typeof contextData.form !== "object" ||
+			!Array.isArray(contextData.submissions) ||
+			!contextData.analytics
+		) {
+			return createErrorResponse("Invalid context data", 400);
 		}
 
 		let sanitizedMessages: { role: string; content: string }[];
@@ -312,7 +411,10 @@ export async function POST(req: NextRequest): Promise<Response> {
 			);
 		}
 
-		const sessionId = requestData.sessionId || uuidv4();
+		const sessionId =
+			typeof requestData.sessionId === "string" && requestData.sessionId
+				? requestData.sessionId
+				: uuidv4();
 
 		const lastUserMessage = sanitizedMessages.at(-1);
 
@@ -329,9 +431,9 @@ export async function POST(req: NextRequest): Promise<Response> {
 						ip,
 						userAgent: req.headers.get("user-agent") || "",
 						contextSnapshot: {
-							totalSubmissions: context.analytics?.totalSubmissions || 0,
-							completionRate: context.analytics?.completionRate || 0,
-							averageTime: context.analytics?.averageTime || 0,
+							totalSubmissions: contextData.analytics?.totalSubmissions || 0,
+							completionRate: contextData.analytics?.completionRate || 0,
+							averageTime: contextData.analytics?.avgSubmissionsPerDay || 0,
 						},
 					}
 				);
@@ -348,21 +450,21 @@ export async function POST(req: NextRequest): Promise<Response> {
 		const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
 		const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-		const todaySubmissions = context.submissions.filter(
-			(sub: unknown) => new Date(sub.submitted_at) >= today
+		const todaySubmissions = contextData.submissions.filter(
+			(submission) => new Date(submission.submitted_at) >= today
 		).length;
 
-		const yesterdaySubmissions = context.submissions.filter((sub: unknown) => {
-			const subDate = new Date(sub.submitted_at);
+		const yesterdaySubmissions = contextData.submissions.filter((submission) => {
+			const subDate = new Date(submission.submitted_at);
 			return subDate >= yesterday && subDate < today;
 		}).length;
 
-		const thisWeekSubmissions = context.submissions.filter(
-			(sub: unknown) => new Date(sub.submitted_at) >= weekAgo
+		const thisWeekSubmissions = contextData.submissions.filter(
+			(submission) => new Date(submission.submitted_at) >= weekAgo
 		).length;
 
-		const thisMonthSubmissions = context.submissions.filter(
-			(sub: unknown) => new Date(sub.submitted_at) >= monthAgo
+		const thisMonthSubmissions = contextData.submissions.filter(
+			(submission) => new Date(submission.submitted_at) >= monthAgo
 		).length;
 
 		const contextString = `
@@ -415,53 +517,55 @@ export async function POST(req: NextRequest): Promise<Response> {
     - Submissions This Week (last 7 days): ${thisWeekSubmissions}
     - Submissions This Month (last 30 days): ${thisMonthSubmissions}
     - Days Since Form Created: ${Math.floor(
-			(now.getTime() - new Date(context.form.created_at).getTime()) /
+			(now.getTime() - new Date(contextData.form.created_at).getTime()) /
 				(1000 * 60 * 60 * 24)
 		)}
     - Days Since Last Update: ${Math.floor(
-			(now.getTime() - new Date(context.form.updated_at).getTime()) /
+			(now.getTime() - new Date(contextData.form.updated_at).getTime()) /
 				(1000 * 60 * 60 * 24)
 		)}
     
     FORM INFORMATION:
-    - Form ID: ${context.form.id}
-    - Form Title: ${context.form.title}
-    - Form Description: ${context.form.description}
-    - Is Published: ${context.form.is_published}
-    - Created: ${context.form.created_at}
-    - Updated: ${context.form.updated_at}
-    - Total Fields: ${context.form.schema.fields?.length || 0}
+    - Form ID: ${contextData.form.id}
+    - Form Title: ${contextData.form.title}
+    - Form Description: ${contextData.form.description}
+    - Is Published: ${contextData.form.is_published}
+    - Created: ${contextData.form.created_at}
+    - Updated: ${contextData.form.updated_at}
+    - Total Fields: ${contextData.form.schema.fields?.length || 0}
     - Form Type: ${
-			context.form.schema.settings?.multiStep ? "Multi-Step" : "Single Page"
+			contextData.form.schema.settings?.multiStep
+				? "Multi-Step"
+				: "Single Page"
 		}
     
     FORM SCHEMA:
-    ${JSON.stringify(context.form.schema, null, 2)}
+    ${JSON.stringify(contextData.form.schema, null, 2)}
     
     COMPREHENSIVE ANALYTICS SUMMARY:
-    - Total Submissions: ${context.analytics.totalSubmissions}
-    - Completion Rate: ${context.analytics.completionRate}%
-    - Recent Submissions (30 days): ${context.analytics.recentSubmissions}
-    - Most Active Day: ${context.analytics.mostActiveDay || "N/A"}
-    - Last Submission: ${context.analytics.lastSubmission || "N/A"}
-    - Average Daily Submissions: ${context.analytics.avgSubmissionsPerDay || 0}
-    - Bounce Rate: ${context.analytics.bounceRate || 0}%
-    - Peak Hour: ${context.analytics.peakHour || "N/A"}
-    - Unique Response Values: ${context.analytics.uniqueResponses || 0}
+    - Total Submissions: ${contextData.analytics.totalSubmissions}
+    - Completion Rate: ${contextData.analytics.completionRate}%
+    - Recent Submissions (30 days): ${contextData.analytics.recentSubmissions}
+    - Most Active Day: ${contextData.analytics.mostActiveDay || "N/A"}
+    - Last Submission: ${contextData.analytics.lastSubmission || "N/A"}
+    - Average Daily Submissions: ${contextData.analytics.avgSubmissionsPerDay || 0}
+    - Bounce Rate: ${contextData.analytics.bounceRate || 0}%
+    - Peak Hour: ${contextData.analytics.peakHour || "N/A"}
+    - Unique Response Values: ${contextData.analytics.uniqueResponses || 0}
     
     FIELD ANALYTICS:
     ${
-			context.analytics.fieldAnalytics
-				? JSON.stringify(context.analytics.fieldAnalytics, null, 2)
+			contextData.analytics.fieldAnalytics
+				? JSON.stringify(contextData.analytics.fieldAnalytics, null, 2)
 				: "No field analytics available"
 		}
     
     TOP PERFORMING FIELDS:
     ${
-			context.analytics.topFields
-				? context.analytics.topFields
+			contextData.analytics.topFields
+				? contextData.analytics.topFields
 						.map(
-							(field: unknown, index: number) =>
+							(field, index) =>
 								`${index + 1}. ${field[1].label}: ${
 									field[1].completionRate
 								}% completion (${field[1].totalResponses} responses)`
@@ -472,10 +576,10 @@ export async function POST(req: NextRequest): Promise<Response> {
     
     FIELDS NEEDING ATTENTION:
     ${
-			context.analytics.worstFields
-				? context.analytics.worstFields
+			contextData.analytics.worstFields
+				? contextData.analytics.worstFields
 						.map(
-							(field: unknown, index: number) =>
+							(field, index) =>
 								`${index + 1}. ${field[1].label}: ${
 									field[1].completionRate
 								}% completion (${field[1].totalResponses} responses)`
@@ -486,8 +590,8 @@ export async function POST(req: NextRequest): Promise<Response> {
     
     SUBMISSION TRENDS (Last 7 Days):
     ${
-			context.analytics.submissionTrends
-				? Object.entries(context.analytics.submissionTrends)
+			contextData.analytics.submissionTrends
+				? Object.entries(contextData.analytics.submissionTrends)
 						.map(([date, count]) => `${date}: ${count} submissions`)
 						.join("\n")
 				: "No trend data available"
@@ -495,12 +599,12 @@ export async function POST(req: NextRequest): Promise<Response> {
     
     CONVERSION FUNNEL (Multi-step forms):
     ${
-			context.analytics.conversionFunnel
-				? context.analytics.conversionFunnel
+			contextData.analytics.conversionFunnel
+				? contextData.analytics.conversionFunnel
 						.map(
-							(step: unknown, index: number) =>
+							(step, index) =>
 								`Step ${index + 1} - ${step.stepName}: ${step.completedCount}/${
-									context.analytics.totalSubmissions
+									contextData.analytics.totalSubmissions
 								} (${step.conversionRate}%)`
 						)
 						.join("\n")
@@ -509,17 +613,12 @@ export async function POST(req: NextRequest): Promise<Response> {
     
     SUBMISSION DATA SAMPLE:
     ${JSON.stringify(
-			context.submissions.slice(0, 10).map((sub: unknown) => ({
-				...sub,
+			contextData.submissions.slice(0, 10).map((submission) => ({
+				...submission,
 				submission_data: Object.fromEntries(
-					Object.entries(sub.submission_data).map(([key, value]) => {
+					Object.entries(submission.submission_data).map(([key, value]) => {
 						if (typeof value === "object" && value !== null) {
-							return [
-								key,
-								Array.isArray(value)
-									? JSON.stringify(value)
-									: JSON.stringify(value),
-							];
+							return [key, JSON.stringify(value)];
 						}
 
 						return [key, value];
@@ -530,24 +629,24 @@ export async function POST(req: NextRequest): Promise<Response> {
 			2
 		)}
     ${
-			context.submissions.length > 10
+			contextData.submissions.length > 10
 				? `... and ${
-						context.submissions.length - 10
+						contextData.submissions.length - 10
 					} more submissions (showing first 10 for context)`
 				: ""
 		}
     
     WEBSITE FIELD DATA FROM ALL RESPONSES:
-    ${context.submissions
-			.map((sub: unknown) => {
-				const website = sub.submission_data?.website;
+    ${contextData.submissions
+			.map((submission) => {
+				const website = submission.submission_data.website;
 
 				if (typeof website === "object" && website !== null) {
 					return JSON.stringify(website);
 				}
 				return website !== undefined ? String(website) : "";
 			})
-			.filter((v: string) => v)
+			.filter((value) => value)
 			.join("\n")}
     `;
 

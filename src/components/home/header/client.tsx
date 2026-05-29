@@ -461,7 +461,7 @@ export function HeaderClient({ primaryLinks }: HeaderClientProps) {
 
 		const fetchUser = async () => {
 			const result = await auth.getSession();
-			const sessionUser = result.ok ? result.data?.user : null;
+			const sessionUser = result.ok ? result.data?.session?.user : null;
 			dispatchAuth({
 				type: "set-auth",
 				user: sessionUser ?? null,

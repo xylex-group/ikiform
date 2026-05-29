@@ -1,5 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
+import type { Database } from "@/lib/database/database.types";
 import { createAthenaServerClient } from "@/utils/athena/server";
+
+type FormTable = Database["public"]["Tables"]["forms"];
+type FormRow = FormTable["Row"];
+type FormInsert = FormTable["Insert"];
+type FormUpdate = FormTable["Update"];
 
 interface ApiKeyResponse {
 	apiKey?: string;
@@ -31,19 +37,18 @@ async function getCurrentUserId(): Promise<string | null> {
 async function updateFormApiSetting(
 	formId: string,
 	userId: string,
-	updates: Record<string, unknown>
+	updates: Partial<Pick<FormUpdate, "api_enabled" | "api_key">>
 ): Promise<boolean> {
 	const athena = await createAthenaServerClient();
 	const { data: form, error } = await athena
-		.from("forms")
+		.from<FormRow, FormInsert, FormUpdate>("forms")
 		.update({
 			...updates,
 			updated_at: new Date().toISOString(),
 		})
 		.eq("id", formId)
 		.eq("user_id", userId)
-		.select("id")
-		.single();
+		.single("id");
 
 	if (error || !form) {
 		return false;

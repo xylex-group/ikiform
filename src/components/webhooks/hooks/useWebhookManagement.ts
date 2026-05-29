@@ -10,6 +10,7 @@ export type WebhookMethod =
 	| "PUT";
 
 export interface WebhookConfig {
+	accountId?: string;
 	createdAt: string;
 	description?: string | null;
 	enabled: boolean;
@@ -26,6 +27,9 @@ export interface WebhookConfig {
 	updatedAt: string;
 	url: string;
 }
+
+const getErrorMessage = (error: unknown): string =>
+	error instanceof Error ? error.message : "Unknown error";
 
 export function useWebhookManagement(options?: { formId?: string }) {
 	const formId = options?.formId;
@@ -47,8 +51,9 @@ export function useWebhookManagement(options?: { formId?: string }) {
 			const data = await res.json();
 			setWebhooks(data);
 		} catch (e: unknown) {
-			setError(e.message);
-			toast.error(e.message || "Failed to fetch webhooks");
+			const message = getErrorMessage(e);
+			setError(message);
+			toast.error(message || "Failed to fetch webhooks");
 		} finally {
 			setLoading(false);
 		}
@@ -69,8 +74,9 @@ export function useWebhookManagement(options?: { formId?: string }) {
 			toast.success("Webhook created!");
 			await fetchWebhooks();
 		} catch (e: unknown) {
-			setError(e.message);
-			toast.error(e.message || "Failed to create webhook");
+			const message = getErrorMessage(e);
+			setError(message);
+			toast.error(message || "Failed to create webhook");
 		} finally {
 			setLoading(false);
 		}
@@ -91,8 +97,9 @@ export function useWebhookManagement(options?: { formId?: string }) {
 			toast.success("Webhook updated!");
 			await fetchWebhooks();
 		} catch (e: unknown) {
-			setError(e.message);
-			toast.error(e.message || "Failed to update webhook");
+			const message = getErrorMessage(e);
+			setError(message);
+			toast.error(message || "Failed to update webhook");
 		} finally {
 			setLoading(false);
 		}
@@ -109,8 +116,9 @@ export function useWebhookManagement(options?: { formId?: string }) {
 			toast.success("Webhook deleted!");
 			await fetchWebhooks();
 		} catch (e: unknown) {
-			setError(e.message);
-			toast.error(e.message || "Failed to delete webhook");
+			const message = getErrorMessage(e);
+			setError(message);
+			toast.error(message || "Failed to delete webhook");
 		} finally {
 			setLoading(false);
 		}

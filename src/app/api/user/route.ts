@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import type { Database } from "@/lib/database/database.types";
 import {
 	sendNewLoginEmail,
 	sendWelcomeEmail,
@@ -6,10 +7,15 @@ import {
 import { sanitizeString } from "@/lib/utils/sanitize";
 import { createClient } from "@/utils/athena/server";
 
-const userCache = new Map<string, { data: unknown; timestamp: number }>();
+type UserTable = Database["public"]["Tables"]["users"];
+type UserRow = UserTable["Row"];
+type UserInsert = UserTable["Insert"];
+type UserUpdate = UserTable["Update"];
+
+const userCache = new Map<string, { data: UserRow; timestamp: number }>();
 const CACHE_TTL = 30_000;
 
-function getCachedUser(email: string) {
+function getCachedUser(email: string): UserRow | null {
 	const cached = userCache.get(email);
 	if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
 		return cached.data;
@@ -17,7 +23,7 @@ function getCachedUser(email: string) {
 	return null;
 }
 
-function setCachedUser(email: string, data: unknown) {
+function setCachedUser(email: string, data: UserRow): void {
 	userCache.set(email, { data, timestamp: Date.now() });
 	if (userCache.size > 1000) {
 		const cutoff = Date.now() - CACHE_TTL;
@@ -34,6 +40,7 @@ export async function POST(request: NextRequest) {
 		const athena = await createClient();
 		const body = await request.json().catch(() => ({}));
 		const { ensureOnly } = body;
+		void ensureOnly;
 
 		const {
 			data: { user },
@@ -44,14 +51,14 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const { id: uid, email, user_metadata } = user;
+		const { id: uid, email } = user;
 		const sanitizedEmail = sanitizeString(email);
 
 		const name =
 			sanitizeString(
-				user_metadata?.full_name ||
-					user_metadata?.name ||
-					user_metadata?.user_name ||
+				user.name ||
+					user.displayUsername ||
+					user.username ||
 					email.split("@")[0]
 			) || "";
 
@@ -68,13 +75,13 @@ export async function POST(request: NextRequest) {
 		}
 
 		const { data: existingUser } = await athena
-			.from("users")
+			.from<UserRow, UserInsert, UserUpdate>("users")
 			.select("has_premium, has_free_trial, polar_customer_id")
 			.eq("email", sanitizedEmail)
 			.single();
 
 		const { data: upsertedUser, error: upsertError } = await athena
-			.from("users")
+			.from<UserRow, UserInsert, UserUpdate>("users")
 			.upsert(
 				{
 					uid,
@@ -86,17 +93,21 @@ export async function POST(request: NextRequest) {
 				},
 				{
 					onConflict: "email",
-					ignoreDuplicates: false,
 				}
 			)
-			.select(
+			.single(
 				"uid, email, name, has_premium, has_free_trial, polar_customer_id, created_at, updated_at"
-			)
-			.single();
+			);
 
 		if (upsertError) {
 			return NextResponse.json(
-				{ error: "Failed to create/update user", details: upsertError.message },
+				{ error: "Failed to create/update user", details: upsertError },
+				{ status: 500 }
+			);
+		}
+		if (!upsertedUser) {
+			return NextResponse.json(
+				{ error: "Failed to create/update user", details: "No user returned" },
 				{ status: 500 }
 			);
 		}
@@ -148,13 +159,17 @@ export async function GET(_request: NextRequest) {
 				authUser: {
 					id: user.id,
 					email: user.email,
-					metadata: user.user_metadata,
+					metadata: {
+						name: user.name ?? null,
+						username: user.username ?? null,
+						image: user.image ?? null,
+					},
 				},
 			});
 		}
 
 		const { data, error } = await athena
-			.from("users")
+			.from<UserRow, UserInsert, UserUpdate>("users")
 			.select(
 				"uid, email, name, has_premium, has_free_trial, polar_customer_id, created_at, updated_at"
 			)
@@ -163,7 +178,13 @@ export async function GET(_request: NextRequest) {
 
 		if (error) {
 			return NextResponse.json(
-				{ error: "User not found in database", details: error.message },
+				{ error: "User not found in database", details: error },
+				{ status: 404 }
+			);
+		}
+		if (!data) {
+			return NextResponse.json(
+				{ error: "User not found in database", details: "No user returned" },
 				{ status: 404 }
 			);
 		}
@@ -176,7 +197,11 @@ export async function GET(_request: NextRequest) {
 			authUser: {
 				id: user.id,
 				email: user.email,
-				metadata: user.user_metadata,
+				metadata: {
+					name: user.name ?? null,
+					username: user.username ?? null,
+					image: user.image ?? null,
+				},
 			},
 		});
 	} catch (error) {

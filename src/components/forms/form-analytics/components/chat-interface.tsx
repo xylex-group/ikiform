@@ -3,9 +3,15 @@
 import { Send, Square } from "lucide-react";
 
 import Image from "next/image";
-import { memo, useEffect, useMemo } from "react";
+import {
+	type ComponentPropsWithoutRef,
+	type CSSProperties,
+	memo,
+	useEffect,
+	useMemo,
+} from "react";
 
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import rehypeSanitize from "rehype-sanitize";
@@ -18,7 +24,10 @@ import { Loader } from "@/components/ui/loader";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 
-import type { ChatInterfaceProps } from "../types";
+import type {
+	ChatMessage as AnalyticsChatMessage,
+	ChatInterfaceProps,
+} from "../types";
 
 function formatContent(content: unknown): string {
 	if (content === null || content === undefined) {
@@ -71,9 +80,9 @@ const ChatMessage = memo(function ChatMessage({
 	index,
 	markdownComponents,
 }: {
-	message: unknown;
+	message: AnalyticsChatMessage;
 	index: number;
-	markdownComponents: unknown;
+	markdownComponents: Components;
 }) {
 	const formattedContent = formatContent(message.content);
 	const isUser = message.role === "user";
@@ -160,50 +169,55 @@ export const ChatInterface = memo(function ChatInterface({
 }: ChatInterfaceProps) {
 	const isEmpty = chatMessages.length === 0;
 
-	const markdownComponents = useMemo(
+	const markdownComponents = useMemo<Components>(
 		() => ({
-			code: ({ inline, className, children, ...props }: unknown) => {
+			code: ({
+				inline,
+				className,
+				children,
+				...codeProps
+			}: ComponentPropsWithoutRef<"code"> & { inline?: boolean }) => {
+				const isInline = inline ?? false;
 				const match = /language-(\w+)/.exec(className || "");
-				return !inline && match ? (
+				return !isInline && match ? (
 					<SyntaxHighlighter
 						className="my-2 rounded-2xl"
 						language={match[1]}
 						PreTag="div"
-						style={oneDark}
-						{...props}
+						style={oneDark as { [key: string]: CSSProperties }}
 					>
 						{String(children).replace(/\n$/, "")}
 					</SyntaxHighlighter>
 				) : (
 					<code
 						className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm"
-						{...props}
+						{...codeProps}
 					>
 						{children}
 					</code>
 				);
 			},
-			p: ({ children, ...props }: unknown) => (
+			p: ({ children, ...props }) => (
 				<p className="mb-2 last:mb-0" {...props}>
 					{children}
 				</p>
 			),
-			h1: ({ children, ...props }: unknown) => (
+			h1: ({ children, ...props }) => (
 				<h1 className="mb-2 font-bold text-xl" {...props}>
 					{children}
 				</h1>
 			),
-			h2: ({ children, ...props }: unknown) => (
+			h2: ({ children, ...props }) => (
 				<h2 className="mb-2 font-semibold text-lg" {...props}>
 					{children}
 				</h2>
 			),
-			h3: ({ children, ...props }: unknown) => (
+			h3: ({ children, ...props }) => (
 				<h3 className="mb-2 font-medium text-md" {...props}>
 					{children}
 				</h3>
 			),
-			ul: ({ children, ...props }: unknown) => (
+			ul: ({ children, ...props }) => (
 				<ul
 					className="mb-2 flex list-inside list-disc flex-col gap-1"
 					{...props}
@@ -211,7 +225,7 @@ export const ChatInterface = memo(function ChatInterface({
 					{children}
 				</ul>
 			),
-			ol: ({ children, ...props }: unknown) => (
+			ol: ({ children, ...props }) => (
 				<ol
 					className="mb-2 flex list-inside list-decimal flex-col gap-1"
 					{...props}
@@ -219,12 +233,12 @@ export const ChatInterface = memo(function ChatInterface({
 					{children}
 				</ol>
 			),
-			li: ({ children, ...props }: unknown) => (
+			li: ({ children, ...props }) => (
 				<li className="ml-2" {...props}>
 					{children}
 				</li>
 			),
-			blockquote: ({ children, ...props }: unknown) => (
+			blockquote: ({ children, ...props }) => (
 				<blockquote
 					className="mb-2 border-primary border-l-4 pl-4 italic"
 					{...props}
@@ -232,7 +246,7 @@ export const ChatInterface = memo(function ChatInterface({
 					{children}
 				</blockquote>
 			),
-			table: ({ children, ...props }: unknown) => (
+			table: ({ children, ...props }) => (
 				<div className="mb-2 overflow-x-auto">
 					<table
 						className="min-w-full border-collapse rounded-2xl border border-border"
@@ -242,7 +256,7 @@ export const ChatInterface = memo(function ChatInterface({
 					</table>
 				</div>
 			),
-			th: ({ children, ...props }: unknown) => (
+			th: ({ children, ...props }) => (
 				<th
 					className="border border-border bg-muted px-3 py-2 text-left font-medium"
 					{...props}
@@ -250,17 +264,17 @@ export const ChatInterface = memo(function ChatInterface({
 					{children}
 				</th>
 			),
-			td: ({ children, ...props }: unknown) => (
+			td: ({ children, ...props }) => (
 				<td className="border border-border px-3 py-2" {...props}>
 					{children}
 				</td>
 			),
-			strong: ({ children, ...props }: unknown) => (
+			strong: ({ children, ...props }) => (
 				<strong className="font-semibold" {...props}>
 					{children}
 				</strong>
 			),
-			em: ({ children, ...props }: unknown) => (
+			em: ({ children, ...props }) => (
 				<em className="italic" {...props}>
 					{children}
 				</em>

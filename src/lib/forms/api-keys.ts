@@ -1,6 +1,16 @@
 import "server-only";
 
+import type { Database } from "@/lib/database/database.types";
 import { createAthenaServerClient } from "@/utils/athena/server";
+
+type FormTable = Database["public"]["Tables"]["forms"];
+type FormRow = FormTable["Row"];
+type FormInsert = FormTable["Insert"];
+type FormUpdate = FormTable["Update"];
+
+type FormApiKeyResult =
+	| { success: true; form: FormRow }
+	| { success: false; error: string };
 
 export function generateApiKey(): string {
 	const timestamp = Date.now().toString(36);
@@ -31,7 +41,7 @@ export async function generateFormApiKey(formId: string): Promise<{
 		const apiKey = generateApiKey();
 
 		const { error } = await athena
-			.from("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms")
 			.update({
 				api_key: apiKey,
 				api_enabled: true,
@@ -67,7 +77,7 @@ export async function revokeFormApiKey(formId: string): Promise<{
 		}
 
 		const { error } = await athena
-			.from("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms")
 			.update({
 				api_key: null,
 				api_enabled: false,
@@ -106,7 +116,7 @@ export async function toggleFormApiEnabled(
 		}
 
 		const { error } = await athena
-			.from("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms")
 			.update({
 				api_enabled: enabled,
 				updated_at: new Date().toISOString(),
@@ -126,11 +136,9 @@ export async function toggleFormApiEnabled(
 	}
 }
 
-export async function getFormByApiKey(apiKey: string): Promise<{
-	success: boolean;
-	form?: unknown;
-	error?: string;
-}> {
+export async function getFormByApiKey(
+	apiKey: string
+): Promise<FormApiKeyResult> {
 	try {
 		if (!isValidApiKeyFormat(apiKey)) {
 			return { success: false, error: "Invalid API key format" };
@@ -139,7 +147,7 @@ export async function getFormByApiKey(apiKey: string): Promise<{
 		const athena = await createAthenaServerClient();
 
 		const { data: form, error } = await athena
-			.from("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms")
 			.select("*")
 			.eq("api_key", apiKey)
 			.eq("api_enabled", true)
@@ -159,11 +167,7 @@ export async function getFormByApiKey(apiKey: string): Promise<{
 export async function validateFormApiAccess(
 	apiKey: string,
 	formId: string
-): Promise<{
-	success: boolean;
-	form?: unknown;
-	error?: string;
-}> {
+): Promise<FormApiKeyResult> {
 	try {
 		if (!isValidApiKeyFormat(apiKey)) {
 			return { success: false, error: "Invalid API key format" };
@@ -172,7 +176,7 @@ export async function validateFormApiAccess(
 		const athena = await createAthenaServerClient();
 
 		const { data: form, error } = await athena
-			.from("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms")
 			.select("*")
 			.eq("id", formId)
 			.eq("api_key", apiKey)

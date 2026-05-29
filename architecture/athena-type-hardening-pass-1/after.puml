@@ -1,0 +1,29 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam ArrowColor #000000
+skinparam PackageBorderColor #000000
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #000000
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #000000
+skinparam NoteBackgroundColor #FFFFFF
+
+package "API / DB Layer (After)" {
+  rectangle "Typed Table Aliases\nDatabase['public']['Tables'][...]" as aliases
+  rectangle "Typed Query Helpers\nfrom<TableRow, Insert, Update>(\"table\")" as helpers
+  rectangle "Correct Athena Mutations\ninsert(...).single()\nupdate(...).single()\nfilters before delete()" as mutations
+  rectangle "Safe Data Narrowing\nvalidated payload records\ndiscriminated API-key validation\nstring error handling" as narrowing
+
+  aliases --> helpers
+  helpers --> mutations
+  helpers --> narrowing
+}
+
+note right of narrowing
+Result:
+- targeted files type-check clean
+- no implicit any/unknown in patched paths
+- compatible with Athena v2 query surface
+end note
+@enduml

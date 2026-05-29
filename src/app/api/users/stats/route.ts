@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient as createAdminClient } from "@/utils/athena/admin";
 
+interface UserNameRow {
+	name: string | null;
+}
+
 export async function GET() {
 	try {
 		const athena = createAdminClient();
@@ -8,7 +12,7 @@ export async function GET() {
 		const [countResult, usersResult] = await Promise.all([
 			athena.from("users").select("*", { count: "exact", head: true }),
 			athena
-				.from("users")
+				.from<UserNameRow>("users")
 				.select("name")
 				.order("created_at", { ascending: false })
 				.limit(5),
@@ -17,7 +21,7 @@ export async function GET() {
 		if (countResult.error) {
 			console.error("[USERS_STATS] Count error:", countResult.error);
 			return NextResponse.json(
-				{ count: null, users: [], error: countResult.error.message },
+				{ count: null, users: [], error: countResult.error },
 				{ status: 500 }
 			);
 		}
@@ -28,7 +32,7 @@ export async function GET() {
 				{
 					count: countResult.count ?? 0,
 					users: [],
-					error: usersResult.error.message,
+					error: usersResult.error,
 				},
 				{ status: 500 }
 			);
@@ -44,7 +48,9 @@ export async function GET() {
 			}
 			const parts = trimmed.split(/\s+/);
 			if (parts.length >= 2) {
-				return (parts[0][0] + parts.at(-1)?.[0]).toUpperCase();
+				const first = parts[0]?.[0] ?? "U";
+				const last = parts.at(-1)?.[0] ?? "";
+				return (first + last).toUpperCase();
 			}
 			return trimmed.slice(0, 2).toUpperCase();
 		};

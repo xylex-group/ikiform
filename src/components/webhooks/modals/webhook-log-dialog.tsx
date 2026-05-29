@@ -42,6 +42,28 @@ interface WebhookLogDrawerProps {
 	webhookId: string | null;
 }
 
+type JsonRecord = Record<string, unknown>;
+
+interface PayloadField {
+	id?: string;
+	label?: string;
+	type?: string;
+	value?: unknown;
+}
+
+const isRecord = (value: unknown): value is JsonRecord =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const toRecord = (value: unknown): JsonRecord | null =>
+	isRecord(value) ? value : null;
+
+const getErrorMessage = (error: unknown): string =>
+	error instanceof Error ? error.message : "Unknown error";
+
+const isPayloadViewMode = (
+	value: string
+): value is "formatted" | "raw" => value === "formatted" || value === "raw";
+
 function CodeBlock({
 	code,
 	className = "",
@@ -120,10 +142,11 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 		}
 	}
 
+	const payloadRecord = toRecord(parsedPayload);
+
 	if (
 		!parsedPayload ||
-		(typeof parsedPayload === "object" &&
-			Object.keys(parsedPayload).length === 0)
+		(payloadRecord && Object.keys(payloadRecord).length === 0)
 	) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
@@ -144,17 +167,26 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 		);
 	}
 
-	function getEventName(payload: unknown): string | undefined {
-		if (payload.event) {
-			return payload.event;
+	function getEventName(record: JsonRecord | null): string | undefined {
+		if (!record) {
+			return;
 		}
 
-		if (Array.isArray(payload.embeds) && payload.embeds.length > 0) {
-			if (payload.embeds[0].title) {
-				return payload.embeds[0].title;
+		const directEvent = record.event;
+		if (typeof directEvent === "string" && directEvent) {
+			return directEvent;
+		}
+
+		const embeds = record.embeds;
+		if (Array.isArray(embeds) && embeds.length > 0) {
+			const firstEmbed = toRecord(embeds[0]);
+			const title = firstEmbed?.title;
+			if (typeof title === "string" && title) {
+				return title;
 			}
-			if (payload.embeds[0].description) {
-				return payload.embeds[0].description;
+			const description = firstEmbed?.description;
+			if (typeof description === "string" && description) {
+				return description;
 			}
 		}
 
@@ -168,23 +200,39 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 
 		return (
 			<div className="flex flex-col gap-3">
-				{fields.map((field, index) => (
-					<div className="rounded-lg border bg-card p-3" key={index}>
-						<div className="mb-2 flex items-center gap-2">
-							<span className="font-medium text-sm">
-								{field.label || field.id}
-							</span>
-							{field.type && (
-								<Badge className="text-xs" variant="outline">
-									{field.type}
-								</Badge>
-							)}
+				{fields.map((field, index) => {
+					const fieldRecord = toRecord(field);
+					const normalizedField: PayloadField | null = fieldRecord
+						? {
+								id: typeof fieldRecord.id === "string" ? fieldRecord.id : undefined,
+								label:
+									typeof fieldRecord.label === "string"
+										? fieldRecord.label
+										: undefined,
+								type:
+									typeof fieldRecord.type === "string" ? fieldRecord.type : undefined,
+								value: fieldRecord.value,
+							}
+						: null;
+
+					return (
+						<div className="rounded-lg border bg-card p-3" key={index}>
+							<div className="mb-2 flex items-center gap-2">
+								<span className="font-medium text-sm">
+									{normalizedField?.label || normalizedField?.id || "Field"}
+								</span>
+								{normalizedField?.type && (
+									<Badge className="text-xs" variant="outline">
+										{normalizedField.type}
+									</Badge>
+								)}
+							</div>
+							<div className="text-muted-foreground text-sm">
+								<span>{formatValue(normalizedField?.value)}</span>
+							</div>
 						</div>
-						<div className="text-muted-foreground text-sm">
-							<span>{formatValue(field.value)}</span>
-						</div>
-					</div>
-				))}
+					);
+				})}
 			</div>
 		);
 	}
@@ -219,7 +267,10 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 		return String(value);
 	}
 
-	function getAdditionalDataKeys(payload: unknown) {
+	function getAdditionalDataKeys(record: JsonRecord | null) {
+		if (!record) {
+			return [];
+		}
 		const knownKeys = [
 			"event",
 			"formId",
@@ -229,11 +280,30 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 			"fields",
 			"rawData",
 		];
-		return Object.keys(payload).filter((key) => !knownKeys.includes(key));
+		return Object.keys(record).filter((key) => !knownKeys.includes(key));
 	}
 
 	function FormattedView() {
-		const eventName = getEventName(parsedPayload);
+		const eventName = getEventName(payloadRecord);
+		const fields = Array.isArray(payloadRecord?.fields)
+			? payloadRecord.fields
+			: null;
+		const rawData = toRecord(payloadRecord?.rawData);
+		const additionalKeys = getAdditionalDataKeys(payloadRecord);
+		const formId =
+			typeof payloadRecord?.formId === "string" ? payloadRecord.formId : null;
+		const formName =
+			typeof payloadRecord?.formName === "string"
+				? payloadRecord.formName
+				: null;
+		const submissionId =
+			typeof payloadRecord?.submissionId === "string"
+				? payloadRecord.submissionId
+				: null;
+		const ipAddress =
+			typeof payloadRecord?.ipAddress === "string"
+				? payloadRecord.ipAddress
+				: null;
 
 		return (
 			<div className="flex flex-col gap-6">
@@ -250,33 +320,33 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 								{eventName || "Unknown"}
 							</Badge>
 						</div>
-						{parsedPayload.formId && (
+						{formId && (
 							<div className="flex items-center justify-between">
 								<span className="text-muted-foreground">Form ID:</span>
 								<code className="rounded-md bg-muted px-2 py-1 font-mono text-xs">
-									{parsedPayload.formId}
+									{formId}
 								</code>
 							</div>
 						)}
-						{parsedPayload.formName && (
+						{formName && (
 							<div className="flex items-center justify-between">
 								<span className="text-muted-foreground">Form Name:</span>
-								<span className="font-medium">{parsedPayload.formName}</span>
+								<span className="font-medium">{formName}</span>
 							</div>
 						)}
-						{parsedPayload.submissionId && (
+						{submissionId && (
 							<div className="flex items-center justify-between">
 								<span className="text-muted-foreground">Submission ID:</span>
 								<code className="rounded-md bg-muted px-2 py-1 font-mono text-xs">
-									{parsedPayload.submissionId}
+									{submissionId}
 								</code>
 							</div>
 						)}
-						{parsedPayload.ipAddress && (
+						{ipAddress && (
 							<div className="flex items-center justify-between">
 								<span className="text-muted-foreground">IP Address:</span>
 								<code className="rounded-md bg-muted px-2 py-1 font-mono text-xs">
-									{parsedPayload.ipAddress}
+									{ipAddress}
 								</code>
 							</div>
 						)}
@@ -284,19 +354,19 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 				</div>
 
 				{}
-				{parsedPayload.fields && (
+				{fields && (
 					<div className="rounded-xl border bg-card p-4">
 						<h4 className="mb-4 font-semibold text-sm">Form Fields</h4>
-						{formatFormFields(parsedPayload.fields)}
+						{formatFormFields(fields)}
 					</div>
 				)}
 
 				{}
-				{parsedPayload.rawData && (
+				{rawData && (
 					<div className="rounded-xl border bg-card p-4">
 						<h4 className="mb-4 font-semibold text-sm">Raw Form Data</h4>
 						<div className="flex flex-col gap-3">
-							{Object.entries(parsedPayload.rawData).map(([key, value]) => (
+							{Object.entries(rawData).map(([key, value]) => (
 								<div
 									className="flex items-start justify-between gap-3 rounded-lg border bg-muted/50 p-3"
 									key={key}
@@ -314,12 +384,12 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 				)}
 
 				{}
-				{getAdditionalDataKeys(parsedPayload).length > 0 && (
+				{additionalKeys.length > 0 && (
 					<div className="rounded-xl border bg-card p-4">
 						<h4 className="mb-4 font-semibold text-sm">Additional Data</h4>
 						<div className="flex flex-col gap-3">
-							{getAdditionalDataKeys(parsedPayload).map((key) => {
-								const value = parsedPayload[key];
+							{additionalKeys.map((key) => {
+								const value = payloadRecord?.[key];
 
 								let displayValue: React.ReactNode;
 								if (typeof value === "object" && value !== null) {
@@ -369,7 +439,11 @@ function PayloadViewer({ payload }: { payload: unknown }) {
 	return (
 		<div className="flex flex-col gap-4">
 			<Tabs
-				onValueChange={(value) => setViewMode(value as "formatted" | "raw")}
+				onValueChange={(value) => {
+					if (isPayloadViewMode(value)) {
+						setViewMode(value);
+					}
+				}}
 				value={viewMode}
 			>
 				<TabsList>
@@ -546,7 +620,7 @@ export function WebhookLogDialog({
 			const data = await res.json();
 			setLogs(Array.isArray(data) ? data : []);
 		} catch (e: unknown) {
-			setError(e.message || "Failed to fetch logs");
+			setError(getErrorMessage(e) || "Failed to fetch logs");
 		} finally {
 			setLoading(false);
 		}

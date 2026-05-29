@@ -4,6 +4,14 @@ import { requirePremium } from "@/lib/utils/premium-check";
 import { sanitizeString } from "@/lib/utils/sanitize";
 import { createClient } from "@/utils/athena/server";
 
+interface SaveChatMessageBody {
+	content: string;
+	formId: string;
+	metadata?: Record<string, unknown>;
+	role: "assistant" | "system" | "user";
+	sessionId: string;
+}
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
 	try {
 		const athena = await createClient();
@@ -35,11 +43,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 			);
 		}
 
-		const chatHistory = await formsDbServer.getAIAnalyticsChatHistory(
-			user.id,
-			formId,
-			sessionId
-		);
+		const chatHistory =
+			(await formsDbServer.getAIAnalyticsChatHistory(
+				user.id,
+				formId,
+				sessionId
+			)) ?? [];
 
 		return NextResponse.json({
 			success: true,
@@ -78,19 +87,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 			);
 		}
 
-		const body = await req.json();
+		const body = (await req.json()) as Partial<SaveChatMessageBody>;
 		const { formId, sessionId, role, content, metadata = {} } = body;
 
-		if (!(formId && sessionId && role && content)) {
+		if (
+			typeof formId !== "string" ||
+			typeof sessionId !== "string" ||
+			(role !== "user" && role !== "assistant" && role !== "system") ||
+			typeof content !== "string"
+		) {
 			return NextResponse.json(
 				{ error: "Form ID, session ID, role, and content are required" },
-				{ status: 400 }
-			);
-		}
-
-		if (!["user", "assistant", "system"].includes(role)) {
-			return NextResponse.json(
-				{ error: "Invalid role. Must be 'user', 'assistant', or 'system'" },
 				{ status: 400 }
 			);
 		}

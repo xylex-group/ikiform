@@ -1,10 +1,15 @@
 "use server";
 
+import type { Database } from "@/lib/database/database.types";
 import { sendFormNotification } from "@/lib/services/notifications";
-// @ts-nocheck -- Temporary during Supabase → Athena migration (loose row shapes + complex queries)
 import { createClient as createAdminClient } from "@/utils/athena/admin";
 
 const EMAIL_SEPARATOR_REGEX = /[\n,]/;
+
+type UserTable = Database["public"]["Tables"]["users"];
+type UserRow = UserTable["Row"];
+type UserInsert = UserTable["Insert"];
+type UserUpdate = UserTable["Update"];
 
 export type AnnouncementResult =
 	| { ok: true; sent: number }
@@ -19,11 +24,10 @@ export async function sendAnnouncementAction(
 	if (!toRaw) {
 		const admin = createAdminClient();
 		const { data, error } = await admin
-			.from("users")
-			.select("email")
-			.returns<{ email: string }[]>();
+			.from<UserRow, UserInsert, UserUpdate>("users")
+			.select("email");
 		if (error) {
-			return { ok: false, error: error.message };
+			return { ok: false, error };
 		}
 		toRaw = (data || []).map((r) => r.email).join(", ");
 	}
@@ -74,14 +78,14 @@ export async function expireTrialsAction(): Promise<ExpireTrialsResult> {
 		);
 
 		const { data: debugUsers, error: debugError } = await athena
-			.from("users")
+			.from<UserRow, UserInsert, UserUpdate>("users")
 			.select("uid, email, name, has_premium, has_free_trial, created_at")
 			.eq("has_premium", true)
 			.eq("has_free_trial", true);
 
 		if (debugError) {
 			logs.push(
-				`[${new Date().toISOString()}] Error fetching debug users: ${debugError.message}`
+				`[${new Date().toISOString()}] Error fetching debug users: ${debugError}`
 			);
 		}
 
@@ -120,7 +124,7 @@ export async function expireTrialsAction(): Promise<ExpireTrialsResult> {
 		}
 
 		const { data, error } = await athena
-			.from("users")
+			.from<UserRow, UserInsert, UserUpdate>("users")
 			.update({
 				has_premium: false,
 				has_free_trial: false,
@@ -133,11 +137,11 @@ export async function expireTrialsAction(): Promise<ExpireTrialsResult> {
 
 		if (error) {
 			logs.push(
-				`[${new Date().toISOString()}] Error updating trial users: ${error.message}`
+				`[${new Date().toISOString()}] Error updating trial users: ${error}`
 			);
 			return {
 				ok: false,
-				error: error.message,
+				error,
 				logs,
 			};
 		}

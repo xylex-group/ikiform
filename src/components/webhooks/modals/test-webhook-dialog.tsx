@@ -22,6 +22,11 @@ interface TestWebhookDialogProps {
 	webhook: WebhookConfig | null;
 }
 
+const isTestMode = (
+	value: string
+): value is "real" | "success" | "failure" =>
+	value === "real" || value === "success" || value === "failure";
+
 export function TestWebhookDialog({
 	webhook,
 	open,
@@ -152,7 +157,11 @@ export function TestWebhookDialog({
 						<h3 className="font-medium text-sm">Mode</h3>
 						<RadioGroup
 							className="grid grid-cols-3 gap-2"
-							onValueChange={(v) => setMode(v as unknown)}
+							onValueChange={(value) => {
+								if (isTestMode(value)) {
+									setMode(value);
+								}
+							}}
 							value={mode}
 						>
 							<Label

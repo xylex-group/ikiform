@@ -24,10 +24,16 @@ function mapInboundMappingRow(
 ): InboundWebhookMapping {
 	const { created_at, updated_at, target_form_id, mapping_rules, ...rest } =
 		row;
+	const mappingRules =
+		mapping_rules &&
+		typeof mapping_rules === "object" &&
+		!Array.isArray(mapping_rules)
+			? (mapping_rules as Record<string, string>)
+			: {};
 	return {
 		...rest,
 		targetFormId: target_form_id,
-		mappingRules: mapping_rules as Record<string, string>,
+		mappingRules,
 		createdAt: created_at,
 		updatedAt: updated_at,
 	};
@@ -54,12 +60,15 @@ export async function createInboundMapping(
 	};
 
 	const { data: result, error } = await athena
-		.from("inbound_webhook_mappings")
-		.insert([insertData] as unknown)
-		.select()
+		.from<
+			InboundWebhookMappingRow,
+			InboundWebhookMappingInsert,
+			InboundWebhookMappingUpdate
+		>("inbound_webhook_mappings")
+		.insert(insertData)
 		.single();
 	if (error || !result) {
-		throw new Error(error?.message || "Failed to create inbound mapping");
+		throw new Error(error || "Failed to create inbound mapping");
 	}
 	return mapInboundMappingRow(result);
 }
@@ -70,14 +79,20 @@ export async function getInboundMappings({
 	targetFormId?: string;
 } = {}): Promise<InboundWebhookMapping[]> {
 	const athena = createAthenaAdminClient();
-	let query = athena.from("inbound_webhook_mappings").select("*");
+	let query = athena
+		.from<
+			InboundWebhookMappingRow,
+			InboundWebhookMappingInsert,
+			InboundWebhookMappingUpdate
+		>("inbound_webhook_mappings")
+		.select("*");
 	if (targetFormId) {
 		query = query.eq("target_form_id", targetFormId);
 	}
 	query = query.order("created_at", { ascending: false });
 	const { data, error } = await query;
 	if (error) {
-		throw new Error(error.message);
+		throw new Error(error);
 	}
 	return Array.isArray(data) ? data.map(mapInboundMappingRow) : [];
 }
@@ -98,15 +113,17 @@ export async function updateInboundMapping(
 		updated_at: now,
 	};
 
-	const { data: result, error } = await (
-		athena.from("inbound_webhook_mappings") as unknown
-	)
+	const { data: result, error } = await athena
+		.from<
+			InboundWebhookMappingRow,
+			InboundWebhookMappingInsert,
+			InboundWebhookMappingUpdate
+		>("inbound_webhook_mappings")
 		.update(updateData)
 		.eq("id", id)
-		.select()
 		.single();
 	if (error || !result) {
-		throw new Error(error?.message || "Failed to update inbound mapping");
+		throw new Error(error || "Failed to update inbound mapping");
 	}
 	return mapInboundMappingRow(result);
 }
@@ -114,10 +131,14 @@ export async function updateInboundMapping(
 export async function deleteInboundMapping(id: string): Promise<void> {
 	const athena = createAthenaAdminClient();
 	const { error } = await athena
-		.from("inbound_webhook_mappings")
-		.delete()
-		.eq("id", id);
+		.from<
+			InboundWebhookMappingRow,
+			InboundWebhookMappingInsert,
+			InboundWebhookMappingUpdate
+		>("inbound_webhook_mappings")
+		.eq("id", id)
+		.delete();
 	if (error) {
-		throw new Error(error.message);
+		throw new Error(error);
 	}
 }

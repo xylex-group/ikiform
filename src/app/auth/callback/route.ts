@@ -3,9 +3,18 @@ import {
 	sendNewLoginEmail,
 	sendWelcomeEmail,
 } from "@/lib/services/notifications";
+import type { Database } from "@/lib/database/database.types";
 
 import { createAthenaAuthClient } from "@/utils/athena/auth-client";
 import { createAthenaServerClient } from "@/utils/athena/server";
+
+type UserTable = Database["public"]["Tables"]["users"];
+type UserInsert = UserTable["Insert"];
+type UserRow = UserTable["Row"];
+type UserUpdate = UserTable["Update"];
+
+const toRecord = (value: unknown): Record<string, unknown> | null =>
+	typeof value === "object" && value !== null ? (value as Record<string, unknown>) : null;
 
 export async function GET(request: NextRequest) {
 	const { searchParams, origin } = new URL(request.url);
@@ -19,21 +28,35 @@ export async function GET(request: NextRequest) {
 		const sessionResult = await auth.getSession();
 
 		if (sessionResult.ok && sessionResult.data) {
-			const user = sessionResult.data.user;
+			const sessionData = sessionResult.data as
+				| { session?: { user?: unknown }; user?: unknown }
+				| undefined;
+			const sessionUser = sessionData?.session?.user ?? sessionData?.user ?? null;
 
-			if (user) {
-				const { id: uid, email, user_metadata } = user as unknown;
+			if (sessionUser) {
+				const sessionUserRecord = toRecord(sessionUser);
+				const uid = sessionUserRecord?.id;
+				const email = sessionUserRecord?.email;
 
-				if (email) {
+				if (typeof uid === "string" && typeof email === "string") {
+					const userMetadata = toRecord(sessionUserRecord?.user_metadata);
+					const fallbackName =
+						typeof sessionUserRecord?.name === "string"
+							? sessionUserRecord.name
+							: typeof sessionUserRecord?.username === "string"
+								? sessionUserRecord.username
+								: email.split("@")[0];
 					const name =
-						user_metadata?.full_name ||
-						user_metadata?.name ||
-						user_metadata?.user_name ||
-						email.split("@")[0] ||
+						(typeof userMetadata?.full_name === "string" &&
+							userMetadata.full_name) ||
+						(typeof userMetadata?.name === "string" && userMetadata.name) ||
+						(typeof userMetadata?.user_name === "string" &&
+							userMetadata.user_name) ||
+						fallbackName ||
 						"";
 					const athena = await createAthenaServerClient();
 					const { data: existingUser } = await athena
-						.from("users")
+						.from<UserRow, UserInsert, UserUpdate>("users")
 						.select("email, has_premium, has_free_trial, polar_customer_id")
 						.eq("email", email)
 						.single();
@@ -68,7 +91,7 @@ export async function GET(request: NextRequest) {
 					}
 
 					const { error: upsertError } = await athena
-						.from("users")
+						.from<UserRow, UserInsert, UserUpdate>("users")
 						.upsert(upsertData, { onConflict: "email" });
 
 					if (!upsertError) {
