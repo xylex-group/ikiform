@@ -7,7 +7,7 @@ interface FormSettingsDesktopLayoutProps {
 	activeSection: FormSettingsSection;
 	onClose: () => void;
 	onSectionChange: (section: FormSettingsSection) => void;
-	sectionProps: any;
+	sectionProps: unknown;
 }
 
 export function FormSettingsDesktopLayout({
@@ -28,11 +28,7 @@ export function FormSettingsDesktopLayout({
 					activeSection={activeSection}
 					onSectionChange={onSectionChange}
 				/>
-				<nav
-					aria-label="Settings sections"
-					className="flex flex-col gap-1"
-					role="navigation"
-				>
+				<nav aria-label="Settings sections" className="flex flex-col gap-1">
 					{FORM_SETTINGS_SECTIONS.map((section) => {
 						const isActive = activeSection === section.id;
 						return (

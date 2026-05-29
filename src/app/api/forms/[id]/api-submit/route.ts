@@ -16,7 +16,7 @@ import { checkFormRateLimit } from "@/lib/forms/rate-limit";
 import { sanitizeString } from "@/lib/utils/sanitize";
 import { createProfanityFilter } from "@/lib/validation/profanity-filter";
 
-function sanitizeObjectStrings(obj: any): any {
+function sanitizeObjectStrings(obj: unknown): unknown {
 	if (typeof obj === "string") {
 		return sanitizeString(obj);
 	}
@@ -24,7 +24,7 @@ function sanitizeObjectStrings(obj: any): any {
 		return obj.map(sanitizeObjectStrings);
 	}
 	if (obj && typeof obj === "object") {
-		const result: any = {};
+		const result: unknown = {};
 		for (const key in obj) {
 			result[key] = sanitizeObjectStrings(obj[key]);
 		}
@@ -43,7 +43,7 @@ export async function POST(
 		const { data: submissionData } = body;
 
 		const authHeader = request.headers.get("authorization");
-		if (!(authHeader && authHeader.startsWith("Bearer "))) {
+		if (!authHeader?.startsWith("Bearer ")) {
 			return NextResponse.json(
 				{
 					error:
@@ -220,7 +220,7 @@ export async function GET(
 		const { id: formId } = await params;
 
 		const authHeader = request.headers.get("authorization");
-		if (!(authHeader && authHeader.startsWith("Bearer "))) {
+		if (!authHeader?.startsWith("Bearer ")) {
 			return NextResponse.json(
 				{
 					error:
@@ -242,7 +242,7 @@ export async function GET(
 
 		const form = validationResult.form;
 
-		const fields = form.schema.fields.map((field: any) => ({
+		const fields = form.schema.fields.map((field: unknown) => ({
 			id: field.id,
 			type: field.type,
 			label: field.label,
@@ -286,4 +286,3 @@ export async function GET(
 		);
 	}
 }
-

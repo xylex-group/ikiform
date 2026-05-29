@@ -208,7 +208,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
 								: f
 						)
 					);
-				} catch (error) {
+				} catch (_error) {
 					setFiles((prev) =>
 						prev.map((f) =>
 							newFiles.find((nf) => nf.id === f.id)

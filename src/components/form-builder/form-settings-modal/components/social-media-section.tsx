@@ -27,8 +27,8 @@ import type { SocialMediaSectionProps } from "../types";
 
 interface BrandingSectionProps extends SocialMediaSectionProps {
 	formId?: string;
-	schema?: any;
-	updateSettings: (updates: any) => void;
+	schema?: unknown;
+	updateSettings: (updates: unknown) => void;
 }
 
 export function BrandingSection({
@@ -63,12 +63,12 @@ export function BrandingSection({
 			);
 	}, [hasChanges]);
 
-	const wrappedUpdateSocial = (updates: any) => {
+	const wrappedUpdateSocial = (updates: unknown) => {
 		updateSocialMedia(updates);
 		setHasChanges(true);
 		setSaved(false);
 	};
-	const wrappedUpdateSettings = (updates: any) => {
+	const wrappedUpdateSettings = (updates: unknown) => {
 		updateSettings(updates);
 		setHasChanges(true);
 		setSaved(false);
@@ -82,7 +82,7 @@ export function BrandingSection({
 		wrappedUpdateSocial({ platforms: updatedPlatforms });
 	};
 
-	const handleSettingChange = (key: string, value: any) => {
+	const handleSettingChange = (key: string, value: unknown) => {
 		wrappedUpdateSocial({ [key]: value });
 	};
 
@@ -93,7 +93,7 @@ export function BrandingSection({
 	};
 
 	const resetBranding = () => {
-		const original = (schema?.settings as any)?.branding || {};
+		const original = (schema?.settings as unknown)?.branding || {};
 		wrappedUpdateSettings({ branding: original });
 		setHasChanges(false);
 	};
@@ -127,7 +127,9 @@ export function BrandingSection({
 					branding: trimmed,
 				},
 			};
-			await formsDb.updateForm(formId, user.id, { schema: newSchema as any });
+			await formsDb.updateForm(formId, user.id, {
+				schema: newSchema as unknown,
+			});
 			setSaved(true);
 			setHasChanges(false);
 			toast.success("Branding settings saved successfully");

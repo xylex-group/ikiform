@@ -39,7 +39,7 @@ export function SchedulerFieldSettings({
 					</Label>
 					<Select
 						onValueChange={(val) =>
-							onUpdateSettings({ schedulerProvider: val as any })
+							onUpdateSettings({ schedulerProvider: val as unknown })
 						}
 						value={field.settings?.schedulerProvider || ""}
 					>
@@ -81,7 +81,7 @@ export function SchedulerFieldSettings({
 							id="scheduler-link"
 							name="scheduler-link"
 							onChange={(e) => {
-								if (!(field.settings && field.settings.schedulerProvider)) {
+								if (!field.settings?.schedulerProvider) {
 									return;
 								}
 								onUpdateSettings({
@@ -99,7 +99,7 @@ export function SchedulerFieldSettings({
 							placeholder="https://..."
 							type="url"
 							value={
-								field.settings && field.settings.schedulerProvider
+								field.settings?.schedulerProvider
 									? field.settings.schedulerLinks?.[
 											field.settings.schedulerProvider
 										] || ""

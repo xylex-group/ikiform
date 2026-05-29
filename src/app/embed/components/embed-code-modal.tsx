@@ -338,7 +338,7 @@ export default function EmbedCodeModal({
 		},
 	];
 
-	const activeMode = embedModes.find((mode) => mode.id === embedMode);
+	const _activeMode = embedModes.find((mode) => mode.id === embedMode);
 
 	return (
 		<Modal onOpenChange={onClose} open={isOpen}>

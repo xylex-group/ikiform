@@ -216,7 +216,7 @@ export function generateIdentifier(
 }
 
 export function extractEmailFromSubmissionData(
-	submissionData: Record<string, any>
+	submissionData: Record<string, unknown>
 ): string | undefined {
 	const emailFields = [
 		"email",

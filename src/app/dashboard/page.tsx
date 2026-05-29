@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createClient } from "@/lib/athena/server";
+import { ensureDefaultFormSettings } from "@/lib/forms";
 import DashboardClient from "./dashboard-client";
 
 // Skeleton components for streaming
@@ -102,5 +102,3 @@ export default function DashboardPage() {
 		</Suspense>
 	);
 }
-
-

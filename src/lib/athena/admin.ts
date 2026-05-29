@@ -1,4 +1,7 @@
-import { createClient as createAthenaClient, type AthenaClient } from "@xylex-group/athena";
+import {
+	type AthenaClient,
+	createClient as createAthenaClient,
+} from "@xylex-group/athena";
 
 /**
  * Privileged admin / service-role Athena client.

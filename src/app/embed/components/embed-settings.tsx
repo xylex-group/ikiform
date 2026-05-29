@@ -175,7 +175,7 @@ export default function EmbedSettings({
 								min="0"
 								onChange={(e) =>
 									updateConfig({
-										borderWidth: Number.parseInt(e.target.value) || 0,
+										borderWidth: Number.parseInt(e.target.value, 10) || 0,
 									})
 								}
 								type="number"
@@ -190,7 +190,7 @@ export default function EmbedSettings({
 								min="0"
 								onChange={(e) =>
 									updateConfig({
-										borderRadius: Number.parseInt(e.target.value) || 0,
+										borderRadius: Number.parseInt(e.target.value, 10) || 0,
 									})
 								}
 								type="number"
@@ -207,7 +207,9 @@ export default function EmbedSettings({
 						max="100"
 						min="0"
 						onChange={(e) =>
-							updateConfig({ padding: Number.parseInt(e.target.value) || 0 })
+							updateConfig({
+								padding: Number.parseInt(e.target.value, 10) || 0,
+							})
 						}
 						type="number"
 						value={config.padding.toString()}

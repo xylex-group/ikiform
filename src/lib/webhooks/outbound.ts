@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { formsDbServer } from "@/lib/database/database.server";
 import type {
 	Database,
@@ -18,23 +18,23 @@ type WebhookLogInsert = Database["public"]["Tables"]["webhook_logs"]["Insert"];
 
 function mapWebhookRow(row: Omit<WebhookRow, "secret">): WebhookConfig {
 	return {
-		id: (row as any).id,
-		formId: (row as any).form_id ?? undefined,
-		accountId: (row as any).account_id ?? undefined,
-		name: (row as any).name ?? null,
-		description: (row as any).description ?? null,
-		url: (row as any).url,
-		events: (row as any).events as any,
+		id: (row as unknown).id,
+		formId: (row as unknown).form_id ?? undefined,
+		accountId: (row as unknown).account_id ?? undefined,
+		name: (row as unknown).name ?? null,
+		description: (row as unknown).description ?? null,
+		url: (row as unknown).url,
+		events: (row as unknown).events as unknown,
 		secret: undefined,
-		method: (row as any).method as any,
-		headers: ((row as any).headers as any) ?? undefined,
-		payloadTemplate: (row as any).payload_template ?? undefined,
-		enabled: (row as any).enabled,
-		notificationEmail: (row as any).notification_email ?? null,
-		notifyOnSuccess: (row as any).notify_on_success ?? false,
-		notifyOnFailure: (row as any).notify_on_failure ?? true,
-		createdAt: (row as any).created_at,
-		updatedAt: (row as any).updated_at,
+		method: (row as unknown).method as unknown,
+		headers: ((row as unknown).headers as unknown) ?? undefined,
+		payloadTemplate: (row as unknown).payload_template ?? undefined,
+		enabled: (row as unknown).enabled,
+		notificationEmail: (row as unknown).notification_email ?? null,
+		notifyOnSuccess: (row as unknown).notify_on_success ?? false,
+		notifyOnFailure: (row as unknown).notify_on_failure ?? true,
+		createdAt: (row as unknown).created_at,
+		updatedAt: (row as unknown).updated_at,
 	} satisfies WebhookConfig as WebhookConfig;
 }
 
@@ -110,8 +110,8 @@ export async function createWebhook(
 
 	const athena = createAthenaAdminClient();
 
-	if ((data.formId || (data as any).form_id) && userId) {
-		const formId = data.formId || (data as any).form_id;
+	if ((data.formId || (data as unknown).form_id) && userId) {
+		const formId = data.formId || (data as unknown).form_id;
 		const { data: form, error: formError } = await athena
 			.from("forms")
 			.select("id, user_id")
@@ -124,7 +124,7 @@ export async function createWebhook(
 		}
 	}
 
-	const accountId = userId || data.accountId || (data as any).account_id;
+	const accountId = userId || data.accountId || (data as unknown).account_id;
 	if (!accountId) {
 		throw new Error("Account ID is required");
 	}
@@ -132,43 +132,42 @@ export async function createWebhook(
 	const now = new Date().toISOString();
 
 	const insertData: WebhookInsert = {
-		name: (data as any).name ?? null,
-		description: (data as any).description ?? null,
+		name: (data as unknown).name ?? null,
+		description: (data as unknown).description ?? null,
 		url: data.url,
 		events: data.events as string[],
 		method: data.method,
-		headers: (data.headers as any) ?? {},
-		form_id: (data as any).form_id ?? data.formId ?? null,
+		headers: (data.headers as unknown) ?? {},
+		form_id: (data as unknown).form_id ?? data.formId ?? null,
 		account_id: accountId,
 		enabled: data.enabled ?? true,
 		payload_template:
-			(data as any).payload_template ?? data.payloadTemplate ?? null,
-		secret: (data as any).secret ?? null,
+			(data as unknown).payload_template ?? data.payloadTemplate ?? null,
+		secret: (data as unknown).secret ?? null,
 		notification_email:
-			(data as any).notification_email ??
-			(data as any).notificationEmail ??
+			(data as unknown).notification_email ??
+			(data as unknown).notificationEmail ??
 			null,
 		notify_on_success:
-			(data as any).notify_on_success ?? (data as any).notifyOnSuccess ?? false,
+			(data as unknown).notify_on_success ??
+			(data as unknown).notifyOnSuccess ??
+			false,
 		notify_on_failure:
-			(data as any).notify_on_failure ?? (data as any).notifyOnFailure ?? true,
+			(data as unknown).notify_on_failure ??
+			(data as unknown).notifyOnFailure ??
+			true,
 		created_at: now,
 		updated_at: now,
 	};
 
 	const { data: result, error } = await athena
 		.from("webhooks" as const)
-		.insert([insertData] as any)
+		.insert([insertData] as unknown)
 		.select("*")
 		.single();
 
 	if (error || !result) {
-		console.error(
-			"Supabase error creating webhook:",
-			error,
-			"Data:",
-			insertData
-		);
+		console.error("Athena error creating webhook:", error, "Data:", insertData);
 		throw new Error(error?.message || "Failed to create webhook");
 	}
 
@@ -185,8 +184,8 @@ export async function updateWebhook(
 ): Promise<WebhookConfig> {
 	const athena = createAthenaAdminClient();
 
-	if ((data.formId || (data as any).form_id) && userId) {
-		const formId = data.formId || (data as any).form_id;
+	if ((data.formId || (data as unknown).form_id) && userId) {
+		const formId = data.formId || (data as unknown).form_id;
 		const { data: form, error: formError } = await athena
 			.from("forms")
 			.select("id, user_id")
@@ -201,37 +200,37 @@ export async function updateWebhook(
 
 	const now = new Date().toISOString();
 	const updateData: WebhookUpdate = {
-		name: (data as any).name ?? undefined,
-		description: (data as any).description ?? undefined,
+		name: (data as unknown).name ?? undefined,
+		description: (data as unknown).description ?? undefined,
 		url: data.url,
-		events: data.events as any,
+		events: data.events as unknown,
 		method: data.method,
-		headers: data.headers as any,
-		form_id: (data as any).form_id ?? data.formId ?? null,
+		headers: data.headers as unknown,
+		form_id: (data as unknown).form_id ?? data.formId ?? null,
 
 		account_id: userId
 			? userId
-			: ((data as any).account_id ?? data.accountId ?? undefined),
+			: ((data as unknown).account_id ?? data.accountId ?? undefined),
 		enabled: data.enabled,
 		payload_template:
-			(data as any).payload_template ?? data.payloadTemplate ?? null,
-		secret: (data as any).secret ?? null,
+			(data as unknown).payload_template ?? data.payloadTemplate ?? null,
+		secret: (data as unknown).secret ?? null,
 		notification_email:
-			(data as any).notification_email ??
-			(data as any).notificationEmail ??
+			(data as unknown).notification_email ??
+			(data as unknown).notificationEmail ??
 			undefined,
 		notify_on_success:
-			(data as any).notify_on_success ??
-			(data as any).notifyOnSuccess ??
+			(data as unknown).notify_on_success ??
+			(data as unknown).notifyOnSuccess ??
 			undefined,
 		notify_on_failure:
-			(data as any).notify_on_failure ??
-			(data as any).notifyOnFailure ??
+			(data as unknown).notify_on_failure ??
+			(data as unknown).notifyOnFailure ??
 			undefined,
 		updated_at: now,
 	};
 	const { data: result, error } = await (
-		athena.from("webhooks" as const) as any
+		athena.from("webhooks" as const) as unknown
 	)
 		.update(updateData)
 		.eq("id", id)
@@ -360,9 +359,9 @@ export async function getWebhookLogs({
 		query = query.eq("webhook_id", webhookId);
 	}
 	if (formId) {
-		query = query.eq("form_id", formId as any);
+		query = query.eq("form_id", formId as unknown);
 	}
-	query = query.eq("account_id", effectiveAccountId as any);
+	query = query.eq("account_id", effectiveAccountId as unknown);
 	query = query.order("timestamp", { ascending: false });
 	const { data, error } = await query;
 	if (error) {
@@ -418,9 +417,9 @@ export async function getWebhookLogs({
 }
 
 export async function resendWebhookDelivery(
-	id: string,
+	_id: string,
 	body: { logId: string }
-): Promise<any> {
+): Promise<unknown> {
 	const athena = createAthenaAdminClient();
 
 	const { data: log, error: logError } = await athena
@@ -449,7 +448,7 @@ export async function resendWebhookDelivery(
 	let payload = (log as WebhookLogRow).request_payload as string | null;
 	let headers: Record<string, string> = {
 		"Content-Type": "application/json",
-		...(((webhook as WebhookRow).headers as any) || {}),
+		...(((webhook as WebhookRow).headers as unknown) || {}),
 	};
 	if ((webhook as WebhookRow).secret) {
 		headers["X-Webhook-Signature"] = signPayload(
@@ -489,7 +488,7 @@ export async function resendWebhookDelivery(
 		clearTimeout(timeoutId);
 		status = res.status;
 		responseBody = await res.text();
-	} catch (err: any) {
+	} catch (err: unknown) {
 		errorMsg = String(err);
 	}
 
@@ -505,7 +504,7 @@ export async function resendWebhookDelivery(
 		attempt: ((log as WebhookLogRow).attempt || 0) + 1,
 	};
 
-	await athena.from("webhook_logs" as const).insert([logInsert] as any);
+	await athena.from("webhook_logs" as const).insert([logInsert] as unknown);
 	if (errorMsg) {
 		return { status, responseBody, error: errorMsg };
 	}
@@ -514,8 +513,8 @@ export async function resendWebhookDelivery(
 
 export async function testWebhook(
 	id: string,
-	samplePayload?: any
-): Promise<any> {
+	samplePayload?: unknown
+): Promise<unknown> {
 	const athena = createAthenaAdminClient();
 
 	const { data: webhook, error } = await athena
@@ -536,7 +535,7 @@ export async function testWebhook(
 	let body = JSON.stringify(payload);
 	let headers: Record<string, string> = {
 		"Content-Type": "application/json",
-		...(((webhook as WebhookRow).headers as any) || {}),
+		...(((webhook as WebhookRow).headers as unknown) || {}),
 	};
 	if ((webhook as WebhookRow).secret) {
 		headers["X-Webhook-Signature"] = signPayload(
@@ -576,7 +575,7 @@ export async function testWebhook(
 			timestamp: new Date().toISOString(),
 			attempt: 0,
 		};
-		await athena.from("webhook_logs" as const).insert([logInsert] as any);
+		await athena.from("webhook_logs" as const).insert([logInsert] as unknown);
 
 		try {
 			if (simulate === "success" && notifyEmail && notifySuccess) {
@@ -617,7 +616,7 @@ export async function testWebhook(
 		});
 		status = res.status;
 		responseBody = await res.text();
-	} catch (err: any) {
+	} catch (err: unknown) {
 		errorMsg = String(err);
 	}
 
@@ -633,7 +632,7 @@ export async function testWebhook(
 		attempt: 0,
 	};
 
-	await athena.from("webhook_logs" as const).insert([logInsert] as any);
+	await athena.from("webhook_logs" as const).insert([logInsert] as unknown);
 
 	const notifyEmail = (webhook as WebhookRow).notification_email;
 	const notifySuccess = (webhook as WebhookRow).notify_on_success ?? false;
@@ -666,10 +665,10 @@ function isDiscordWebhook(url: string) {
 }
 
 function buildDiscordEmbedPayload(
-	formData: Record<string, any>,
+	formData: Record<string, unknown>,
 	formId: string
 ) {
-	function formatValue(value: any): string {
+	function formatValue(value: unknown): string {
 		if (value === null || value === undefined) {
 			return "N/A";
 		}
@@ -697,10 +696,10 @@ function buildDiscordEmbedPayload(
 		return String(value);
 	}
 
-	const fields: { name: any; value: string; inline: boolean }[] = [];
+	const fields: { name: unknown; value: string; inline: boolean }[] = [];
 
 	if (formData.fields && Array.isArray(formData.fields)) {
-		formData.fields.forEach((field: any) => {
+		formData.fields.forEach((field: unknown) => {
 			fields.push({
 				name: field.label || field.id || "Unknown Field",
 				value: formatValue(field.value),
@@ -751,8 +750,8 @@ function isSlackWebhook(url: string) {
 	return url.startsWith("https://hooks.slack.com/services/");
 }
 
-function buildSlackMessagePayload(formData: Record<string, any>) {
-	function formatValue(value: any): string {
+function buildSlackMessagePayload(formData: Record<string, unknown>) {
+	function formatValue(value: unknown): string {
 		if (value === null || value === undefined) {
 			return "N/A";
 		}
@@ -780,10 +779,10 @@ function buildSlackMessagePayload(formData: Record<string, any>) {
 		return String(value);
 	}
 
-	const fields: { title: any; value: string; short: boolean }[] = [];
+	const fields: { title: unknown; value: string; short: boolean }[] = [];
 
 	if (formData.fields && Array.isArray(formData.fields)) {
-		formData.fields.forEach((field: any) => {
+		formData.fields.forEach((field: unknown) => {
 			fields.push({
 				title: field.label || field.id || "Unknown Field",
 				value: formatValue(field.value),
@@ -828,7 +827,7 @@ function buildSlackMessagePayload(formData: Record<string, any>) {
 
 function renderTemplate(
 	template: string,
-	context: Record<string, any>
+	context: Record<string, unknown>
 ): string {
 	return template.replace(/{{\s*(json)?\s*([\w.]+)\s*}}/g, (_, isJson, key) => {
 		const keys = key.split(".");
@@ -852,15 +851,15 @@ function renderTemplate(
 
 export async function formatHumanFriendlyPayload(
 	formId: string,
-	formData: Record<string, any>
+	formData: Record<string, unknown>
 ) {
 	const form = await formsDbServer.getPublicForm(formId);
 	const schema = form.schema;
 	const allFields = schema.blocks?.length
-		? schema.blocks.flatMap((block: any) => block.fields)
+		? schema.blocks.flatMap((block: unknown) => block.fields)
 		: schema.fields || [];
 	const fields = Object.entries(formData).map(([fieldId, value]) => {
-		const field = allFields.find((f: any) => f.id === fieldId);
+		const field = allFields.find((f: unknown) => f.id === fieldId);
 		return {
 			id: fieldId,
 			label: field?.label || fieldId,
@@ -878,7 +877,7 @@ export async function formatHumanFriendlyPayload(
 
 export async function triggerWebhooks(
 	event: WebhookEventType,
-	payload: any
+	payload: unknown
 ): Promise<void> {
 	const athena = createAthenaAdminClient();
 
@@ -903,7 +902,7 @@ export async function triggerWebhooks(
 	if (!webhooks || webhooks.length === 0) {
 		return;
 	}
-	const deliveries: Array<Promise<void>> = [];
+	const deliveries: Promise<void>[] = [];
 	for (const webhook of webhooks as WebhookRow[]) {
 		let body: string;
 
@@ -913,7 +912,7 @@ export async function triggerWebhooks(
 				payload.formData
 			);
 			body = (webhook as WebhookRow).payload_template
-				? renderTemplate((webhook as WebhookRow).payload_template as any, {
+				? renderTemplate((webhook as WebhookRow).payload_template as unknown, {
 						event,
 						...payload,
 						formatted,
@@ -921,7 +920,7 @@ export async function triggerWebhooks(
 				: JSON.stringify({ event, ...payload, formatted });
 		} else {
 			body = (webhook as WebhookRow).payload_template
-				? renderTemplate((webhook as WebhookRow).payload_template as any, {
+				? renderTemplate((webhook as WebhookRow).payload_template as unknown, {
 						event,
 						...payload,
 					})
@@ -930,7 +929,7 @@ export async function triggerWebhooks(
 
 		const headers: Record<string, string> = {
 			"Content-Type": "application/json",
-			...(((webhook as WebhookRow).headers as any) || {}),
+			...(((webhook as WebhookRow).headers as unknown) || {}),
 		};
 		if ((webhook as WebhookRow).secret) {
 			headers["X-Webhook-Signature"] = signPayload(
@@ -1051,7 +1050,7 @@ export async function deliverWithRetry(
 			timestamp: new Date().toISOString(),
 			attempt,
 		};
-		await athena.from("webhook_logs" as const).insert([successLog] as any);
+		await athena.from("webhook_logs" as const).insert([successLog] as unknown);
 
 		console.log(
 			`[WEBHOOK DELIVERY] Successfully delivered webhook ${webhook.id} in ${duration}ms`
@@ -1067,7 +1066,7 @@ export async function deliverWithRetry(
 				});
 			} catch {}
 		}
-	} catch (err: any) {
+	} catch (err: unknown) {
 		const duration = Date.now() - startTime;
 		console.error(
 			`[WEBHOOK DELIVERY] Failed to deliver webhook ${webhook.id} after ${duration}ms:`,
@@ -1083,7 +1082,7 @@ export async function deliverWithRetry(
 			timestamp: new Date().toISOString(),
 			attempt,
 		};
-		await athena.from("webhook_logs" as const).insert([failureLog] as any);
+		await athena.from("webhook_logs" as const).insert([failureLog] as unknown);
 
 		const isFinalAttempt = attempt + 1 >= 3;
 		if (
@@ -1120,7 +1119,3 @@ export async function deliverWithRetry(
 		}
 	}
 }
-
-
-
-

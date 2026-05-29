@@ -34,7 +34,7 @@ export const FormBuilderPanels: React.FC<FormBuilderPanelsProps> = ({
 	onFormSettingsUpdate,
 	onStepSelect,
 }) => {
-	const allFields = getAllFields(formSchema);
+	const _allFields = getAllFields(formSchema);
 
 	const handleSchemaUpdate = (updatedSchema: FormSchema) => {
 		if (updatedSchema.fields && updatedSchema.fields !== formSchema.fields) {

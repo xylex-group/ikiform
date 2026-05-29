@@ -19,7 +19,7 @@ import type { LocalSettings } from "../types";
 interface QuizSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: any;
+	schema?: unknown;
 	updateSettings: (updates: Partial<LocalSettings>) => void;
 }
 
@@ -29,7 +29,9 @@ export function QuizSection({
 	formId,
 	schema,
 	onSchemaUpdate,
-}: QuizSectionProps & { onSchemaUpdate?: (updates: Partial<any>) => void }) {
+}: QuizSectionProps & {
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+}) {
 	const initialQuiz = localSettings.quiz || {};
 	const [quizSettings, setQuizSettings] = useState({
 		enabled: initialQuiz.enabled,
@@ -96,7 +98,7 @@ export function QuizSection({
 					quizSettings.timeLimit === "" || quizSettings.timeLimit === undefined
 						? undefined
 						: Number(quizSettings.timeLimit),
-			} as any;
+			} as unknown;
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
@@ -368,8 +370,8 @@ function QuizField({
 	id: string;
 	label: string;
 	description?: string;
-	value: any;
-	onChange: (value: any) => void;
+	value: unknown;
+	onChange: (value: unknown) => void;
 	type?: "text" | "number" | "textarea" | "slider";
 	placeholder?: string;
 	rows?: number;

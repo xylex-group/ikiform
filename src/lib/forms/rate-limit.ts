@@ -53,7 +53,7 @@ function getRateLimiter(
 			redis: redisClient,
 			limiter: Ratelimit.fixedWindow(
 				settings.maxSubmissions,
-				settings.window as any
+				settings.window as unknown
 			),
 			analytics: true,
 			prefix,

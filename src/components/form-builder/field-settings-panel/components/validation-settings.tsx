@@ -41,7 +41,7 @@ export function ValidationSettings({
 								name="min-length"
 								onChange={(e) =>
 									onUpdateValidation({
-										minLength: Number.parseInt(e.target.value) || undefined,
+										minLength: Number.parseInt(e.target.value, 10) || undefined,
 									})
 								}
 								onKeyDown={(e) => {
@@ -68,7 +68,7 @@ export function ValidationSettings({
 								name="max-length"
 								onChange={(e) =>
 									onUpdateValidation({
-										maxLength: Number.parseInt(e.target.value) || undefined,
+										maxLength: Number.parseInt(e.target.value, 10) || undefined,
 									})
 								}
 								onKeyDown={(e) => {
@@ -127,7 +127,7 @@ export function ValidationSettings({
 								name="min-value"
 								onChange={(e) =>
 									onUpdateValidation({
-										min: Number.parseInt(e.target.value) || undefined,
+										min: Number.parseInt(e.target.value, 10) || undefined,
 									})
 								}
 								onKeyDown={(e) => {
@@ -154,7 +154,7 @@ export function ValidationSettings({
 								name="max-value"
 								onChange={(e) =>
 									onUpdateValidation({
-										max: Number.parseInt(e.target.value) || undefined,
+										max: Number.parseInt(e.target.value, 10) || undefined,
 									})
 								}
 								onKeyDown={(e) => {

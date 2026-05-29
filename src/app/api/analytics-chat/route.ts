@@ -2,6 +2,7 @@ import { cohere } from "@ai-sdk/cohere";
 import { streamText } from "ai";
 import type { NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
+import { createClient } from "@/lib/athena/server";
 import { formsDbServer } from "@/lib/database/database.server";
 import { checkRateLimit, type RateLimitSettings } from "@/lib/forms/server";
 import { requirePremium } from "@/lib/utils/premium-check";
@@ -10,7 +11,6 @@ import {
 	filterSystemMessages,
 } from "@/lib/utils/prompt-injection";
 import { sanitizeString } from "@/lib/utils/sanitize";
-import { createClient } from "@/lib/athena/server";
 
 const systemPrompt = process.env.ANALYTICS_AI_SYSTEM_PROMPT;
 
@@ -50,7 +50,7 @@ function createErrorResponse(message: string, status = 500) {
 }
 
 function validateAndSanitizeMessages(
-	messages: any[]
+	messages: unknown[]
 ): { role: string; content: string }[] {
 	if (
 		!Array.isArray(messages) ||
@@ -88,10 +88,8 @@ function analyzeConversation(
 	const userMessages = messages.filter((msg) => msg.role === "user");
 	const assistantMessages = messages.filter((msg) => msg.role === "assistant");
 
-	const lastUserMessage =
-		userMessages[userMessages.length - 1]?.content || null;
-	const lastAiResponse =
-		assistantMessages[assistantMessages.length - 1]?.content || null;
+	const lastUserMessage = userMessages.at(-1)?.content || null;
+	const lastAiResponse = assistantMessages.at(-1)?.content || null;
 
 	const followUpKeywords = [
 		"what about",
@@ -213,7 +211,7 @@ function analyzeConversation(
 		currentMessage.includes("these") ||
 		currentMessage.includes("them");
 
-	const contextualHints = [];
+	const contextualHints: string[] = [];
 	if (hasFollowUpQuestions) {
 		contextualHints.push("User is asking a follow-up question");
 	}
@@ -291,7 +289,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 			return createErrorResponse("AI service temporarily unavailable", 503);
 		}
 
-		let requestData: any;
+		let requestData: unknown;
 		try {
 			requestData = await req.json();
 		} catch {
@@ -316,7 +314,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
 		const sessionId = requestData.sessionId || uuidv4();
 
-		const lastUserMessage = sanitizedMessages[sanitizedMessages.length - 1];
+		const lastUserMessage = sanitizedMessages.at(-1);
 
 		if (lastUserMessage && lastUserMessage.role === "user") {
 			try {
@@ -351,20 +349,20 @@ export async function POST(req: NextRequest): Promise<Response> {
 		const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
 		const todaySubmissions = context.submissions.filter(
-			(sub: any) => new Date(sub.submitted_at) >= today
+			(sub: unknown) => new Date(sub.submitted_at) >= today
 		).length;
 
-		const yesterdaySubmissions = context.submissions.filter((sub: any) => {
+		const yesterdaySubmissions = context.submissions.filter((sub: unknown) => {
 			const subDate = new Date(sub.submitted_at);
 			return subDate >= yesterday && subDate < today;
 		}).length;
 
 		const thisWeekSubmissions = context.submissions.filter(
-			(sub: any) => new Date(sub.submitted_at) >= weekAgo
+			(sub: unknown) => new Date(sub.submitted_at) >= weekAgo
 		).length;
 
 		const thisMonthSubmissions = context.submissions.filter(
-			(sub: any) => new Date(sub.submitted_at) >= monthAgo
+			(sub: unknown) => new Date(sub.submitted_at) >= monthAgo
 		).length;
 
 		const contextString = `
@@ -463,7 +461,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 			context.analytics.topFields
 				? context.analytics.topFields
 						.map(
-							(field: any, index: number) =>
+							(field: unknown, index: number) =>
 								`${index + 1}. ${field[1].label}: ${
 									field[1].completionRate
 								}% completion (${field[1].totalResponses} responses)`
@@ -477,7 +475,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 			context.analytics.worstFields
 				? context.analytics.worstFields
 						.map(
-							(field: any, index: number) =>
+							(field: unknown, index: number) =>
 								`${index + 1}. ${field[1].label}: ${
 									field[1].completionRate
 								}% completion (${field[1].totalResponses} responses)`
@@ -500,7 +498,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 			context.analytics.conversionFunnel
 				? context.analytics.conversionFunnel
 						.map(
-							(step: any, index: number) =>
+							(step: unknown, index: number) =>
 								`Step ${index + 1} - ${step.stepName}: ${step.completedCount}/${
 									context.analytics.totalSubmissions
 								} (${step.conversionRate}%)`
@@ -511,7 +509,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     
     SUBMISSION DATA SAMPLE:
     ${JSON.stringify(
-			context.submissions.slice(0, 10).map((sub: any) => ({
+			context.submissions.slice(0, 10).map((sub: unknown) => ({
 				...sub,
 				submission_data: Object.fromEntries(
 					Object.entries(sub.submission_data).map(([key, value]) => {
@@ -541,7 +539,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     
     WEBSITE FIELD DATA FROM ALL RESPONSES:
     ${context.submissions
-			.map((sub: any) => {
+			.map((sub: unknown) => {
 				const website = sub.submission_data?.website;
 
 				if (typeof website === "object" && website !== null) {
@@ -730,7 +728,3 @@ export async function GET(): Promise<Response> {
 		}
 	);
 }
-
-
-
-

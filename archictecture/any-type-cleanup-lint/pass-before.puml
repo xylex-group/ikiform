@@ -1,0 +1,28 @@
+@startuml
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam ArrowColor #222222
+skinparam packageStyle rectangle
+
+title Any-Type State Before Cleanup
+
+package "TypeScript Surface" as TS #FFE8E8 {
+  rectangle "UI & API Modules\n(many explicit any annotations)" as UiApi #FFD6D6
+  rectangle "Athena Wrappers\n(casts + loose params)" as Athena #FFE0B2
+  rectangle "Utility Layer\n(implicit/evolving any lets)" as Utils #FFF0C2
+}
+
+rectangle "Ultracite / Biome Lint Gate" as Lint #FDE68A
+rectangle "Merge Readiness" as Merge #FCA5A5
+
+UiApi --> Lint : noExplicitAny violations
+Athena --> Lint : noExplicitAny violations
+Utils --> Lint : noImplicitAnyLet/noEvolvingTypes
+Lint --> Merge : blocked
+
+note right of Lint
+Explicit any usage appears across
+multiple modules and fails strict linting.
+end note
+
+@enduml

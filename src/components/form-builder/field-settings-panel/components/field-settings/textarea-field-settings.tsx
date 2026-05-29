@@ -28,7 +28,7 @@ export function TextareaFieldSettings({
 						name="textarea-rows"
 						onChange={(e) =>
 							onUpdateSettings({
-								rows: Number.parseInt(e.target.value) || 4,
+								rows: Number.parseInt(e.target.value, 10) || 4,
 							})
 						}
 						onKeyDown={(e) => {

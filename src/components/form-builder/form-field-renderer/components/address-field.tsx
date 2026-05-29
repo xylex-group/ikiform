@@ -51,7 +51,7 @@ export function AddressField(props: BaseFieldProps) {
 		}
 	};
 
-	const renderAddressField = (fieldConfig: any) => {
+	const renderAddressField = (fieldConfig: unknown) => {
 		const fieldId = getFieldId(fieldConfig.key);
 		const fieldValue = getAddressValue(fieldConfig.key);
 		const placeholder = getFieldPlaceholder(fieldConfig.label);

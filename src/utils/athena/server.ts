@@ -34,8 +34,8 @@ export async function createAthenaServerClient() {
 	const authClient = createAthenaAuthClient();
 
 	return {
-		from: (dbClient as any).from.bind(dbClient),
-		rpc: (dbClient as any).rpc?.bind(dbClient),
+		from: (dbClient as unknown).from.bind(dbClient),
+		rpc: (dbClient as unknown).rpc?.bind(dbClient),
 
 		auth: {
 			getUser: async () => {

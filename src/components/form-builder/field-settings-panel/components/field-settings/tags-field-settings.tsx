@@ -28,7 +28,7 @@ export function TagsFieldSettings({
 						name="tags-max"
 						onChange={(e) =>
 							onUpdateSettings({
-								maxTags: Number.parseInt(e.target.value) || 10,
+								maxTags: Number.parseInt(e.target.value, 10) || 10,
 							})
 						}
 						onKeyDown={(e) => {

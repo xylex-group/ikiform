@@ -15,7 +15,7 @@ export interface SingleStepFormState {
 		attemptsRemaining?: number;
 	} | null;
 	errors: Record<string, string>;
-	formData: Record<string, any>;
+	formData: Record<string, unknown>;
 
 	progress: FormProgress | null;
 	progressError: string | null;
@@ -28,10 +28,10 @@ export interface SingleStepFormState {
 
 export interface SingleStepFormActions {
 	clearProgress: () => Promise<void>;
-	handleFieldValueChange: (fieldId: string, value: any) => void;
+	handleFieldValueChange: (fieldId: string, value: unknown) => void;
 	handleSubmit: (e: React.FormEvent) => Promise<void>;
 	setErrors: (errors: Record<string, string>) => void;
-	setFormData: (data: Record<string, any>) => void;
+	setFormData: (data: Record<string, unknown>) => void;
 	setSubmitted: (submitted: boolean) => void;
 	setSubmitting: (submitting: boolean) => void;
 }

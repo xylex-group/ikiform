@@ -23,7 +23,7 @@ export function BasicInfoSection({
 	schema,
 	onSchemaUpdate,
 }: BasicInfoSectionProps & {
-	onSchemaUpdate?: (updates: Partial<any>) => void;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
 }) {
 	const [basicInfo, setBasicInfo] = useState({
 		title: localSettings.title || "",

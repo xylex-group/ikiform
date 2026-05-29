@@ -55,7 +55,7 @@ export async function createInboundMapping(
 
 	const { data: result, error } = await athena
 		.from("inbound_webhook_mappings")
-		.insert([insertData] as any)
+		.insert([insertData] as unknown)
 		.select()
 		.single();
 	if (error || !result) {
@@ -99,7 +99,7 @@ export async function updateInboundMapping(
 	};
 
 	const { data: result, error } = await (
-		athena.from("inbound_webhook_mappings") as any
+		athena.from("inbound_webhook_mappings") as unknown
 	)
 		.update(updateData)
 		.eq("id", id)
@@ -121,4 +121,3 @@ export async function deleteInboundMapping(id: string): Promise<void> {
 		throw new Error(error.message);
 	}
 }
-

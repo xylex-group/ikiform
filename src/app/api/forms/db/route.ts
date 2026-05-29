@@ -1,12 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
-
-import { formsDb } from "@/lib/database";
 import { createClient } from "@/lib/athena/server";
+import { formsDb } from "@/lib/database";
 
-type FormDbActionBody = {
+interface FormDbActionBody {
 	action: string;
 	args: unknown[];
-};
+}
 
 function invalidActionResponse(action: string) {
 	return NextResponse.json(
@@ -22,7 +21,7 @@ function invalidPayloadResponse(message: string, status = 400) {
 function ensureStringArg(
 	args: unknown[],
 	index: number,
-	field: string,
+	field: string
 ): string {
 	const value = args[index];
 	if (typeof value !== "string") {
@@ -82,7 +81,11 @@ export async function POST(request: NextRequest) {
 				enforceCallerUser(user.id, userId, "userId");
 				const title = ensureStringArg(args, 1, "title");
 				const schema = args[2];
-				data = await formsDb.createForm(userId, title, schema as Record<string, any>);
+				data = await formsDb.createForm(
+					userId,
+					title,
+					schema as Record<string, unknown>
+				);
 				break;
 			}
 			case "duplicateForm": {
@@ -135,7 +138,7 @@ export async function POST(request: NextRequest) {
 				data = await formsDb.updateForm(
 					formId,
 					userId,
-					(args[2] as Record<string, any>) || {}
+					(args[2] as Record<string, unknown>) || {}
 				);
 				break;
 			}
@@ -158,7 +161,7 @@ export async function POST(request: NextRequest) {
 				const formId = ensureStringArg(args, 0, "formId");
 				data = await formsDb.submitForm(
 					formId,
-					(args[1] as Record<string, any>) || {},
+					(args[1] as Record<string, unknown>) || {},
 					typeof args[2] === "string" ? args[2] : undefined
 				);
 				break;
@@ -167,7 +170,11 @@ export async function POST(request: NextRequest) {
 				const formId = ensureStringArg(args, 0, "formId");
 				const userId = ensureStringArg(args, 1, "userId");
 				enforceCallerUser(user.id, userId, "userId");
-				data = await formsDb.getFormSubmissions(formId, userId, args[2] as number);
+				data = await formsDb.getFormSubmissions(
+					formId,
+					userId,
+					args[2] as number
+				);
 				break;
 			}
 			case "getFormSubmissionsPaginated": {
@@ -190,7 +197,9 @@ export async function POST(request: NextRequest) {
 					ensureStringArg(args, 1, "sessionId"),
 					(args[2] as "user" | "assistant" | "system") || "user",
 					ensureStringArg(args, 3, "content"),
-					(typeof args[4] === "object" ? (args[4] as Record<string, any>) : {})
+					typeof args[4] === "object"
+						? (args[4] as Record<string, unknown>)
+						: {}
 				);
 				break;
 			}
@@ -206,7 +215,10 @@ export async function POST(request: NextRequest) {
 			case "getAIBuilderSessions": {
 				const userId = ensureStringArg(args, 0, "userId");
 				enforceCallerUser(user.id, userId, "userId");
-				data = await formsDb.getAIBuilderSessions(userId, Number(args[1] ?? 10));
+				data = await formsDb.getAIBuilderSessions(
+					userId,
+					Number(args[1] ?? 10)
+				);
 				break;
 			}
 			case "saveAIAnalyticsMessage": {
@@ -218,7 +230,9 @@ export async function POST(request: NextRequest) {
 					ensureStringArg(args, 2, "sessionId"),
 					(args[3] as "user" | "assistant" | "system") || "user",
 					ensureStringArg(args, 4, "content"),
-					typeof args[5] === "object" ? (args[5] as Record<string, any>) : {}
+					typeof args[5] === "object"
+						? (args[5] as Record<string, unknown>)
+						: {}
 				);
 				break;
 			}
@@ -267,8 +281,7 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json({ ok: true, data });
 	} catch (error: unknown) {
-		const message =
-			error instanceof Error ? error.message : "Request failed";
+		const message = error instanceof Error ? error.message : "Request failed";
 		return NextResponse.json(
 			{
 				ok: false,
@@ -278,7 +291,9 @@ export async function POST(request: NextRequest) {
 		);
 	} finally {
 		const duration = Date.now() - start;
-		console.log(`[FORMS DB API] POST /api/forms/db - completed in ${duration}ms`);
+		console.log(
+			`[FORMS DB API] POST /api/forms/db - completed in ${duration}ms`
+		);
 	}
 }
 

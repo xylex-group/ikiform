@@ -111,7 +111,7 @@ export function TrialBannerWrapper({ className }: TrialBannerWrapperProps) {
 		};
 	}, [trialEndDate]);
 
-	const handleDismiss = useCallback(() => {
+	const _handleDismiss = useCallback(() => {
 		setIsDismissed(true);
 		localStorage.setItem("trial-banner-dismissed", "true");
 	}, []);

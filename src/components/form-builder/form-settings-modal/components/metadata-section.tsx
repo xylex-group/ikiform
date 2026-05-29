@@ -34,8 +34,8 @@ export function MetadataSection({
 	onSchemaUpdate,
 }: MetadataSectionProps & {
 	formId?: string;
-	schema?: any;
-	onSchemaUpdate?: (updates: Partial<any>) => void;
+	schema?: unknown;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
 }) {
 	const { user } = useAuth();
 	const metadata = localSettings.metadata || {};
@@ -96,7 +96,7 @@ export function MetadataSection({
 		const robotsValue = robotsMap[value];
 		if (robotsValue) {
 			updateIndexingMetadata({
-				robots: value as any,
+				robots: value as unknown,
 				...robotsValue,
 			});
 		}
@@ -116,7 +116,7 @@ export function MetadataSection({
 	};
 
 	const resetBasic = () => {
-		const original = (schema?.settings as any)?.metadata || {};
+		const original = (schema?.settings as unknown)?.metadata || {};
 		updateSettings({
 			metadata: {
 				...metadata,
@@ -131,7 +131,7 @@ export function MetadataSection({
 	};
 
 	const resetIndexing = () => {
-		const original = (schema?.settings as any)?.metadata || {};
+		const original = (schema?.settings as unknown)?.metadata || {};
 		updateSettings({
 			metadata: {
 				...metadata,
@@ -148,7 +148,7 @@ export function MetadataSection({
 	};
 
 	const resetSocial = () => {
-		const original = (schema?.settings as any)?.metadata || {};
+		const original = (schema?.settings as unknown)?.metadata || {};
 		updateSettings({
 			metadata: {
 				...metadata,
@@ -220,7 +220,9 @@ export function MetadataSection({
 					metadata: { ...localSettings.metadata },
 				},
 			};
-			await formsDb.updateForm(formId, user.id, { schema: newSchema as any });
+			await formsDb.updateForm(formId, user.id, {
+				schema: newSchema as unknown,
+			});
 			setSavedIndexing(true);
 			setHasIndexingChanges(false);
 			toast.success("Indexing settings saved");
@@ -583,7 +585,7 @@ export function MetadataSection({
 						<Label htmlFor="twitter-card">Twitter Card Type</Label>
 						<Select
 							onValueChange={(value) =>
-								updateSocialMetadata({ twitterCard: value as any })
+								updateSocialMetadata({ twitterCard: value as unknown })
 							}
 							value={metadata.twitterCard || "summary"}
 						>

@@ -34,7 +34,7 @@ export function FieldSpecificSettings({
 	onUpdateSettings,
 	onFieldUpdate,
 }: FieldSpecificSettingsProps) {
-	const fieldSettingsMap: Record<string, React.ComponentType<any>> = {
+	const fieldSettingsMap: Record<string, React.ComponentType<unknown>> = {
 		text: TextFieldSettings,
 		number: NumberFieldSettings,
 		date: DateFieldSettings,

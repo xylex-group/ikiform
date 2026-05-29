@@ -13,7 +13,7 @@ const PublicFormContent = dynamic(
 
 interface PublicFormClientProps {
 	formId: string;
-	schema: any;
+	schema: unknown;
 }
 
 export default function PublicFormClient({

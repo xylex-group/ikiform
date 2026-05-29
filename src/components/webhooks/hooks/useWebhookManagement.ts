@@ -46,7 +46,7 @@ export function useWebhookManagement(options?: { formId?: string }) {
 			}
 			const data = await res.json();
 			setWebhooks(data);
-		} catch (e: any) {
+		} catch (e: unknown) {
 			setError(e.message);
 			toast.error(e.message || "Failed to fetch webhooks");
 		} finally {
@@ -68,7 +68,7 @@ export function useWebhookManagement(options?: { formId?: string }) {
 			}
 			toast.success("Webhook created!");
 			await fetchWebhooks();
-		} catch (e: any) {
+		} catch (e: unknown) {
 			setError(e.message);
 			toast.error(e.message || "Failed to create webhook");
 		} finally {
@@ -90,7 +90,7 @@ export function useWebhookManagement(options?: { formId?: string }) {
 			}
 			toast.success("Webhook updated!");
 			await fetchWebhooks();
-		} catch (e: any) {
+		} catch (e: unknown) {
 			setError(e.message);
 			toast.error(e.message || "Failed to update webhook");
 		} finally {
@@ -108,7 +108,7 @@ export function useWebhookManagement(options?: { formId?: string }) {
 			}
 			toast.success("Webhook deleted!");
 			await fetchWebhooks();
-		} catch (e: any) {
+		} catch (e: unknown) {
 			setError(e.message);
 			toast.error(e.message || "Failed to delete webhook");
 		} finally {
@@ -118,7 +118,7 @@ export function useWebhookManagement(options?: { formId?: string }) {
 
 	useEffect(() => {
 		fetchWebhooks();
-	}, [formId]);
+	}, [fetchWebhooks]);
 
 	return {
 		webhooks,

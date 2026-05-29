@@ -5,10 +5,10 @@ import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-type DropdownMenuSelectEvent = {
+interface DropdownMenuSelectEvent {
 	defaultPrevented: boolean;
 	preventDefault: () => void;
-};
+}
 
 interface DropdownMenuItemProps
 	extends Omit<MenuPrimitive.Item.Props, "onClick"> {

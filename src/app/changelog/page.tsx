@@ -9,7 +9,7 @@ import { getChangelogEntries } from "@/lib/utils/changelog";
 function formatChangelogDate(dateString: string): string {
 	try {
 		const date = new Date(dateString);
-		if (!isNaN(date.getTime())) {
+		if (!Number.isNaN(date.getTime())) {
 			return format(date, "MMMM d, yyyy");
 		}
 		return dateString;
@@ -19,7 +19,7 @@ function formatChangelogDate(dateString: string): string {
 }
 
 const markdownComponents = {
-	code: ({ inline, className, children, ...props }: any) => {
+	code: ({ inline, className, children, ...props }: unknown) => {
 		const match = /language-(\w+)/.exec(className || "");
 		return !inline && match ? (
 			<code
@@ -37,32 +37,32 @@ const markdownComponents = {
 			</code>
 		);
 	},
-	p: ({ children, ...props }: any) => (
+	p: ({ children, ...props }: unknown) => (
 		<p className="mb-4 leading-relaxed last:mb-0" {...props}>
 			{children}
 		</p>
 	),
-	h1: ({ children, ...props }: any) => (
+	h1: ({ children, ...props }: unknown) => (
 		<h1 className="my-4 font-bold text-3xl first:mt-0" {...props}>
 			{children}
 		</h1>
 	),
-	h2: ({ children, ...props }: any) => (
+	h2: ({ children, ...props }: unknown) => (
 		<h2 className="my-3 font-semibold text-2xl" {...props}>
 			{children}
 		</h2>
 	),
-	h3: ({ children, ...props }: any) => (
+	h3: ({ children, ...props }: unknown) => (
 		<h3 className="my-0 font-medium text-lg" {...props}>
 			{children}
 		</h3>
 	),
-	ul: ({ children, ...props }: any) => (
+	ul: ({ children, ...props }: unknown) => (
 		<ul className="my-4 flex list-inside list-disc flex-col gap-2" {...props}>
 			{children}
 		</ul>
 	),
-	ol: ({ children, ...props }: any) => (
+	ol: ({ children, ...props }: unknown) => (
 		<ol
 			className="my-4 flex list-inside list-decimal flex-col gap-2"
 			{...props}
@@ -70,12 +70,12 @@ const markdownComponents = {
 			{children}
 		</ol>
 	),
-	li: ({ children, ...props }: any) => (
+	li: ({ children, ...props }: unknown) => (
 		<li className="pl-4" {...props}>
 			{children}
 		</li>
 	),
-	blockquote: ({ children, ...props }: any) => (
+	blockquote: ({ children, ...props }: unknown) => (
 		<blockquote
 			className="mb-4 border-primary border-l-4 pl-4 italic"
 			{...props}
@@ -83,12 +83,12 @@ const markdownComponents = {
 			{children}
 		</blockquote>
 	),
-	strong: ({ children, ...props }: any) => (
+	strong: ({ children, ...props }: unknown) => (
 		<strong className="font-semibold" {...props}>
 			{children}
 		</strong>
 	),
-	a: ({ children, href, ...props }: any) => (
+	a: ({ children, href, ...props }: unknown) => (
 		<a
 			className="text-primary underline-offset-4 hover:underline"
 			href={href}

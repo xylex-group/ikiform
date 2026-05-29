@@ -104,19 +104,19 @@ export function LayoutCustomizationSection({
 
 	useEffect(() => {
 		setWidthSliderValue(getWidthSliderValue(currentWidth));
-	}, [currentWidth]);
+	}, [currentWidth, getWidthSliderValue]);
 
 	useEffect(() => {
 		setPaddingSliderValue(getPaddingSliderValue(currentPadding));
-	}, [currentPadding]);
+	}, [currentPadding, getPaddingSliderValue]);
 
 	useEffect(() => {
 		setMarginSliderValue(getMarginSliderValue(currentMargin));
-	}, [currentMargin]);
+	}, [currentMargin, getMarginSliderValue]);
 
 	useEffect(() => {
 		setBorderRadiusSliderValue(getBorderRadiusSliderValue(currentBorderRadius));
-	}, [currentBorderRadius]);
+	}, [currentBorderRadius, getBorderRadiusSliderValue]);
 
 	const handleBorderRadiusChange = (values: number[]) => {
 		setBorderRadiusSliderValue(values[0] ?? 0);

@@ -44,7 +44,7 @@ export class FormProgressStorage {
 	}
 
 	public calculateCompletionPercentage(
-		formData: Record<string, any>,
+		formData: Record<string, unknown>,
 		totalFields: number
 	): number {
 		if (totalFields === 0) {
@@ -67,7 +67,7 @@ export class FormProgressStorage {
 	public createProgress(
 		formId: string,
 		sessionId: string,
-		formData: Record<string, any>,
+		formData: Record<string, unknown>,
 		currentStep = 0,
 		totalSteps = 1,
 		userId?: string

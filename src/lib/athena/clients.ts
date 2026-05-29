@@ -17,16 +17,16 @@ export { createAthenaServerClient as _createServerClient } from "@/utils/athena/
  * Use in Server Components, Route Handlers, and Server Actions.
  */
 // Preferred short names for daily use
-export { _createServerClient as getServerClient };
-export { _createAdminClient as getAdminClient };
-export { _createClient as getClient };
-export { _createAuthClient as getAuthClient };
+export type { _createServerClient as getServerClient };
+export type { _createAdminClient as getAdminClient };
+export type { _createClient as getClient };
+export type { _createAuthClient as getAuthClient };
 
 // Re-export the original factory names.
-export { _createServerClient as createAthenaServerClient };
-export { _createAdminClient as createAthenaAdminClient };
-export { _createClient as createAthenaClient };
-export { _createAuthClient as createAthenaAuthClient };
+export type { _createServerClient as createAthenaServerClient };
+export type { _createAdminClient as createAthenaAdminClient };
+export type { _createClient as createAthenaClient };
+export type { _createAuthClient as createAthenaAuthClient };
 
 /**
  * Returns the currently authenticated user from Athena Auth (server-side).

@@ -38,34 +38,34 @@ const IGNORE_CONSOLE_ERROR_PATTERNS = [
 	/error loading form:.*pgrst116/i,
 ];
 
-type CapturedError = {
-	type: "console" | "pageerror";
+interface CapturedError {
 	message: string;
-};
+	type: "console" | "pageerror";
+}
 
-type InteractionStats = {
-	clicks: number;
-	fills: number;
-	toggles: number;
-	selects: number;
-	keys: number;
-	navigationsRecovered: number;
+interface InteractionStats {
 	actionsConsumed: number;
 	budgetExhausted: boolean;
-};
+	clicks: number;
+	fills: number;
+	keys: number;
+	navigationsRecovered: number;
+	selects: number;
+	toggles: number;
+}
 
-type InteractionContext = {
-	expectedRoute: string;
+interface InteractionContext {
+	actionLog: string[];
 	deadline: number;
+	expectedRoute: string;
 	remainingActions: number;
 	stats: InteractionStats;
-	actionLog: string[];
-};
+}
 
-type DeepPassResult = {
-	stats: InteractionStats;
+interface DeepPassResult {
 	actionLog: string[];
-};
+	stats: InteractionStats;
+}
 
 function isIgnorableError(text: string): boolean {
 	return IGNORE_CONSOLE_ERROR_PATTERNS.some((pattern) => pattern.test(text));

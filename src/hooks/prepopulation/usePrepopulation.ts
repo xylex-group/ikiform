@@ -9,31 +9,31 @@ interface PrepopulationData {
 	fieldId: string;
 	source: string;
 	success: boolean;
-	value: any;
+	value: unknown;
 }
 
 interface UsePrepopulationResult {
 	errors: Record<string, string>;
 	loading: boolean;
-	prepopulatedData: Record<string, any>;
+	prepopulatedData: Record<string, unknown>;
 	sources: Record<string, string>;
 }
 
 export function usePrepopulation(fields: FormField[]): UsePrepopulationResult {
-	const [prepopulatedData, setPrepopulatedData] = useState<Record<string, any>>(
-		{}
-	);
+	const [prepopulatedData, setPrepopulatedData] = useState<
+		Record<string, unknown>
+	>({});
 	const [loading, setLoading] = useState(true);
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [sources, setSources] = useState<Record<string, string>>({});
 
-	const prepopulationKey = useMemo(
+	const _prepopulationKey = useMemo(
 		() =>
 			fields
 				.filter((field) => field.prepopulation?.enabled)
 				.map(
 					(field) =>
-						`${field.id}-${field.prepopulation!.source}-${JSON.stringify(field.prepopulation!.config)}`
+						`${field.id}-${field.prepopulation?.source}-${JSON.stringify(field.prepopulation?.config)}`
 				)
 				.join("|"),
 		[fields]
@@ -60,7 +60,7 @@ export function usePrepopulation(fields: FormField[]): UsePrepopulationResult {
 			const urlEngine = new UrlEngine();
 			const apiEngine = new ApiEngine();
 
-			const data: Record<string, any> = {};
+			const data: Record<string, unknown> = {};
 			const errorMap: Record<string, string> = {};
 			const sourceMap: Record<string, string> = {};
 
@@ -157,7 +157,7 @@ export function usePrepopulation(fields: FormField[]): UsePrepopulationResult {
 		}
 
 		loadPrepopulatedData();
-	}, [prepopulationKey]);
+	}, [fields.filter]);
 
 	return {
 		prepopulatedData,

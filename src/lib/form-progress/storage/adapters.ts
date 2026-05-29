@@ -1,7 +1,7 @@
 import type { FormProgress, ProgressStorageAdapter } from "../types";
 
 export class LocalStorageAdapter implements ProgressStorageAdapter {
-	private prefix = "ikiform_progress_";
+	private readonly prefix = "ikiform_progress_";
 
 	async save(key: string, data: FormProgress): Promise<void> {
 		try {
@@ -55,7 +55,7 @@ export class LocalStorageAdapter implements ProgressStorageAdapter {
 }
 
 export class SessionStorageAdapter implements ProgressStorageAdapter {
-	private prefix = "ikiform_progress_";
+	private readonly prefix = "ikiform_progress_";
 
 	async save(key: string, data: FormProgress): Promise<void> {
 		try {
@@ -109,7 +109,7 @@ export class SessionStorageAdapter implements ProgressStorageAdapter {
 }
 
 export class ServerStorageAdapter implements ProgressStorageAdapter {
-	private baseUrl = "/api/form-progress";
+	private readonly baseUrl = "/api/form-progress";
 
 	async save(key: string, data: FormProgress): Promise<void> {
 		try {

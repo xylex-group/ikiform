@@ -65,7 +65,7 @@ export function FieldGroupField({
 		return;
 	};
 
-	const handleGroupFieldChange = (fieldId: string, fieldValue: any) => {
+	const handleGroupFieldChange = (fieldId: string, fieldValue: unknown) => {
 		const currentValues = value || {};
 		onChange({
 			...currentValues,
@@ -73,7 +73,7 @@ export function FieldGroupField({
 		});
 	};
 
-	const renderGroupFieldLabel = (groupField: any) => {
+	const renderGroupFieldLabel = (groupField: unknown) => {
 		if (!groupField.label) {
 			return null;
 		}
@@ -88,7 +88,7 @@ export function FieldGroupField({
 		);
 	};
 
-	const renderGroupField = (groupField: any) => {
+	const renderGroupField = (groupField: unknown) => {
 		const fieldValue = getFieldValue(groupField.id);
 		const fieldError = getFieldError(groupField.id);
 

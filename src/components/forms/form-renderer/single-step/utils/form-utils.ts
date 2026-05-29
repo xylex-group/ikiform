@@ -14,7 +14,7 @@ export const getAllFields = (schema: FormSchema): FormField[] =>
 
 export const validateSingleStepForm = (
 	fields: FormField[],
-	formData: Record<string, any>
+	formData: Record<string, unknown>
 ): { errors: Record<string, string>; isValid: boolean } => {
 	const errors: Record<string, string> = {};
 
@@ -63,7 +63,7 @@ export const validateSingleStepForm = (
 			}
 		} else if (field.type === "number" && value) {
 			const numValue = Number.parseFloat(value);
-			if (isNaN(numValue)) {
+			if (Number.isNaN(numValue)) {
 				errors[field.id] =
 					field.validation?.numberMessage || "Please enter a valid number";
 			} else {
@@ -123,7 +123,7 @@ export const validateSingleStepForm = (
 
 export const submitSingleStepForm = async (
 	formId: string,
-	formData: Record<string, any>
+	formData: Record<string, unknown>
 ): Promise<{
 	success: boolean;
 	message?: string;
@@ -138,7 +138,7 @@ export const submitSingleStepForm = async (
 		if (typeof window !== "undefined") {
 			const token = localStorage.getItem("token");
 			if (token) {
-				headers["Authorization"] = `Bearer ${token}`;
+				headers.Authorization = `Bearer ${token}`;
 			}
 		}
 		const response = await fetch(`/api/forms/${formId}/submit`, {

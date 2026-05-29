@@ -23,7 +23,7 @@ import {
 } from "../utils";
 
 export const useFormBuilder = (formId?: string) => {
-	const router = useRouter();
+	const _router = useRouter();
 	const { user, loading: authLoading } = useAuth();
 
 	const [state, setState] = useState<FormBuilderState>({
@@ -102,7 +102,7 @@ export const useFormBuilder = (formId?: string) => {
 		if (draft) {
 			actions.setFormSchema(draft);
 		}
-	}, [draftKey]);
+	}, [draftKey, actions.setFormSchema]);
 
 	useEffect(() => {
 		saveDraftToStorage(draftKey, state.formSchema);
@@ -112,11 +112,11 @@ export const useFormBuilder = (formId?: string) => {
 		if (formId && user && !isFormLoaded.current) {
 			loadForm();
 		}
-	}, [formId, user]);
+	}, [formId, user, loadForm]);
 
 	useEffect(() => {
 		isFormLoaded.current = false;
-	}, [formId]);
+	}, []);
 
 	useEffect(
 		() => () => {
@@ -131,7 +131,7 @@ export const useFormBuilder = (formId?: string) => {
 		if (state.isNewForm && !authLoading && user && !importedFromAi.current) {
 			actions.setShowCreationWizard(true);
 		}
-	}, [state.isNewForm, authLoading, user]);
+	}, [state.isNewForm, authLoading, user, actions.setShowCreationWizard]);
 
 	useEffect(() => {
 		const hasChanges = hasFormChanges(
@@ -139,7 +139,7 @@ export const useFormBuilder = (formId?: string) => {
 			lastManuallySavedSchemaRef.current
 		);
 		actions.setHasUnsavedChanges(hasChanges);
-	}, [state.formSchema]);
+	}, [state.formSchema, actions.setHasUnsavedChanges]);
 
 	useEffect(() => {
 		const imported = localStorage.getItem(DRAFT_KEYS.IMPORTED_FORM_SCHEMA);
@@ -192,7 +192,7 @@ export const useFormBuilder = (formId?: string) => {
 			} catch {}
 			localStorage.removeItem(DRAFT_KEYS.IMPORTED_FORM_SCHEMA);
 		}
-	}, []);
+	}, [actions.setFormSchema, actions.setHasUnsavedChanges]);
 
 	const loadForm = async () => {
 		if (!(formId && user) || isFormLoaded.current) {

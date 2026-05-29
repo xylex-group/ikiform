@@ -128,7 +128,7 @@ export async function toggleFormApiEnabled(
 
 export async function getFormByApiKey(apiKey: string): Promise<{
 	success: boolean;
-	form?: any;
+	form?: unknown;
 	error?: string;
 }> {
 	try {
@@ -161,7 +161,7 @@ export async function validateFormApiAccess(
 	formId: string
 ): Promise<{
 	success: boolean;
-	form?: any;
+	form?: unknown;
 	error?: string;
 }> {
 	try {
@@ -192,5 +192,3 @@ export async function validateFormApiAccess(
 		return { success: false, error: "An unexpected error occurred" };
 	}
 }
-
-

@@ -193,7 +193,7 @@ export default function DemoFormBuilder() {
 	};
 
 	const handleStepSelection = (stepIndex: number) => {
-		if (formSchema.blocks && formSchema.blocks[stepIndex]) {
+		if (formSchema.blocks?.[stepIndex]) {
 			setSelectedBlockId(formSchema.blocks[stepIndex].id);
 		}
 	};
@@ -259,7 +259,7 @@ export default function DemoFormBuilder() {
 		}
 	};
 
-	const handleReset = () => {
+	const _handleReset = () => {
 		setFormSchema(
 			createDefaultFormSchema({
 				title: "Demo Form",

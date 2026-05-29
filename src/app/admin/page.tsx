@@ -124,5 +124,3 @@ const AdminPage = async function AdminPage() {
 };
 
 export default AdminPage;
-
-

@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/athena/server";
 import {
 	sendNewLoginEmail,
 	sendWelcomeEmail,
 } from "@/lib/services/notifications";
 import { sanitizeString } from "@/lib/utils/sanitize";
-import { createClient } from "@/lib/athena/server";
 
-const userCache = new Map<string, { data: any; timestamp: number }>();
+const userCache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_TTL = 30_000;
 
 function getCachedUser(email: string) {
@@ -17,7 +17,7 @@ function getCachedUser(email: string) {
 	return null;
 }
 
-function setCachedUser(email: string, data: any) {
+function setCachedUser(email: string, data: unknown) {
 	userCache.set(email, { data, timestamp: Date.now() });
 	if (userCache.size > 1000) {
 		const cutoff = Date.now() - CACHE_TTL;
@@ -187,5 +187,3 @@ export async function GET(_request: NextRequest) {
 		);
 	}
 }
-
-

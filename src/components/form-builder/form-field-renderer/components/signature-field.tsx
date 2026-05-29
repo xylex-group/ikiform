@@ -34,7 +34,7 @@ export function SignatureField({
 		updateCanvasWidth();
 		window.addEventListener("resize", updateCanvasWidth);
 		return () => window.removeEventListener("resize", updateCanvasWidth);
-	}, []);
+	}, [updateCanvasWidth]);
 
 	useEffect(() => {
 		if (value && signatureRef.current && signatureRef.current.isEmpty()) {
@@ -43,7 +43,7 @@ export function SignatureField({
 			signatureRef.current.clear();
 		}
 		setIsLoading(false);
-	}, [value, canvasWidth]);
+	}, [value]);
 
 	const handleSignatureEnd = () => {
 		if (signatureRef.current) {
@@ -59,7 +59,7 @@ export function SignatureField({
 		onChange("");
 	};
 
-	const handleEditSignature = () => {
+	const _handleEditSignature = () => {
 		if (signatureRef.current) {
 			signatureRef.current.clear();
 			onChange("");

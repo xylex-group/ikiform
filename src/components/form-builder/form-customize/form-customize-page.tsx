@@ -37,15 +37,15 @@ export function FormCustomizePage({ formId, schema }: FormCustomizePageProps) {
 
 	const [previewMode, setPreviewMode] = useState(false);
 	const [saving, setSaving] = useState(false);
-	const [settingsVersion, setSettingsVersion] = useState(0);
+	const [settingsVersion, _setSettingsVersion] = useState(0);
 	const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
 	const [localSettings, setLocalSettings] = useState<LocalSettings>(() => ({
 		...schema.settings,
-		layout: (schema.settings as any).layout || {},
-		colors: (schema.settings as any).colors || {},
-		typography: (schema.settings as any).typography || {},
-		branding: (schema.settings as any).branding || {},
+		layout: (schema.settings as unknown).layout || {},
+		colors: (schema.settings as unknown).colors || {},
+		typography: (schema.settings as unknown).typography || {},
+		branding: (schema.settings as unknown).branding || {},
 	}));
 
 	const updateSettings = (updates: Partial<LocalSettings>) => {
@@ -60,9 +60,11 @@ export function FormCustomizePage({ formId, schema }: FormCustomizePageProps) {
 		try {
 			setSaving(true);
 			const newSchema = { ...schema, settings: localSettings };
-			await formsDb.updateForm(formId, user.id, { schema: newSchema as any });
+			await formsDb.updateForm(formId, user.id, {
+				schema: newSchema as unknown,
+			});
 			toast.success("Saved customization");
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to save changes. Please try again.");
 		} finally {
 			setSaving(false);

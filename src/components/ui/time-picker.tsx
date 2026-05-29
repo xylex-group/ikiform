@@ -30,7 +30,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 		let h = now.getHours();
 		const m = now.getMinutes();
 		const ap = h >= 12 ? "PM" : "AM";
-		h = h % 12;
+		h %= 12;
 		if (h === 0) {
 			h = 12;
 		}
@@ -76,7 +76,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 			setMinute(m);
 			setAmPm(ap);
 		}
-	}, []);
+	}, [getDefaultTime, onChange, value]);
 
 	const handleChange = React.useCallback(
 		(h: string, m: string, ap: string) => {

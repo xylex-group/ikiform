@@ -37,7 +37,7 @@ const getAllTrends = (trends: Record<string, number>) => {
 	return dates.map((date) => ({ date, value: trends[date] }));
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: unknown) => {
 	if (active && payload && payload.length) {
 		return (
 			<div className="rounded-xl border border-border bg-card px-3 py-2">

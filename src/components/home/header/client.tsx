@@ -1,12 +1,12 @@
 "use client";
 
-import type { AppAuthUser } from "@/lib/auth/types";
 import { AlignJustify, ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useReducer } from "react";
 import { Separator } from "@/components/ui";
 import { athenaBrowserAuth } from "@/lib/auth/athena-browser-auth";
+import type { AppAuthUser } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { Button } from "../../ui/button";
@@ -42,10 +42,10 @@ interface AuthState {
 	user: AppAuthUser | null;
 }
 
-type AuthAction = {
+interface AuthAction {
 	type: "set-auth";
 	user: AppAuthUser | null;
-};
+}
 
 const INITIAL_AUTH_STATE: AuthState = {
 	user: null,
@@ -268,7 +268,7 @@ const DrawerProfileSection = React.memo(function DrawerProfileSection({
 	user,
 	signOut,
 }: DrawerProfileSectionProps) {
-	const handleSignOut = useCallback(async () => {
+	const _handleSignOut = useCallback(async () => {
 		try {
 			await signOut();
 		} catch (error) {

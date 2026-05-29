@@ -25,7 +25,7 @@ const DEFAULT_SAVE_OPTIONS: SaveProgressOptions = {
 
 export function useFormProgress(
 	formId: string,
-	totalFields: number,
+	_totalFields: number,
 	config: Partial<FormProgressConfig> = {},
 	options: Partial<SaveProgressOptions> = {}
 ): FormProgressState & FormProgressActions {
@@ -61,7 +61,11 @@ export function useFormProgress(
 	}, [finalConfig, formId]);
 
 	const debouncedSave = useCallback(
-		async (formData: Record<string, any>, currentStep = 0, totalSteps = 1) => {
+		async (
+			formData: Record<string, unknown>,
+			currentStep = 0,
+			totalSteps = 1
+		) => {
 			if (!finalOptions.enableAutoSave) {
 				return;
 			}
@@ -77,11 +81,15 @@ export function useFormProgress(
 				}, finalOptions.debounceMs);
 			});
 		},
-		[finalOptions.debounceMs, finalOptions.enableAutoSave]
+		[finalOptions.debounceMs, finalOptions.enableAutoSave, saveProgress]
 	);
 
 	const saveProgress = useCallback(
-		async (formData: Record<string, any>, currentStep = 0, totalSteps = 1) => {
+		async (
+			formData: Record<string, unknown>,
+			currentStep = 0,
+			totalSteps = 1
+		) => {
 			if (
 				!(storageRef.current && sessionIdRef.current && finalConfig.enabled)
 			) {
@@ -125,7 +133,7 @@ export function useFormProgress(
 				}));
 			}
 		},
-		[formId]
+		[formId, finalConfig.enabled, finalOptions.skipFields?.forEach]
 	);
 
 	const loadProgress = useCallback(async () => {
@@ -159,7 +167,7 @@ export function useFormProgress(
 					error instanceof Error ? error.message : "Failed to load progress",
 			}));
 		}
-	}, [formId]);
+	}, [formId, finalConfig.enabled]);
 
 	const clearProgress = useCallback(async () => {
 		if (!(storageRef.current && sessionIdRef.current)) {

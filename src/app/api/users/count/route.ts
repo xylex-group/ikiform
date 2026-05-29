@@ -25,5 +25,3 @@ export async function GET() {
 		return NextResponse.json({ count: null }, { status: 500 });
 	}
 }
-
-

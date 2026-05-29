@@ -63,7 +63,7 @@ const SingleStepForm = dynamic(
 
 interface PublicFormContentProps {
 	formId: string;
-	schema: any;
+	schema: unknown;
 }
 
 export default function PublicFormContent({
@@ -91,7 +91,7 @@ export default function PublicFormContent({
 				root.style.removeProperty("--color-background");
 			};
 		}
-	}, [schema.settings?.colors?.websiteBackground]);
+	}, [schema.settings?.colors?.websiteBackground, schema.settings?.colors]);
 
 	return (
 		<CSSPropertiesProvider borderRadius={borderRadius}>

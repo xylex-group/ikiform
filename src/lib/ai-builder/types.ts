@@ -1,13 +1,13 @@
 export interface ChatMessage {
 	content: string;
 	role: "user" | "assistant";
-	schema?: any;
+	schema?: unknown;
 }
 
 export interface FormSchema {
 	id: string;
 	prompt: string;
-	schema: any;
+	schema: unknown;
 }
 
 export interface ChatPanelProps {
@@ -33,7 +33,7 @@ export interface PreviewPanelProps {
 	activeForm: FormSchema | undefined;
 	activeFormId: string | null;
 	forms: FormSchema[];
-	router: any;
+	router: unknown;
 	setActiveFormId: (id: string) => void;
 	setShowJsonModal: (v: boolean) => void;
 }

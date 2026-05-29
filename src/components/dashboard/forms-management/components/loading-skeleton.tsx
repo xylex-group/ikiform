@@ -13,7 +13,7 @@ export function LoadingSkeleton({ className }: LoadingSkeletonProps) {
 
 	const skeletonCards = useMemo(
 		() =>
-			[...Array(SKELETON_FORM_COUNT)].map((_, i) => {
+			[...new Array(SKELETON_FORM_COUNT)].map((_, i) => {
 				let cardClass =
 					"group flex cursor-pointer flex-col gap-4 shadow-none p-6 hover:bg-accent/50 relative";
 

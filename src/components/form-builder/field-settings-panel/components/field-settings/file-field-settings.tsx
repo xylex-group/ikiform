@@ -80,7 +80,7 @@ export function FileFieldSettings({
 		helpText = "",
 	} = settings;
 
-	const updateSetting = (key: keyof FileFieldSettings, value: any) => {
+	const updateSetting = (key: keyof FileFieldSettings, value: unknown) => {
 		onUpdateSettings({
 			[key]: value,
 		});
@@ -156,7 +156,10 @@ export function FileFieldSettings({
 						min="1"
 						name="maxFiles"
 						onChange={(e) =>
-							updateSetting("maxFiles", Number.parseInt(e.target.value) || 1)
+							updateSetting(
+								"maxFiles",
+								Number.parseInt(e.target.value, 10) || 1
+							)
 						}
 						onKeyDown={(e) => {
 							if (e.key === "Escape") {
@@ -187,7 +190,7 @@ export function FileFieldSettings({
 							onChange={(e) =>
 								updateSetting(
 									"maxSize",
-									(Number.parseInt(e.target.value) || 1) * 1024 * 1024
+									(Number.parseInt(e.target.value, 10) || 1) * 1024 * 1024
 								)
 							}
 							onKeyDown={(e) => {

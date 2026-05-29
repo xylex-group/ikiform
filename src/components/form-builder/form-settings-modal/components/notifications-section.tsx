@@ -18,7 +18,7 @@ import type { LocalSettings, NotificationSettings } from "../types";
 interface NotificationsSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: any;
+	schema?: unknown;
 	updateNotifications: (updates: Partial<NotificationSettings>) => void;
 }
 
@@ -29,7 +29,7 @@ export function NotificationsSection({
 	schema,
 	onSchemaUpdate,
 }: NotificationsSectionProps & {
-	onSchemaUpdate?: (updates: Partial<any>) => void;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
 }) {
 	const notifications = localSettings.notifications || {};
 	const customLinks = notifications.customLinks || [];
@@ -72,7 +72,7 @@ export function NotificationsSection({
 	};
 
 	const resetNotifications = () => {
-		const original = (schema?.settings as any)?.notifications || {};
+		const original = (schema?.settings as unknown)?.notifications || {};
 		updateNotifications(original);
 		setHasChanges(false);
 	};

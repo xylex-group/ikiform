@@ -5,7 +5,7 @@ import type {
 } from "../types";
 
 export class UrlEngine implements PrepopulationEngine {
-	private urlParams: URLSearchParams;
+	private readonly urlParams: URLSearchParams;
 
 	constructor() {
 		this.urlParams =
@@ -54,7 +54,7 @@ export class UrlEngine implements PrepopulationEngine {
 	}
 
 	validateConfig(config: PrepopulationConfig): boolean {
-		return Boolean(config.urlParam && config.urlParam.trim());
+		return Boolean(config.urlParam?.trim());
 	}
 
 	private sanitizeValue(value: string): string {

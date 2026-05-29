@@ -47,7 +47,7 @@ export function BlocksList({
 	onSaveEdit,
 	onCancelEdit,
 }: BlocksListProps) {
-	const handleDragEnd = (result: any) => {
+	const handleDragEnd = (result: unknown) => {
 		handleBlockReorder(blocks, result, onBlocksUpdate);
 	};
 

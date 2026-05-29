@@ -57,7 +57,7 @@ export function useFormStyling(schema: FormSchema) {
 				const styles = await getFormCustomStyles(schema);
 				setCustomStyles(styles);
 
-				const fontFamily = (schema.settings as any)?.typography?.fontFamily;
+				const fontFamily = (schema.settings as unknown)?.typography?.fontFamily;
 				if (fontFamily && typeof window !== "undefined") {
 					await loadGoogleFont(fontFamily);
 					setFontLoaded(true);
@@ -71,15 +71,15 @@ export function useFormStyling(schema: FormSchema) {
 		}
 
 		loadStyles();
-	}, [schema.settings]);
+	}, [schema.settings, schema]);
 
 	useEffect(() => {
 		if (typeof window === "undefined") {
 			return;
 		}
 
-		const colors = (schema.settings as any)?.colors;
-		const typography = (schema.settings as any)?.typography;
+		const colors = (schema.settings as unknown)?.colors;
+		const typography = (schema.settings as unknown)?.typography;
 		const root = document.documentElement;
 
 		if (colors) {
@@ -135,7 +135,10 @@ export function useFormStyling(schema: FormSchema) {
 			root.style.removeProperty("--form-font-size");
 			root.style.removeProperty("--form-font-weight");
 		};
-	}, [(schema.settings as any)?.colors, (schema.settings as any)?.typography]);
+	}, [
+		(schema.settings as unknown)?.colors,
+		(schema.settings as unknown)?.typography,
+	]);
 
 	const getFormClasses = () => {
 		const classes = ["ikiform-customized", "w-full", "ikiform-minimal"];
@@ -143,7 +146,7 @@ export function useFormStyling(schema: FormSchema) {
 	};
 
 	const getFieldStyles = () => {
-		const colors = (schema.settings as any)?.colors;
+		const colors = (schema.settings as unknown)?.colors;
 		return {
 			borderColor: colors?.border || undefined,
 			fontFamily: customStyles.formStyle.fontFamily || undefined,
@@ -151,7 +154,7 @@ export function useFormStyling(schema: FormSchema) {
 	};
 
 	const getButtonStyles = (isPrimary = false) => {
-		const colors = (schema.settings as any)?.colors;
+		const colors = (schema.settings as unknown)?.colors;
 		if (isPrimary && colors?.primary) {
 			return {
 				backgroundColor: colors.primary,

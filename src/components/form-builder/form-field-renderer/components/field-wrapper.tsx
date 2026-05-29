@@ -22,7 +22,8 @@ export function FieldWrapper({
 
 	const getFieldHelpText = () => field.settings?.helpText;
 
-	const getFieldWidthClass = () => getWidthClass(field.settings?.width as any);
+	const getFieldWidthClass = () =>
+		getWidthClass(field.settings?.width as unknown);
 
 	const getContainerClassName = () => {
 		const baseClasses = "flex flex-col gap-2";

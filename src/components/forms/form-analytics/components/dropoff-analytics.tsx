@@ -95,7 +95,7 @@ export const DropoffAnalytics: React.FC<DropoffAnalyticsProps> = ({
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{form.schema.blocks.map((block: any, idx: number) => {
+						{form.schema.blocks.map((block: unknown, idx: number) => {
 							const reached = dropoffCounts[block.id] || 0;
 							const dropoff =
 								total > 0 ? 100 - Math.round((reached / total) * 100) : 0;

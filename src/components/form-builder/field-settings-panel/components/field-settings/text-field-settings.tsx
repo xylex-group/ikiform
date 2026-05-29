@@ -32,7 +32,7 @@ export function TextFieldSettings({
 								...field,
 								validation: {
 									...field.validation,
-									maxLength: Number.parseInt(e.target.value) || undefined,
+									maxLength: Number.parseInt(e.target.value, 10) || undefined,
 								},
 							})
 						}
@@ -68,7 +68,7 @@ export function TextFieldSettings({
 								...field,
 								validation: {
 									...field.validation,
-									minLength: Number.parseInt(e.target.value) || undefined,
+									minLength: Number.parseInt(e.target.value, 10) || undefined,
 								},
 							})
 						}

@@ -50,7 +50,7 @@ export const OptionsSettings: React.FC<OptionsSettingsProps> = ({
 			<CardContent className="flex flex-col gap-4 p-0">
 				<div className="flex flex-col gap-2">
 					{sanitizeOptions(field.options || []).map(
-						(option: any, index: number) => {
+						(option: unknown, index: number) => {
 							let value = "";
 							if (typeof option === "string") {
 								value = option;

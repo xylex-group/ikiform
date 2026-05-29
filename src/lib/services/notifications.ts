@@ -34,7 +34,7 @@ export interface SendNotificationOptions {
 	to: string;
 }
 
-function renderLinks(analyticsUrl?: string, customLinks?: NotificationLink[]) {
+function _renderLinks(analyticsUrl?: string, customLinks?: NotificationLink[]) {
 	let linksHtml = "";
 	if (analyticsUrl) {
 		linksHtml += `<li><a href="${analyticsUrl}">View Form Analytics</a></li>`;
@@ -61,31 +61,27 @@ export async function sendFormNotification({
 	if (!process.env.RESEND_API_KEY) {
 		throw new Error("Resend API key not configured");
 	}
-	try {
-		const htmlMessage = await marked.parse(message || "");
-		const primary = analyticsUrl
-			? { label: "View Form Analytics", url: analyticsUrl }
-			: undefined;
-		const secondary =
-			customLinks && customLinks.length > 0 ? customLinks : undefined;
-		const email = React.createElement(BaseMarkdownEmail, {
-			heading: subject,
-			previewText: subject,
-			markdown: htmlMessage,
-			primaryCta: primary,
-			secondaryCtas: secondary,
-		});
-		const html = await render(email, { pretty: true });
-		const result = await getResend().emails.send({
-			from: from || "Ikiform <no-reply@ikiform.com>",
-			to,
-			subject,
-			html,
-		});
-		return result;
-	} catch (error) {
-		throw error;
-	}
+	const htmlMessage = await marked.parse(message || "");
+	const primary = analyticsUrl
+		? { label: "View Form Analytics", url: analyticsUrl }
+		: undefined;
+	const secondary =
+		customLinks && customLinks.length > 0 ? customLinks : undefined;
+	const email = React.createElement(BaseMarkdownEmail, {
+		heading: subject,
+		previewText: subject,
+		markdown: htmlMessage,
+		primaryCta: primary,
+		secondaryCtas: secondary,
+	});
+	const html = await render(email, { pretty: true });
+	const result = await getResend().emails.send({
+		from: from || "Ikiform <no-reply@ikiform.com>",
+		to,
+		subject,
+		html,
+	});
+	return result;
 }
 
 export async function sendWelcomeEmail({

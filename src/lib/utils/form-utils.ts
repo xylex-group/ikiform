@@ -4,7 +4,7 @@ export function getFormTitle(
 	schema: FormSchema | null | undefined,
 	isPublic = false
 ): string {
-	if (!(schema && schema.settings)) {
+	if (!schema?.settings) {
 		return "Untitled Form";
 	}
 

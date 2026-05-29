@@ -1,8 +1,8 @@
 "use server";
 
+import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createAthenaAdminClient } from "@/utils/athena/admin";
 import { createAthenaServerClient } from "@/utils/athena/server";
-import { ensureDefaultFormSettings } from "@/lib/forms";
 
 export const formsDbServer = {
 	async getPublicForm(identifier: string) {
@@ -53,7 +53,7 @@ export const formsDbServer = {
 
 	async submitForm(
 		formId: string,
-		submissionData: Record<string, any>,
+		submissionData: Record<string, unknown>,
 		ipAddress?: string
 	) {
 		const athena = await createAthenaServerClient();
@@ -80,7 +80,7 @@ export const formsDbServer = {
 		sessionId: string,
 		role: "user" | "assistant" | "system",
 		content: string,
-		metadata: Record<string, any> = {}
+		metadata: Record<string, unknown> = {}
 	) {
 		const athena = await createAthenaServerClient();
 
@@ -157,7 +157,7 @@ export const formsDbServer = {
 		sessionId: string,
 		role: "user" | "assistant" | "system",
 		content: string,
-		metadata: Record<string, any> = {}
+		metadata: Record<string, unknown> = {}
 	) {
 		const athena = await createAthenaServerClient();
 
@@ -203,7 +203,7 @@ export const formsDbServer = {
 		return data;
 	},
 
-	async getAIAnalyticsSessions(userId: string, formId: string, limit = 10) {
+	async getAIAnalyticsSessions(userId: string, _formId: string, limit = 10) {
 		const athena = await createAthenaServerClient();
 
 		const { data, error } = await athena
@@ -229,7 +229,7 @@ export const formsDbServer = {
 				}
 				return acc;
 			},
-			{} as Record<string, any>
+			{} as Record<string, unknown>
 		);
 
 		return Object.values(sessions);

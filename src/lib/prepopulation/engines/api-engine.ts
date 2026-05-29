@@ -6,7 +6,10 @@ import type {
 } from "../types";
 
 export class ApiEngine implements PrepopulationEngine {
-	private static cache = new Map<string, { data: any; timestamp: number }>();
+	private static cache = new Map<
+		string,
+		{ data: unknown; timestamp: number }
+	>();
 	private static readonly DEFAULT_CACHE_TTL = 5 * 60 * 1000;
 	private static readonly DEFAULT_TIMEOUT = 10_000;
 	private static readonly DEFAULT_RETRY_ATTEMPTS = 3;
@@ -60,7 +63,9 @@ export class ApiEngine implements PrepopulationEngine {
 		return Boolean(config.apiEndpoint && this.isValidUrl(config.apiEndpoint));
 	}
 
-	private async makeRequestWithRetry(config: ApiEngineConfig): Promise<any> {
+	private async makeRequestWithRetry(
+		config: ApiEngineConfig
+	): Promise<unknown> {
 		const maxAttempts =
 			config.retryAttempts || ApiEngine.DEFAULT_RETRY_ATTEMPTS;
 		const retryDelay = config.retryDelay || ApiEngine.DEFAULT_RETRY_DELAY;
@@ -78,7 +83,7 @@ export class ApiEngine implements PrepopulationEngine {
 		}
 	}
 
-	private async makeRequest(config: ApiEngineConfig): Promise<any> {
+	private async makeRequest(config: ApiEngineConfig): Promise<unknown> {
 		const controller = new AbortController();
 		const timeout = config.timeout || ApiEngine.DEFAULT_TIMEOUT;
 
@@ -110,7 +115,7 @@ export class ApiEngine implements PrepopulationEngine {
 			}
 
 			const contentType = response.headers.get("content-type");
-			if (contentType && contentType.includes("application/json")) {
+			if (contentType?.includes("application/json")) {
 				return await response.json();
 			}
 			return await response.text();
@@ -123,7 +128,7 @@ export class ApiEngine implements PrepopulationEngine {
 		return template;
 	}
 
-	private extractValue(data: any, jsonPath?: string): any {
+	private extractValue(data: unknown, jsonPath?: string): unknown {
 		if (!jsonPath) {
 			return data;
 		}
@@ -136,7 +141,7 @@ export class ApiEngine implements PrepopulationEngine {
 		}
 	}
 
-	private evaluateJsonPath(data: any, path: string): any {
+	private evaluateJsonPath(data: unknown, path: string): unknown {
 		if (path === "$") {
 			return data;
 		}
@@ -186,7 +191,7 @@ export class ApiEngine implements PrepopulationEngine {
 		);
 	}
 
-	private getCachedValue(key: string, customTtl?: number): any | null {
+	private getCachedValue(key: string, customTtl?: number): unknown | null {
 		const cached = ApiEngine.cache.get(key);
 		if (!cached) {
 			return null;
@@ -201,7 +206,7 @@ export class ApiEngine implements PrepopulationEngine {
 		return cached.data;
 	}
 
-	private setCachedValue(key: string, data: any, customTtl?: number): void {
+	private setCachedValue(key: string, data: unknown, customTtl?: number): void {
 		ApiEngine.cache.set(key, { data, timestamp: Date.now() });
 
 		if (ApiEngine.cache.size > 100) {

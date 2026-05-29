@@ -289,7 +289,7 @@ export function GoogleFontPicker({
 		if (value && !loadedFonts.has(value)) {
 			preloadFont(value);
 		}
-	}, [value, loadedFonts]);
+	}, [value, loadedFonts, preloadFont]);
 
 	const selectedFont = fonts.find((font) => font.family === value);
 

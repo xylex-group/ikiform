@@ -198,7 +198,7 @@ export function JsonViewModal({ schema, isOpen, onClose }: JsonViewModalProps) {
 				setCopied(true);
 				setTimeout(() => setCopied(false), 2000);
 			}
-		} catch (error) {
+		} catch (_error) {
 			const { toast } = await import("@/hooks/use-toast");
 			toast.error("Failed to copy JSON");
 		}

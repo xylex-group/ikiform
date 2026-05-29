@@ -55,9 +55,9 @@ export function PollFieldSettings({
 						<Button
 							aria-label="Add poll option"
 							className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
-							disabled={!(newOption && newOption.trim())}
+							disabled={!newOption?.trim()}
 							onClick={() => {
-								if (newOption && newOption.trim()) {
+								if (newOption?.trim()) {
 									onUpdateSettings({
 										pollOptions: [
 											...(field.settings?.pollOptions || []),
@@ -70,7 +70,7 @@ export function PollFieldSettings({
 							onKeyDown={(e) => {
 								if (e.key === "Enter" || e.key === " ") {
 									e.preventDefault();
-									if (newOption && newOption.trim()) {
+									if (newOption?.trim()) {
 										onUpdateSettings({
 											pollOptions: [
 												...(field.settings?.pollOptions || []),

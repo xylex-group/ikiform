@@ -115,7 +115,7 @@ export const useAIBuilder = (initialPrompt?: string) => {
 				autoSendPrompt(initialPrompt);
 			}, 100);
 		}
-	}, [initialPrompt]);
+	}, [initialPrompt, autoSendPrompt]);
 
 	useEffect(() => {
 		processInitialPrompt();

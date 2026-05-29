@@ -7,7 +7,7 @@ export class AIBuilderService {
 		sessionId: string,
 		onStream: (content: string) => void,
 		onError: (error: string) => void
-	): Promise<{ fullText: string; foundJson: any }> {
+	): Promise<{ fullText: string; foundJson: unknown }> {
 		try {
 			const response = await fetch("/api/ai-builder", {
 				method: "POST",
@@ -22,7 +22,7 @@ export class AIBuilderService {
 
 			const reader = response.body.getReader();
 			let fullText = "";
-			let foundJson = null;
+			let foundJson: unknown = null;
 
 			while (true) {
 				const { value, done } = await reader.read();
@@ -40,7 +40,7 @@ export class AIBuilderService {
 			}
 
 			return { fullText, foundJson };
-		} catch (error) {
+		} catch (_error) {
 			onError("Failed to send message");
 			return { fullText: "", foundJson: null };
 		}

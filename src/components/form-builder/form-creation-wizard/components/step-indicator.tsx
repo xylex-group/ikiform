@@ -52,7 +52,6 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
 								style={{
 									outlineOffset: current ? 2 : undefined,
 								}}
-								tabIndex={0}
 							/>
 						</li>
 					);

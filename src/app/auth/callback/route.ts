@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 			const user = sessionResult.data.user;
 
 			if (user) {
-				const { id: uid, email, user_metadata } = user as any;
+				const { id: uid, email, user_metadata } = user as unknown;
 
 				if (email) {
 					const name =
@@ -39,7 +39,14 @@ export async function GET(request: NextRequest) {
 						.single();
 					const isNewUser = !existingUser;
 
-					let upsertData;
+					let upsertData: {
+						uid: string;
+						name: string;
+						email: string;
+						has_premium: boolean;
+						has_free_trial: boolean;
+						polar_customer_id: string | null;
+					};
 					if (isNewUser) {
 						upsertData = {
 							uid,

@@ -13,7 +13,7 @@ interface TreeContextType {
 	handleSelection: (nodeId: string, ctrlKey?: boolean) => void;
 	indent: number;
 	multiSelect: boolean;
-	onNodeClick?: (nodeId: string, data?: any) => void;
+	onNodeClick?: (nodeId: string, data?: unknown) => void;
 	onNodeExpand?: (nodeId: string, expanded: boolean) => void;
 	selectable: boolean;
 	selectedIds: string[];
@@ -83,7 +83,7 @@ export interface TreeProviderProps
 	defaultExpandedIds?: string[];
 	indent?: number;
 	multiSelect?: boolean;
-	onNodeClick?: (nodeId: string, data?: any) => void;
+	onNodeClick?: (nodeId: string, data?: unknown) => void;
 	onNodeExpand?: (nodeId: string, expanded: boolean) => void;
 	onSelectionChange?: (selectedIds: string[]) => void;
 	selectable?: boolean;
@@ -227,7 +227,7 @@ export interface TreeItemProps
 	extends React.HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof treeItemVariants> {
 	asChild?: boolean;
-	data?: any;
+	data?: unknown;
 	hasChildren?: boolean;
 	icon?: React.ReactNode;
 	isLast?: boolean;
@@ -255,7 +255,7 @@ const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
 			onClick,
 			...props
 		},
-		ref
+		_ref
 	) => {
 		const {
 			expandedIds,
@@ -293,7 +293,7 @@ const TreeItem = React.forwardRef<HTMLDivElement, TreeItemProps>(
 			onClick?.(e);
 		};
 
-		const Comp = asChild ? Slot : "div";
+		const _Comp = asChild ? Slot : "div";
 		return (
 			<div className="select-none">
 				<m.div

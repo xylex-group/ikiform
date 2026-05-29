@@ -16,16 +16,16 @@ const getAthenaClient = async () => {
  * These will be gradually replaced by generated types from the Athena registry
  * (RowOf<FormModel>, InsertOf<FormModel>, etc.).
  */
-// Legacy aliases kept as any during migration to avoid massive type churn.
+// Legacy aliases kept as unknown during migration to avoid massive type churn.
 // Will be replaced once the generated Athena registry is adopted.
-export type Form = any;
-export type FormSubmission = any;
-export type User = any;
+export type Form = unknown;
+export type FormSubmission = unknown;
+export type User = unknown;
 
-const cache = new Map<string, { data: any; expires: number }>();
+const cache = new Map<string, { data: unknown; expires: number }>();
 const CACHE_TTL = 5 * 60 * 1000;
 
-function getCacheKey(method: string, ...args: any[]): string {
+function getCacheKey(method: string, ...args: unknown[]): string {
 	return `${method}:${JSON.stringify(args)}`;
 }
 
@@ -38,7 +38,7 @@ function getFromCache<T>(key: string): T | null {
 	return null;
 }
 
-function setCache(key: string, data: any): void {
+function setCache(key: string, data: unknown): void {
 	cache.set(key, {
 		data,
 		expires: Date.now() + CACHE_TTL,
@@ -380,7 +380,7 @@ export const formsDb = {
 
 	async submitForm(
 		formId: string,
-		submissionData: Record<string, any>,
+		submissionData: Record<string, unknown>,
 		ipAddress?: string
 	) {
 		const athena = await getAthenaClient();
@@ -541,7 +541,7 @@ export const formsDb = {
 		sessionId: string,
 		role: "user" | "assistant" | "system",
 		content: string,
-		metadata: Record<string, any> = {}
+		metadata: Record<string, unknown> = {}
 	) {
 		const athena = await getAthenaClient();
 
@@ -573,7 +573,7 @@ export const formsDb = {
 
 	async getAIBuilderChatHistory(userId: string, sessionId: string) {
 		const cacheKey = getCacheKey("getAIBuilderChatHistory", userId, sessionId);
-		const cached = getFromCache<any[]>(cacheKey);
+		const cached = getFromCache<unknown[]>(cacheKey);
 		if (cached) {
 			return cached;
 		}
@@ -597,7 +597,7 @@ export const formsDb = {
 
 	async getAIBuilderSessions(userId: string, limit = 10) {
 		const cacheKey = getCacheKey("getAIBuilderSessions", userId, limit);
-		const cached = getFromCache<any[]>(cacheKey);
+		const cached = getFromCache<unknown[]>(cacheKey);
 		if (cached) {
 			return cached;
 		}
@@ -641,7 +641,7 @@ export const formsDb = {
 		sessionId: string,
 		role: "user" | "assistant" | "system",
 		content: string,
-		metadata: Record<string, any> = {}
+		metadata: Record<string, unknown> = {}
 	) {
 		const athena = await getAthenaClient();
 
@@ -684,7 +684,7 @@ export const formsDb = {
 			formId,
 			sessionId
 		);
-		const cached = getFromCache<any[]>(cacheKey);
+		const cached = getFromCache<unknown[]>(cacheKey);
 		if (cached) {
 			return cached;
 		}
@@ -714,7 +714,7 @@ export const formsDb = {
 			formId,
 			limit
 		);
-		const cached = getFromCache<any[]>(cacheKey);
+		const cached = getFromCache<unknown[]>(cacheKey);
 		if (cached) {
 			return cached;
 		}
@@ -744,7 +744,7 @@ export const formsDb = {
 				}
 				return acc;
 			},
-			{} as Record<string, any>
+			{} as Record<string, unknown>
 		);
 
 		const result = Object.values(sessions);
@@ -757,7 +757,7 @@ export const formsDb = {
 	},
 
 	clearUserCache(userId: string) {
-		const keysToDelete = [];
+		const keysToDelete: string[] = [];
 		for (const key of cache.keys()) {
 			if (key.includes(userId)) {
 				keysToDelete.push(key);
@@ -767,7 +767,7 @@ export const formsDb = {
 	},
 
 	clearFormCache(formId: string) {
-		const keysToDelete = [];
+		const keysToDelete: string[] = [];
 		for (const key of cache.keys()) {
 			if (key.includes(formId)) {
 				keysToDelete.push(key);
@@ -776,4 +776,3 @@ export const formsDb = {
 		keysToDelete.forEach((key) => cache.delete(key));
 	},
 };
-

@@ -114,5 +114,3 @@ export async function getFileMetadata(
 		return null;
 	}
 }
-
-

@@ -21,11 +21,11 @@ export function ResponseLimitSection({
 	schema,
 	onSchemaUpdate,
 }: {
-	localSettings: any;
-	updateResponseLimit: (updates: Partial<any>) => void;
+	localSettings: unknown;
+	updateResponseLimit: (updates: Partial<unknown>) => void;
 	formId?: string;
-	schema?: any;
-	onSchemaUpdate?: (updates: Partial<any>) => void;
+	schema?: unknown;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
 }) {
 	const [settings, setSettings] = useState({
 		enabled: !!localSettings.responseLimit?.enabled,
@@ -56,7 +56,7 @@ export function ResponseLimitSection({
 			);
 	}, [hasChanges]);
 
-	const handleChange = (field: string, value: any) => {
+	const handleChange = (field: string, value: unknown) => {
 		setSettings((prev) => ({ ...prev, [field]: value }));
 		setSaved(false);
 		setHasChanges(true);
@@ -344,7 +344,7 @@ function ResponseLimitField({
 				max={max}
 				min={min}
 				name={id}
-				onChange={(e) => onChange(Number.parseInt(e.target.value) || min)}
+				onChange={(e) => onChange(Number.parseInt(e.target.value, 10) || min)}
 				onKeyDown={handleKeyDown}
 				placeholder={placeholder}
 				required={required}

@@ -2,7 +2,7 @@ export interface FormProgress {
 	completionPercentage: number;
 	currentStep: number;
 	expiresAt: Date;
-	formData: Record<string, any>;
+	formData: Record<string, unknown>;
 	formId: string;
 	id: string;
 	lastUpdated: Date;
@@ -23,7 +23,7 @@ export interface FormProgressActions {
 	loadProgress: () => Promise<void>;
 	restoreProgress: () => void;
 	saveProgress: (
-		formData: Record<string, any>,
+		formData: Record<string, unknown>,
 		currentStep?: number
 	) => Promise<void>;
 }

@@ -25,7 +25,7 @@ export function ProfanityFilterSection({
 	schema,
 	onSchemaUpdate,
 }: ProfanityFilterSectionProps & {
-	onSchemaUpdate?: (updates: Partial<any>) => void;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
 }) {
 	const [profanityFilterSettings, setProfanityFilterSettings] = useState({
 		enabled: localSettings.profanityFilter?.enabled,
@@ -57,7 +57,7 @@ export function ProfanityFilterSection({
 			);
 	}, [hasChanges]);
 
-	const handleProfanityFilterChange = (field: string, value: any) => {
+	const handleProfanityFilterChange = (field: string, value: unknown) => {
 		setProfanityFilterSettings((prev) => ({ ...prev, [field]: value }));
 		setSaved(false);
 		setHasChanges(true);
@@ -332,8 +332,8 @@ function FilterModeSection({
 	profanityFilter,
 	updateProfanityFilter,
 }: {
-	profanityFilter: any;
-	updateProfanityFilter: (field: string, value: any) => void;
+	profanityFilter: unknown;
+	updateProfanityFilter: (field: string, value: unknown) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">
@@ -372,8 +372,8 @@ function CustomMessageSection({
 	profanityFilter,
 	updateProfanityFilter,
 }: {
-	profanityFilter: any;
-	updateProfanityFilter: (field: string, value: any) => void;
+	profanityFilter: unknown;
+	updateProfanityFilter: (field: string, value: unknown) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">

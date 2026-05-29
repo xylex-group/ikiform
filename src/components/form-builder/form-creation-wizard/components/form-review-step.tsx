@@ -28,7 +28,7 @@ export const FormReviewStep: React.FC<FormReviewStepProps> = ({
 	onEditStep,
 }) => {
 	const isMultiStep = configuration.type === "multi";
-	const [showPreview, setShowPreview] = React.useState(false);
+	const [showPreview, _setShowPreview] = React.useState(false);
 
 	const previewSchema = createDefaultFormSchema({
 		title: configuration.title || "",

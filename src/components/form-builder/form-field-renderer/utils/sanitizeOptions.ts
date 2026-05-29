@@ -1,4 +1,4 @@
-export function sanitizeOptions(options: Array<any>): Array<any> {
+export function sanitizeOptions(options: unknown[]): unknown[] {
 	return options.map((opt) => {
 		if (typeof opt === "string") {
 			return escapeHtml(opt);

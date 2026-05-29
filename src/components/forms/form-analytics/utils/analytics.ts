@@ -395,7 +395,7 @@ export const calculateQuizAnalytics = (
 		0
 	);
 	const passCount = quizResults.filter((item) => item.result.passed).length;
-	const passingScore = form.schema.settings?.quiz?.passingScore || 70;
+	const _passingScore = form.schema.settings?.quiz?.passingScore || 70;
 
 	const questionAnalytics = quizFields.map((field) => {
 		const fieldResults = quizResults.flatMap((item) =>

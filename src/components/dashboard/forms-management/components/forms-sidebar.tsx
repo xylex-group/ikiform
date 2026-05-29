@@ -10,7 +10,6 @@ export const FormsSidebar = memo(function FormsSidebar({
 		<aside
 			aria-label="Forms statistics sidebar"
 			className="flex w-full flex-col"
-			role="complementary"
 		>
 			<FormStats forms={forms} loading={loading} />
 		</aside>

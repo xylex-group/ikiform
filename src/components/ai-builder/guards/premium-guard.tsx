@@ -8,7 +8,7 @@ interface PremiumGuardProps {
 	checking: boolean;
 	children: React.ReactNode;
 	hasPremium: boolean | null;
-	user: any;
+	user: unknown;
 	useSkeleton?: boolean;
 }
 

@@ -5,7 +5,7 @@ import { createClient } from "@/lib/athena/server";
 export const GET = CustomerPortal({
 	accessToken: process.env.POLAR_ACCESS_TOKEN!,
 	server: "production",
-	getCustomerId: async (req: NextRequest) => {
+	getCustomerId: async (_req: NextRequest) => {
 		try {
 			const athena = await createClient();
 
@@ -37,5 +37,3 @@ export const GET = CustomerPortal({
 		}
 	},
 });
-
-

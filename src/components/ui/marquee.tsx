@@ -62,7 +62,7 @@ export const Marquee = React.forwardRef<HTMLDivElement, MarqueeProps>(
 
 			resizeObserver.observe(container);
 			return () => resizeObserver.disconnect();
-		}, [isClient, children]);
+		}, [isClient]);
 
 		const getSpeed = (): string => {
 			if (typeof speed === "number") {

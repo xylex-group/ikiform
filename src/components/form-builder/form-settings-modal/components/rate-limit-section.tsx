@@ -23,7 +23,7 @@ export function RateLimitSection({
 	schema,
 	onSchemaUpdate,
 }: RateLimitSectionProps & {
-	onSchemaUpdate?: (updates: Partial<any>) => void;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
 }) {
 	const [rateLimitSettings, setRateLimitSettings] = useState({
 		enabled: localSettings.rateLimit?.enabled,
@@ -56,7 +56,7 @@ export function RateLimitSection({
 			);
 	}, [hasChanges]);
 
-	const handleRateLimitChange = (field: string, value: any) => {
+	const handleRateLimitChange = (field: string, value: unknown) => {
 		setRateLimitSettings((prev) => ({ ...prev, [field]: value }));
 		setSaved(false);
 		setHasChanges(true);
@@ -429,7 +429,7 @@ function RateLimitField({
 				max={max}
 				min={min}
 				name={id}
-				onChange={(e) => onChange(Number.parseInt(e.target.value) || min)}
+				onChange={(e) => onChange(Number.parseInt(e.target.value, 10) || min)}
 				onKeyDown={handleKeyDown}
 				placeholder={placeholder}
 				required={required}

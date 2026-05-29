@@ -1,23 +1,19 @@
-import type {
-	Form,
-	FormSubmission,
-	User,
-} from "@/lib/database/database";
+import type { Form, FormSubmission, User } from "@/lib/database/database";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 
-type AnyRecord = Record<string, any>;
+type AnyRecord = Record<string, unknown>;
 
 const API_PATH = "/api/forms/db";
 const CACHE_TTL = 5 * 60 * 1000;
 
-interface CacheEntry<T = any> {
+interface CacheEntry<T = unknown> {
 	data: T;
 	expires: number;
 }
 
 const cache = new Map<string, CacheEntry>();
 
-function getCacheKey(method: string, ...args: any[]): string {
+function getCacheKey(method: string, ...args: unknown[]): string {
 	return `${method}:${JSON.stringify(args)}`;
 }
 
@@ -37,7 +33,7 @@ function setCache<T>(key: string, data: T): void {
 	});
 }
 
-async function callDb<T>(action: string, args: any[] = []): Promise<T> {
+async function callDb<T>(action: string, args: unknown[] = []): Promise<T> {
 	const response = await fetch(API_PATH, {
 		method: "POST",
 		headers: {
@@ -67,7 +63,7 @@ async function callDb<T>(action: string, args: any[] = []): Promise<T> {
 
 export const formsDb = {
 	async createForm(userId: string, title: string, schema: AnyRecord) {
-		const created = await callDb<Form>( "createForm", [userId, title, schema]);
+		const created = await callDb<Form>("createForm", [userId, title, schema]);
 		return created;
 	},
 
@@ -100,10 +96,7 @@ export const formsDb = {
 			return cached;
 		}
 
-		const forms = await callDb<Form[]>(
-			"getUserFormsWithDetails",
-			[userId]
-		);
+		const forms = await callDb<Form[]>("getUserFormsWithDetails", [userId]);
 		const transformedForms = forms.map((form) => ({
 			...form,
 			schema: ensureDefaultFormSettings(form.schema || {}),
@@ -160,10 +153,10 @@ export const formsDb = {
 			return cachedForms;
 		}
 
-		const fetchedForms = await callDb<Form[]>(
-			"getMultipleForms",
-			[uncachedIds, userId]
-		);
+		const fetchedForms = await callDb<Form[]>("getMultipleForms", [
+			uncachedIds,
+			userId,
+		]);
 		const transformed = fetchedForms.map((form) => {
 			const hydrated = {
 				...form,
@@ -220,7 +213,11 @@ export const formsDb = {
 		}
 	},
 
-	async togglePublishForm(formId: string, userId: string, isPublished: boolean) {
+	async togglePublishForm(
+		formId: string,
+		userId: string,
+		isPublished: boolean
+	) {
 		const updated = await callDb<Form>("togglePublishForm", [
 			formId,
 			userId,
@@ -245,8 +242,12 @@ export const formsDb = {
 		return updated;
 	},
 
-	async submitForm(formId: string, submissionData: Record<string, any>, ipAddress?: string) {
-		return callDb<Record<string, any>>("submitForm", [
+	async submitForm(
+		formId: string,
+		submissionData: Record<string, unknown>,
+		ipAddress?: string
+	) {
+		return callDb<Record<string, unknown>>("submitForm", [
 			formId,
 			submissionData,
 			ipAddress,
@@ -254,16 +255,22 @@ export const formsDb = {
 	},
 
 	async getFormSubmissions(formId: string, userId: string, limit?: number) {
-		const result = await callDb<FormSubmission[]>(
-			"getFormSubmissions",
-			[formId, userId, limit]
-		);
+		const result = await callDb<FormSubmission[]>("getFormSubmissions", [
+			formId,
+			userId,
+			limit,
+		]);
 		const cacheKey = getCacheKey("getFormSubmissions", formId, userId, limit);
 		setCache(cacheKey, result);
 		return result;
 	},
 
-	async getFormSubmissionsPaginated(formId: string, userId: string, page = 1, pageSize = 50) {
+	async getFormSubmissionsPaginated(
+		formId: string,
+		userId: string,
+		page = 1,
+		pageSize = 50
+	) {
 		const cacheKey = getCacheKey(
 			"getFormSubmissionsPaginated",
 			formId,
@@ -271,7 +278,7 @@ export const formsDb = {
 			page,
 			pageSize
 		);
-		const cached = getFromCache<any[]>(cacheKey);
+		const cached = getFromCache<unknown[]>(cacheKey);
 		if (cached) {
 			return cached;
 		}
@@ -289,7 +296,7 @@ export const formsDb = {
 		sessionId: string,
 		role: "user" | "assistant" | "system",
 		content: string,
-		metadata: Record<string, any> = {}
+		metadata: Record<string, unknown> = {}
 	) {
 		return callDb<AnyRecord>("saveAIBuilderMessage", [
 			userId,
@@ -307,10 +314,10 @@ export const formsDb = {
 			return cached;
 		}
 
-		const history = await callDb<AnyRecord[]>(
-			"getAIBuilderChatHistory",
-			[userId, sessionId]
-		);
+		const history = await callDb<AnyRecord[]>("getAIBuilderChatHistory", [
+			userId,
+			sessionId,
+		]);
 		setCache(cacheKey, history);
 		return history;
 	},
@@ -322,10 +329,10 @@ export const formsDb = {
 			return cached;
 		}
 
-		const sessions = await callDb<AnyRecord[]>(
-			"getAIBuilderSessions",
-			[userId, limit]
-		);
+		const sessions = await callDb<AnyRecord[]>("getAIBuilderSessions", [
+			userId,
+			limit,
+		]);
 		setCache(cacheKey, sessions);
 		return sessions;
 	},
@@ -336,7 +343,7 @@ export const formsDb = {
 		sessionId: string,
 		role: "user" | "assistant" | "system",
 		content: string,
-		metadata: Record<string, any> = {}
+		metadata: Record<string, unknown> = {}
 	) {
 		return callDb<AnyRecord>("saveAIAnalyticsMessage", [
 			userId,
@@ -364,10 +371,11 @@ export const formsDb = {
 			return cached;
 		}
 
-		const history = await callDb<AnyRecord[]>(
-			"getAIAnalyticsChatHistory",
-			[userId, formId, sessionId]
-		);
+		const history = await callDb<AnyRecord[]>("getAIAnalyticsChatHistory", [
+			userId,
+			formId,
+			sessionId,
+		]);
 		setCache(cacheKey, history);
 		return history;
 	},
@@ -384,10 +392,11 @@ export const formsDb = {
 			return cached;
 		}
 
-		const sessions = await callDb<AnyRecord[]>(
-			"getAIAnalyticsSessions",
-			[userId, formId, limit]
-		);
+		const sessions = await callDb<AnyRecord[]>("getAIAnalyticsSessions", [
+			userId,
+			formId,
+			limit,
+		]);
 		setCache(cacheKey, sessions);
 		return sessions;
 	},

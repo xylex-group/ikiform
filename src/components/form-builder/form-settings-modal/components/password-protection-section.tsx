@@ -17,9 +17,9 @@ import { toast } from "@/hooks/use-toast";
 
 interface PasswordProtectionSectionProps {
 	formId?: string;
-	localSettings: any;
-	schema?: any;
-	updatePasswordProtection: (updates: any) => void;
+	localSettings: unknown;
+	schema?: unknown;
+	updatePasswordProtection: (updates: unknown) => void;
 }
 
 export function PasswordProtectionSection({
@@ -29,7 +29,7 @@ export function PasswordProtectionSection({
 	schema,
 	onSchemaUpdate,
 }: PasswordProtectionSectionProps & {
-	onSchemaUpdate?: (updates: Partial<any>) => void;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
 }) {
 	const [showPassword, setShowPassword] = useState(false);
 	const [passwordProtectionSettings, setPasswordProtectionSettings] = useState({
@@ -61,7 +61,7 @@ export function PasswordProtectionSection({
 			);
 	}, [hasChanges]);
 
-	const handlePasswordProtectionChange = (field: string, value: any) => {
+	const handlePasswordProtectionChange = (field: string, value: unknown) => {
 		setPasswordProtectionSettings((prev) => ({ ...prev, [field]: value }));
 		setSaved(false);
 		setHasChanges(true);

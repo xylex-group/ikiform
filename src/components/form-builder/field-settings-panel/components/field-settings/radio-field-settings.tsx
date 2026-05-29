@@ -91,7 +91,7 @@ export function RadioFieldSettings({
 							min="1"
 							onChange={(e) =>
 								onUpdateSettings({
-									points: Number.parseInt(e.target.value) || 1,
+									points: Number.parseInt(e.target.value, 10) || 1,
 								})
 							}
 							type="number"

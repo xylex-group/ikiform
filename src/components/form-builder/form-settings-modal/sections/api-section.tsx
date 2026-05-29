@@ -34,11 +34,11 @@ import {
 } from "@/lib/fields/slider-utils";
 import type { ApiSectionProps } from "../types";
 
-type ApiKeyResult = {
-	success: boolean;
+interface ApiKeyResult {
 	apiKey?: string;
 	error?: string;
-};
+	success: boolean;
+}
 
 const readApiSectionError = (payload: unknown, fallback: string): string => {
 	if (
@@ -67,16 +67,24 @@ const manageFormApiKey = async (
 		...(body ? { body: JSON.stringify(body) } : {}),
 	});
 
-	const payload = (await response.json().catch(() => null)) as ApiKeyResult | null;
+	const payload = (await response
+		.json()
+		.catch(() => null)) as ApiKeyResult | null;
 	if (!response.ok) {
 		return {
 			success: false,
-			error: readApiSectionError(payload, `Failed to ${method.toLowerCase()} API key`),
+			error: readApiSectionError(
+				payload,
+				`Failed to ${method.toLowerCase()} API key`
+			),
 		};
 	}
 
 	if (!payload) {
-		return { success: false, error: `Invalid response while ${method.toLowerCase()} API key` };
+		return {
+			success: false,
+			error: `Invalid response while ${method.toLowerCase()} API key`,
+		};
 	}
 
 	return payload;
@@ -134,7 +142,7 @@ export function ApiSection({
 			setSaved(true);
 			setHasChanges(false);
 			toast.success("API settings saved successfully");
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to save API settings");
 		} finally {
 			setSaving(false);
@@ -165,7 +173,9 @@ export function ApiSection({
 						},
 					},
 				};
-				await formsDb.updateForm(formId, user.id, { schema: newSchema as any });
+				await formsDb.updateForm(formId, user.id, {
+					schema: newSchema as unknown,
+				});
 				updateApi({ apiKey: result.apiKey, enabled: true });
 				setDraftEnabled(true);
 				setSaved(true);
@@ -173,7 +183,7 @@ export function ApiSection({
 			} else {
 				toast.error(result.error || "Failed to generate API key");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to generate API key");
 		} finally {
 			setIsGenerating(false);
@@ -204,7 +214,9 @@ export function ApiSection({
 						},
 					},
 				};
-				await formsDb.updateForm(formId, user.id, { schema: newSchema as any });
+				await formsDb.updateForm(formId, user.id, {
+					schema: newSchema as unknown,
+				});
 				updateApi({ apiKey: undefined, enabled: false });
 				setDraftEnabled(false);
 				setSaved(true);
@@ -212,7 +224,7 @@ export function ApiSection({
 			} else {
 				toast.error(result.error || "Failed to revoke API key");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to revoke API key");
 		} finally {
 			setIsRevoking(false);
@@ -243,9 +255,9 @@ export function ApiSection({
 		const apiKey = apiSettings.apiKey;
 
 		const formFields = schema ? getAllFields(schema) : [];
-		const sampleData: Record<string, any> = {};
+		const sampleData: Record<string, unknown> = {};
 
-		formFields.forEach((field: any) => {
+		formFields.forEach((field: unknown) => {
 			switch (field.type) {
 				case "text":
 				case "email":
@@ -699,4 +711,3 @@ print_r($result);
 		</Card>
 	);
 }
-

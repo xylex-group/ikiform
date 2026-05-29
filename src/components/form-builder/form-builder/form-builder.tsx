@@ -305,7 +305,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 	};
 
 	const handleStepSelection = (stepIndex: number) => {
-		if (state.formSchema.blocks && state.formSchema.blocks[stepIndex]) {
+		if (state.formSchema.blocks?.[stepIndex]) {
 			actions.setSelectedBlockId(state.formSchema.blocks[stepIndex].id);
 		}
 	};

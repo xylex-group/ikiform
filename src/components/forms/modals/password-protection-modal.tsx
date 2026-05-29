@@ -81,7 +81,7 @@ export function PasswordProtectionModal({
 				document.removeEventListener("keydown", handleTabKey);
 			};
 		}
-	}, [isOpen, isSubmitting, onCancel]);
+	}, [isOpen, onCancel]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -97,7 +97,7 @@ export function PasswordProtectionModal({
 
 		try {
 			await onPasswordSubmit(password);
-		} catch (err) {
+		} catch (_err) {
 			setError("Incorrect password. Please try again.");
 			passwordInputRef.current?.focus();
 		} finally {

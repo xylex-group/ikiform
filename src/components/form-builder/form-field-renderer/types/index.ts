@@ -6,10 +6,10 @@ export interface FormFieldRendererProps {
 	disabled?: boolean;
 	error?: string;
 	field: FormField;
-	fieldRef?: RefObject<any>;
+	fieldRef?: RefObject<unknown>;
 	formId?: string;
-	onChange: (value: any) => void;
-	value: any;
+	onChange: (value: unknown) => void;
+	value: unknown;
 }
 
 export interface FieldWrapperProps {
@@ -25,10 +25,10 @@ export interface BaseFieldProps {
 	disabled?: boolean;
 	error?: string;
 	field: FormField;
-	fieldRef?: RefObject<any>;
+	fieldRef?: RefObject<unknown>;
 	formId?: string;
-	onChange: (value: any) => void;
-	value: any;
+	onChange: (value: unknown) => void;
+	value: unknown;
 }
 
 export type FieldSize = "sm" | "lg" | "default";

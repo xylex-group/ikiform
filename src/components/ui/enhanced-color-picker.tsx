@@ -82,10 +82,10 @@ export function EnhancedColorPicker({
 	const handleEyeDropper = async () => {
 		if ("EyeDropper" in window) {
 			try {
-				const eyeDropper = new (window as any).EyeDropper();
+				const eyeDropper = new (window as unknown).EyeDropper();
 				const result = await eyeDropper.open();
 				onChange(result.sRGBHex);
-			} catch (e) {}
+			} catch (_e) {}
 		}
 	};
 

@@ -1,7 +1,9 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { createAuthClient } from "@xylex-group/athena";
+import { type NextRequest, NextResponse } from "next/server";
 
-type ActionParam = { params: { action: string } };
+interface ActionParam {
+	params: { action: string };
+}
 
 type AuthAction =
 	| "session"
@@ -76,7 +78,9 @@ const createAuthRouteClient = (request: NextRequest) => {
 const parsePayload = async (request: NextRequest): Promise<AuthPayload> => {
 	try {
 		const json = await request.json();
-		return typeof json === "object" && json !== null ? (json as AuthPayload) : {};
+		return typeof json === "object" && json !== null
+			? (json as AuthPayload)
+			: {};
 	} catch {
 		return {};
 	}
@@ -94,11 +98,13 @@ const dispatchAuthAction = async (
 	> = {
 		session: () => client.getSession(),
 		"sign-in-email": (input) =>
-			client.signIn.email(input as {
-				email: string;
-				password: string;
-				rememberMe?: boolean;
-			}),
+			client.signIn.email(
+				input as {
+					email: string;
+					password: string;
+					rememberMe?: boolean;
+				}
+			),
 		"sign-in-social": (input) =>
 			client.signIn.social(input as { provider: string; redirectTo: string }),
 		"sign-out": () => client.signOut(),

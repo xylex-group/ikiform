@@ -6,14 +6,12 @@ import Pricing from "@/components/home/pricing/pricing";
 
 export default function Home() {
 	return (
-		<>
-			<main className="flex flex-col items-center">
-				<Hero />
-				<BentoFeatures />
-				<Pricing />
-				<FaqSection />
-				<CTA />
-			</main>
-		</>
+		<main className="flex flex-col items-center">
+			<Hero />
+			<BentoFeatures />
+			<Pricing />
+			<FaqSection />
+			<CTA />
+		</main>
 	);
 }

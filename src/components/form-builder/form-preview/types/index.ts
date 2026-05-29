@@ -38,13 +38,13 @@ export interface StepHeaderProps {
 export interface FormFieldsContainerProps {
 	fields: FormField[];
 	fieldVisibility?: Record<string, { visible: boolean; disabled: boolean }>;
-	formData: Record<string, any>;
+	formData: Record<string, unknown>;
 	isMultiStep: boolean;
 	onAddField?: (fieldType: FormField["type"]) => void;
 	onFieldDelete: (fieldId: string) => void;
 	onFieldSelect: (fieldId: string | null) => void;
 	onFieldsReorder: (fields: FormField[]) => void;
-	onFieldValueChange: (fieldId: string, value: any) => void;
+	onFieldValueChange: (fieldId: string, value: unknown) => void;
 	selectedFieldId: string | null;
 }
 

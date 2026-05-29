@@ -157,7 +157,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
 			handleResize();
 
 			return () => window.removeEventListener("resize", handleResize);
-		}, [collapsed]);
+		}, [collapsed, handleToggleCollapse]);
 
 		React.useEffect(() => {
 			const handleKeyDown = (event: KeyboardEvent) => {
@@ -188,7 +188,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
 
 			const timeoutId = setTimeout(updateFocusableElements, 300);
 			return () => clearTimeout(timeoutId);
-		}, [collapsed]);
+		}, []);
 
 		const headerChild = React.Children.toArray(children).find(
 			(child) => React.isValidElement(child) && child.type === SidebarHeader
@@ -360,10 +360,8 @@ const SidebarBody: React.FC<SidebarBodyProps> = ({ children, className }) => {
 		<ScrollArea
 			className={cn("flex-1 py-2", collapsed ? "px-2" : "px-2", className)}
 		>
-			<nav aria-label="Main navigation" role="navigation">
-				<ul className="flex list-none flex-col gap-1" role="list">
-					{children}
-				</ul>
+			<nav aria-label="Main navigation">
+				<ul className="flex list-none flex-col gap-1">{children}</ul>
 			</nav>
 		</ScrollArea>
 	);
@@ -536,7 +534,6 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 						<ul
 							aria-label={`${label} submenu`}
 							className="ml-2 flex list-none flex-col gap-1 border-border/50 border-l py-1 pl-2"
-							role="menu"
 						>
 							{React.Children.map(children, (child) => {
 								if (React.isValidElement(child) && child.type === SidebarItem) {
@@ -572,11 +569,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
 	position = "fixed",
 }) => {
 	if (position === "relative") {
-		return (
-			<main className={cn("flex-1", className)} role="main">
-				{children}
-			</main>
-		);
+		return <main className={cn("flex-1", className)}>{children}</main>;
 	}
 	return (
 		<motion.main

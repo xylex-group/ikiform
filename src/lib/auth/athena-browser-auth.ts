@@ -2,20 +2,20 @@ import type { AppAuthSession } from "@/lib/auth/types";
 
 type AuthErrorPayload = string | { message?: string } | null;
 
-type AuthCompatResult<T = unknown> = {
-	ok: boolean;
+interface AuthCompatResult<T = unknown> {
 	data: T | null;
 	error: AuthErrorPayload | null;
-};
-
-type RawAuthResult<T = unknown> = {
 	ok: boolean;
+}
+
+interface RawAuthResult<T = unknown> {
 	data: T | null;
 	error: AuthErrorPayload;
-	status: number;
-	raw?: unknown;
 	errorDetails?: unknown;
-};
+	ok: boolean;
+	raw?: unknown;
+	status: number;
+}
 
 function getBaseUrl() {
 	return (
@@ -27,7 +27,9 @@ function getBaseUrl() {
 	);
 }
 
-const toAuthError = (error: AuthErrorPayload | unknown): { message: string } | null => {
+const toAuthError = (
+	error: AuthErrorPayload | unknown
+): { message: string } | null => {
 	if (!error) {
 		return null;
 	}
@@ -47,7 +49,7 @@ const toAuthError = (error: AuthErrorPayload | unknown): { message: string } | n
 const parseAuthResponse = async <T>(
 	response: Response
 ): Promise<AuthCompatResult<T>> => {
-	const fallbackStatus = response.status || 500;
+	const _fallbackStatus = response.status || 500;
 	let payload: RawAuthResult<T> | null = null;
 
 	try {
@@ -127,16 +129,17 @@ export const athenaBrowserAuth = {
 			const result = await callBrowserAuth<AppAuthSession>("session", {
 				method: "GET",
 			});
-			return normalizeSession({ ...result, data: result.data as AppAuthSession | null });
+			return normalizeSession({
+				...result,
+				data: result.data as AppAuthSession | null,
+			});
 		} catch (error) {
 			return {
 				ok: false,
 				data: { session: null },
 				error: {
 					message:
-						error instanceof Error
-							? error.message
-							: "Failed to load session",
+						error instanceof Error ? error.message : "Failed to load session",
 				},
 			};
 		}
@@ -146,7 +149,7 @@ export const athenaBrowserAuth = {
 		const sessionResult = await athenaBrowserAuth.getSession();
 		return {
 			data: {
-				user: sessionResult.ok ? sessionResult.data?.session ?? null : null,
+				user: sessionResult.ok ? (sessionResult.data?.session ?? null) : null,
 			},
 			error: sessionResult.error,
 		};
@@ -167,7 +170,11 @@ export const athenaBrowserAuth = {
 	},
 
 	signIn: {
-		email: async (input: { email: string; password: string; rememberMe?: boolean }) =>
+		email: async (input: {
+			email: string;
+			password: string;
+			rememberMe?: boolean;
+		}) =>
 			callBrowserAuth("sign-in-email", {
 				method: "POST",
 				payload: input,

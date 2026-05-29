@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 import type { ChatInterfaceProps } from "../types";
 
-function formatContent(content: any): string {
+function formatContent(content: unknown): string {
 	if (content === null || content === undefined) {
 		return String(content);
 	}
@@ -47,7 +47,7 @@ function formatContent(content: any): string {
 	return String(content);
 }
 
-function formatValue(value: any): string {
+function formatValue(value: unknown): string {
 	if (value === null || value === undefined) {
 		return String(value);
 	}
@@ -71,9 +71,9 @@ const ChatMessage = memo(function ChatMessage({
 	index,
 	markdownComponents,
 }: {
-	message: any;
+	message: unknown;
 	index: number;
-	markdownComponents: any;
+	markdownComponents: unknown;
 }) {
 	const formattedContent = formatContent(message.content);
 	const isUser = message.role === "user";
@@ -162,7 +162,7 @@ export const ChatInterface = memo(function ChatInterface({
 
 	const markdownComponents = useMemo(
 		() => ({
-			code: ({ inline, className, children, ...props }: any) => {
+			code: ({ inline, className, children, ...props }: unknown) => {
 				const match = /language-(\w+)/.exec(className || "");
 				return !inline && match ? (
 					<SyntaxHighlighter
@@ -183,27 +183,27 @@ export const ChatInterface = memo(function ChatInterface({
 					</code>
 				);
 			},
-			p: ({ children, ...props }: any) => (
+			p: ({ children, ...props }: unknown) => (
 				<p className="mb-2 last:mb-0" {...props}>
 					{children}
 				</p>
 			),
-			h1: ({ children, ...props }: any) => (
+			h1: ({ children, ...props }: unknown) => (
 				<h1 className="mb-2 font-bold text-xl" {...props}>
 					{children}
 				</h1>
 			),
-			h2: ({ children, ...props }: any) => (
+			h2: ({ children, ...props }: unknown) => (
 				<h2 className="mb-2 font-semibold text-lg" {...props}>
 					{children}
 				</h2>
 			),
-			h3: ({ children, ...props }: any) => (
+			h3: ({ children, ...props }: unknown) => (
 				<h3 className="mb-2 font-medium text-md" {...props}>
 					{children}
 				</h3>
 			),
-			ul: ({ children, ...props }: any) => (
+			ul: ({ children, ...props }: unknown) => (
 				<ul
 					className="mb-2 flex list-inside list-disc flex-col gap-1"
 					{...props}
@@ -211,7 +211,7 @@ export const ChatInterface = memo(function ChatInterface({
 					{children}
 				</ul>
 			),
-			ol: ({ children, ...props }: any) => (
+			ol: ({ children, ...props }: unknown) => (
 				<ol
 					className="mb-2 flex list-inside list-decimal flex-col gap-1"
 					{...props}
@@ -219,12 +219,12 @@ export const ChatInterface = memo(function ChatInterface({
 					{children}
 				</ol>
 			),
-			li: ({ children, ...props }: any) => (
+			li: ({ children, ...props }: unknown) => (
 				<li className="ml-2" {...props}>
 					{children}
 				</li>
 			),
-			blockquote: ({ children, ...props }: any) => (
+			blockquote: ({ children, ...props }: unknown) => (
 				<blockquote
 					className="mb-2 border-primary border-l-4 pl-4 italic"
 					{...props}
@@ -232,7 +232,7 @@ export const ChatInterface = memo(function ChatInterface({
 					{children}
 				</blockquote>
 			),
-			table: ({ children, ...props }: any) => (
+			table: ({ children, ...props }: unknown) => (
 				<div className="mb-2 overflow-x-auto">
 					<table
 						className="min-w-full border-collapse rounded-2xl border border-border"
@@ -242,7 +242,7 @@ export const ChatInterface = memo(function ChatInterface({
 					</table>
 				</div>
 			),
-			th: ({ children, ...props }: any) => (
+			th: ({ children, ...props }: unknown) => (
 				<th
 					className="border border-border bg-muted px-3 py-2 text-left font-medium"
 					{...props}
@@ -250,17 +250,17 @@ export const ChatInterface = memo(function ChatInterface({
 					{children}
 				</th>
 			),
-			td: ({ children, ...props }: any) => (
+			td: ({ children, ...props }: unknown) => (
 				<td className="border border-border px-3 py-2" {...props}>
 					{children}
 				</td>
 			),
-			strong: ({ children, ...props }: any) => (
+			strong: ({ children, ...props }: unknown) => (
 				<strong className="font-semibold" {...props}>
 					{children}
 				</strong>
 			),
-			em: ({ children, ...props }: any) => (
+			em: ({ children, ...props }: unknown) => (
 				<em className="italic" {...props}>
 					{children}
 				</em>

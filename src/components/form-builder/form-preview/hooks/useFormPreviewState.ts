@@ -7,7 +7,7 @@ import {
 	normalizeSingleSliderValue,
 } from "@/lib/fields/slider-utils";
 
-const getDefaultValueForField = (field: FormField): any => {
+const getDefaultValueForField = (field: FormField): unknown => {
 	switch (field.type) {
 		case "tags":
 			return [];
@@ -24,16 +24,13 @@ const getDefaultValueForField = (field: FormField): any => {
 			return normalizeSingleSliderValue(field.settings);
 		case "number":
 			return "";
-		case "text":
-		case "email":
-		case "textarea":
 		default:
 			return "";
 	}
 };
 
-const initializeFormData = (fields: FormField[]): Record<string, any> => {
-	const formData: Record<string, any> = {};
+const _initializeFormData = (fields: FormField[]): Record<string, unknown> => {
+	const formData: Record<string, unknown> = {};
 
 	fields.forEach((field) => {
 		formData[field.id] = getDefaultValueForField(field);
@@ -46,7 +43,7 @@ export function useFormPreviewState(
 	schema: FormSchema,
 	selectedBlockId?: string | null
 ) {
-	const [formData, setFormData] = useState<Record<string, any>>({});
+	const [formData, setFormData] = useState<Record<string, unknown>>({});
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 	const initializedFieldsRef = useRef<Set<string>>(new Set());
 
@@ -72,7 +69,7 @@ export function useFormPreviewState(
 			setFormData(newFormData);
 			newFieldIds.forEach((id) => initializedFieldsRef.current.add(id));
 		}
-	}, [allFields.length]);
+	}, [allFields.forEach, allFields.map, formData]);
 
 	useEffect(() => {
 		if (selectedBlockId && schema.blocks) {
@@ -85,7 +82,7 @@ export function useFormPreviewState(
 		}
 	}, [selectedBlockId, schema.blocks]);
 
-	const handleFieldValueChange = (fieldId: string, value: any) => {
+	const handleFieldValueChange = (fieldId: string, value: unknown) => {
 		setFormData((prev) => ({ ...prev, [fieldId]: value }));
 	};
 

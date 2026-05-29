@@ -1,8 +1,8 @@
 "use server";
 
-import { sendFormNotification } from "@/lib/services/notifications";
 // @ts-nocheck -- Temporary during Supabase → Athena migration (loose row shapes + complex queries)
 import { createClient as createAdminClient } from "@/lib/athena/admin";
+import { sendFormNotification } from "@/lib/services/notifications";
 
 const EMAIL_SEPARATOR_REGEX = /[\n,]/;
 
@@ -183,6 +183,3 @@ export async function expireTrialsAction(): Promise<ExpireTrialsResult> {
 		};
 	}
 }
-
-
-

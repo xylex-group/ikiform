@@ -1,9 +1,9 @@
-export type SettingsSearchItem = {
-	label: string;
-	section: string;
+export interface SettingsSearchItem {
 	anchorId: string;
 	keywords?: string[];
-};
+	label: string;
+	section: string;
+}
 
 export const SETTINGS_SEARCH_INDEX: SettingsSearchItem[] = [
 	{

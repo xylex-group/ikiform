@@ -1,4 +1,7 @@
-import { createClient as createAthenaClient, type AthenaClient } from "@xylex-group/athena";
+import {
+	type AthenaClient,
+	createClient as createAthenaClient,
+} from "@xylex-group/athena";
 import { cookies } from "next/headers";
 import { createAthenaAuthClient } from "./auth";
 
@@ -12,8 +15,8 @@ import { createAthenaAuthClient } from "./auth";
  */
 export async function createClient(): AthenaClient & {
 	auth: ReturnType<typeof createAthenaAuthClient> & {
-		getUser: () => Promise<{ data: { user: any }; error: any }>;
-		getSession: () => Promise<{ data: { session: any }; error: any }>;
+		getUser: () => Promise<{ data: { user: unknown }; error: unknown }>;
+		getSession: () => Promise<{ data: { session: unknown }; error: unknown }>;
 	};
 } {
 	const cookieStore = await cookies();
@@ -41,8 +44,8 @@ export async function createClient(): AthenaClient & {
 	const authClient = createAthenaAuthClient();
 
 	return {
-		from: (dbClient as any).from.bind(dbClient),
-		rpc: (dbClient as any).rpc?.bind(dbClient),
+		from: (dbClient as unknown).from.bind(dbClient),
+		rpc: (dbClient as unknown).rpc?.bind(dbClient),
 
 		auth: {
 			getUser: async () => {

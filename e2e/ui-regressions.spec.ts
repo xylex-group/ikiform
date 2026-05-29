@@ -67,7 +67,7 @@ function assertSvgRendered(locator: ReturnType<Page["locator"]>) {
 }
 
 async function loginToDashboard(page: Page) {
-	test.skip(
+	test(
 		!(TEST_EMAIL && TEST_PASSWORD),
 		"Set E2E_TEST_EMAIL and E2E_TEST_PASSWORD to run authenticated dashboard icon checks."
 	);

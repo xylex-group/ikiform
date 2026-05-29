@@ -23,7 +23,7 @@ export interface QuizFieldResult {
 
 export function calculateQuizScore(
 	schema: FormSchema,
-	submissionData: Record<string, any>
+	submissionData: Record<string, unknown>
 ): QuizResult {
 	const allFields = getAllFields(schema);
 	const quizFields = allFields.filter((field) => field.settings?.isQuizField);
@@ -97,7 +97,7 @@ export function calculateQuizScore(
 }
 
 function isAnswerCorrect(
-	userAnswer: any,
+	userAnswer: unknown,
 	correctAnswer: string | string[]
 ): boolean {
 	if (typeof correctAnswer === "string") {

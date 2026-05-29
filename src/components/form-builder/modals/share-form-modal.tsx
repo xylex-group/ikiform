@@ -56,7 +56,7 @@ export function ShareFormModal({
 		if (isOpen && isPublished && shareUrl && showQr && !qrCodeDataUrl) {
 			generateQrCode();
 		}
-	}, [isOpen, isPublished, shareUrl, showQr, qrCodeDataUrl]);
+	}, [isOpen, isPublished, shareUrl, showQr, qrCodeDataUrl, generateQrCode]);
 
 	const generateQrCode = async () => {
 		if (!shareUrl) {

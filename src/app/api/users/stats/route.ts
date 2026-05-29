@@ -44,7 +44,7 @@ export async function GET() {
 			}
 			const parts = trimmed.split(/\s+/);
 			if (parts.length >= 2) {
-				return (parts[0][0] + parts.at(-1)![0]).toUpperCase();
+				return (parts[0][0] + parts.at(-1)?.[0]).toUpperCase();
 			}
 			return trimmed.slice(0, 2).toUpperCase();
 		};
@@ -68,5 +68,3 @@ export async function GET() {
 		return NextResponse.json({ count: null, users: [] }, { status: 500 });
 	}
 }
-
-

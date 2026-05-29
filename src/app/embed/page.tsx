@@ -80,5 +80,3 @@ export default async function EmbedPage({ searchParams }: EmbedPageProps) {
 		notFound();
 	}
 }
-
-

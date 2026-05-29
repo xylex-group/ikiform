@@ -158,7 +158,7 @@ export function FileUploadField(props: BaseFieldProps) {
 				setIsUploading(false);
 			}
 		},
-		[field.id, value, onChange]
+		[field.id, onChange, createMockFile, getFallbackFormId, getUploadedFiles]
 	);
 
 	const handleRemoveUploadedFile = useCallback(
@@ -166,13 +166,13 @@ export function FileUploadField(props: BaseFieldProps) {
 			const currentFiles = getUploadedFiles();
 			const fileToRemove = currentFiles.find((file) => file.id === fileId);
 
-			if (fileToRemove && fileToRemove.signedUrl.startsWith("blob:")) {
+			if (fileToRemove?.signedUrl.startsWith("blob:")) {
 				URL.revokeObjectURL(fileToRemove.signedUrl);
 			}
 
 			onChange(currentFiles.filter((file) => file.id !== fileId));
 		},
-		[value, onChange]
+		[onChange, getUploadedFiles]
 	);
 
 	const handleRemoveButtonClick = (fileId: string) => {
@@ -199,13 +199,13 @@ export function FileUploadField(props: BaseFieldProps) {
 		if (value === undefined || value === null || value === "") {
 			onChange([]);
 		}
-	}, []);
+	}, [onChange, value]);
 
 	const uploadedFiles = getUploadedFiles();
 	const maxFiles = getMaxFiles();
 	const maxSize = getMaxFileSize();
 	const accept = getAcceptedFileTypes();
-	const fallbackFormId = getFallbackFormId();
+	const _fallbackFormId = getFallbackFormId();
 	const constraints = getFileConstraintsText();
 
 	return (

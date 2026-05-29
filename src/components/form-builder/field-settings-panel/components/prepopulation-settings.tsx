@@ -56,7 +56,7 @@ export function PrepopulationSettings({
 
 		const baseUrl =
 			typeof window !== "undefined"
-				? window.location.origin + "/form/123"
+				? `${window.location.origin}/form/123`
 				: "https://yoursite.com/form/123";
 
 		const exampleValue = `Sample ${field.label}`;
@@ -140,7 +140,7 @@ export function PrepopulationSettings({
 							</Label>
 							<Select
 								onValueChange={(source) =>
-									updatePrepopulation({ source: source as any })
+									updatePrepopulation({ source: source as unknown })
 								}
 								value={prepopulation.source}
 							>
@@ -355,7 +355,7 @@ export function PrepopulationSettings({
 										id="api-headers"
 										name="api-headers"
 										onChange={(e) =>
-											updateConfig({ apiHeaders: e.target.value as any })
+											updateConfig({ apiHeaders: e.target.value as unknown })
 										}
 										onKeyDown={(e) => {
 											if (e.key === "Escape") {

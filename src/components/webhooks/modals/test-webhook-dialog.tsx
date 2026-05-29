@@ -66,7 +66,7 @@ export function TestWebhookDialog({
 					message: data.error || "Test failed",
 				});
 			}
-		} catch (error) {
+		} catch (_error) {
 			setTestResult({
 				success: false,
 				message: "Test failed - Network error",
@@ -152,7 +152,7 @@ export function TestWebhookDialog({
 						<h3 className="font-medium text-sm">Mode</h3>
 						<RadioGroup
 							className="grid grid-cols-3 gap-2"
-							onValueChange={(v) => setMode(v as any)}
+							onValueChange={(v) => setMode(v as unknown)}
 							value={mode}
 						>
 							<Label

@@ -1,9 +1,9 @@
 "use client";
 
-import type { AppAuthUser } from "@/lib/auth/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import type { AppAuthUser } from "@/lib/auth/types";
 import type { Form } from "@/lib/database";
 import { formsDb } from "@/lib/database";
 import type { NormalizedImportedFormData } from "@/lib/forms/import-normalize";
@@ -77,28 +77,27 @@ function filterAndSortForms(
 			case "created": {
 				const aCreated = new Date(a.created_at).getTime();
 				const bCreated = new Date(b.created_at).getTime();
-				if (isNaN(aCreated) && isNaN(bCreated)) {
+				if (Number.isNaN(aCreated) && Number.isNaN(bCreated)) {
 					return 0;
 				}
-				if (isNaN(aCreated)) {
+				if (Number.isNaN(aCreated)) {
 					return 1;
 				}
-				if (isNaN(bCreated)) {
+				if (Number.isNaN(bCreated)) {
 					return -1;
 				}
 				return bCreated - aCreated;
 			}
-			case "updated":
 			default: {
 				const aUpdated = new Date(a.updated_at).getTime();
 				const bUpdated = new Date(b.updated_at).getTime();
-				if (isNaN(aUpdated) && isNaN(bUpdated)) {
+				if (Number.isNaN(aUpdated) && Number.isNaN(bUpdated)) {
 					return 0;
 				}
-				if (isNaN(aUpdated)) {
+				if (Number.isNaN(aUpdated)) {
 					return 1;
 				}
-				if (isNaN(bUpdated)) {
+				if (Number.isNaN(bUpdated)) {
 					return -1;
 				}
 				return bUpdated - aUpdated;

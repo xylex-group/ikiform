@@ -36,7 +36,7 @@ export async function generateMetadata({
 		const keywords = metadata.keywords;
 		const canonicalUrl = metadata.canonicalUrl || formUrl;
 
-		const robots = metadata.robots || "noindex";
+		const _robots = metadata.robots || "noindex";
 		const robotsConfig = {
 			index: !metadata.noIndex,
 			follow: !metadata.noFollow,
@@ -126,4 +126,3 @@ export default async function PublicFormPage({ params }: PublicFormPageProps) {
 		notFound();
 	}
 }
-

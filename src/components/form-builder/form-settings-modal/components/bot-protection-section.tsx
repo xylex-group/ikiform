@@ -23,7 +23,7 @@ export function BotProtectionSection({
 	schema,
 	onSchemaUpdate,
 }: BotProtectionSectionProps & {
-	onSchemaUpdate?: (updates: Partial<any>) => void;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
 }) {
 	const [botProtectionSettings, setBotProtectionSettings] = useState({
 		enabled: localSettings.botProtection?.enabled,
@@ -51,7 +51,7 @@ export function BotProtectionSection({
 			);
 	}, [hasChanges]);
 
-	const handleBotProtectionChange = (field: string, value: any) => {
+	const handleBotProtectionChange = (field: string, value: unknown) => {
 		setBotProtectionSettings((prev) => ({ ...prev, [field]: value }));
 		setSaved(false);
 		setHasChanges(true);

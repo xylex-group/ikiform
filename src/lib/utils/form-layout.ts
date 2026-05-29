@@ -30,7 +30,10 @@ export const getFormLayoutClasses = (schema: FormSchema): LayoutClasses => {
 	let maxWidthClass = "max-w-2xl";
 	let containerClass = "w-full max-w-2xl mx-auto";
 
-	if ((layout as any)?.maxWidth === "custom" && (layout as any)?.customWidth) {
+	if (
+		(layout as unknown)?.maxWidth === "custom" &&
+		(layout as unknown)?.customWidth
+	) {
 		maxWidthClass = "";
 		containerClass = "w-full mx-auto";
 	} else {
@@ -96,8 +99,8 @@ export const getFormCustomStyles = async (
 	schema: FormSchema
 ): Promise<FormCustomStyles> => {
 	const settings = schema.settings || {};
-	const colors = (settings as any).colors || {};
-	const typography = (settings as any).typography || {};
+	const colors = (settings as unknown).colors || {};
+	const typography = (settings as unknown).typography || {};
 	const layout = settings.layout || {};
 
 	if (typography.fontFamily && typeof window !== "undefined") {
@@ -121,8 +124,9 @@ export const getFormCustomStyles = async (
 			? getFontWeightValue(typography.fontWeight)
 			: undefined,
 		maxWidth:
-			(layout as any).maxWidth === "custom" && (layout as any).customWidth
-				? (layout as any).customWidth
+			(layout as unknown).maxWidth === "custom" &&
+			(layout as unknown).customWidth
+				? (layout as unknown).customWidth
 				: layout.maxWidth
 					? getMaxWidthValue(layout.maxWidth)
 					: getMaxWidthValue("md"),

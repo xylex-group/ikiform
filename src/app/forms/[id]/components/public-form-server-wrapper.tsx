@@ -5,7 +5,7 @@ import { FormSkeleton } from "./form-skeletons";
 
 interface PublicFormServerWrapperProps {
 	formId: string;
-	schema: any;
+	schema: unknown;
 }
 
 export default function PublicFormServerWrapper({

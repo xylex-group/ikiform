@@ -44,9 +44,9 @@ export function WebhookManagementPanel({ formId }: { formId?: string }) {
 				...webhook,
 				formId,
 				accountId,
-			} as any);
+			} as unknown);
 		} else {
-			await createWebhook({ ...webhook, formId, accountId } as any);
+			await createWebhook({ ...webhook, formId, accountId } as unknown);
 		}
 		setModalOpen(false);
 		setEditingWebhook(null);
@@ -64,7 +64,7 @@ export function WebhookManagementPanel({ formId }: { formId?: string }) {
 			enabled: !webhook.enabled,
 			formId,
 			accountId,
-		} as any);
+		} as unknown);
 		fetchWebhooks();
 	}
 

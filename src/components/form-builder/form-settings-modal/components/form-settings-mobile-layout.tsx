@@ -11,7 +11,7 @@ interface FormSettingsMobileLayoutProps {
 	activeSection: FormSettingsSection;
 	onClose: () => void;
 	onSectionChange: (section: FormSettingsSection) => void;
-	sectionProps: any;
+	sectionProps: unknown;
 }
 
 export function FormSettingsMobileLayout({
@@ -49,7 +49,6 @@ export function FormSettingsMobileLayout({
 					<nav
 						aria-label="Settings sections"
 						className="flex flex-col gap-1 overflow-auto p-2"
-						role="navigation"
 					>
 						{FORM_SETTINGS_SECTIONS.map((section, index) => (
 							<button
@@ -109,7 +108,6 @@ export function FormSettingsMobileLayout({
 			<main
 				aria-labelledby="settings-section-title"
 				className="h-full"
-				role="main"
 				style={{
 					overscrollBehavior: "contain",
 				}}

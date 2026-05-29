@@ -106,8 +106,8 @@ export const UsersTable = memo(function UsersTable({ users }: UsersTableProps) {
 		});
 
 		return filtered.sort((a, b) => {
-			let aValue: any = a[sortField];
-			let bValue: any = b[sortField];
+			let aValue: unknown = a[sortField];
+			let bValue: unknown = b[sortField];
 
 			if (sortField === "created_at" || sortField === "updated_at") {
 				aValue = new Date(aValue).getTime();
@@ -490,7 +490,7 @@ export const UsersTable = memo(function UsersTable({ users }: UsersTableProps) {
 
 						<div className="flex items-center gap-1">
 							{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-								let pageNum;
+								let pageNum = 1;
 								if (totalPages <= 5) {
 									pageNum = i + 1;
 								} else if (currentPage <= 3) {

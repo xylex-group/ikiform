@@ -1,9 +1,9 @@
 "use client";
 
-import type { AppAuthUser } from "@/lib/auth/types";
 import dynamic from "next/dynamic";
 import { Suspense, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { AppAuthUser } from "@/lib/auth/types";
 import type { Form } from "@/lib/database";
 
 const ProfileCard = dynamic(

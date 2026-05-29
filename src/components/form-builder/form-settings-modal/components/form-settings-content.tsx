@@ -18,20 +18,20 @@ import { WebhooksSettingsSection } from "./webhooks-settings-section";
 
 interface FormSettingsContentProps {
 	formId?: string;
-	localSettings: any;
-	onSchemaUpdate?: (updates: Partial<any>) => void;
-	schema?: any;
+	localSettings: unknown;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	schema?: unknown;
 	section: FormSettingsSection;
-	updateApi: any;
-	updateBotProtection: any;
-	updateDuplicatePrevention: any;
-	updateNotifications: any;
-	updatePasswordProtection: any;
-	updateProfanityFilter: any;
-	updateRateLimit: any;
-	updateResponseLimit: any;
-	updateSettings: any;
-	updateSocialMedia: any;
+	updateApi: unknown;
+	updateBotProtection: unknown;
+	updateDuplicatePrevention: unknown;
+	updateNotifications: unknown;
+	updatePasswordProtection: unknown;
+	updateProfanityFilter: unknown;
+	updateRateLimit: unknown;
+	updateResponseLimit: unknown;
+	updateSettings: unknown;
+	updateSocialMedia: unknown;
 }
 
 export function FormSettingsContent({

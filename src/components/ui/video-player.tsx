@@ -199,7 +199,7 @@ const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
 					clearTimeout(hideControlsTimeoutRef.current);
 				}
 			};
-		}, [autoHide, isPlaying]);
+		}, [resetHideControlsTimeout]);
 
 		React.useEffect(() => {
 			const handleFullscreenChange = () => {
@@ -256,7 +256,7 @@ const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
 
 			document.addEventListener("keydown", handleKeyDown);
 			return () => document.removeEventListener("keydown", handleKeyDown);
-		}, [currentTime, duration]);
+		}, [skip, toggleFullscreen, toggleMute, togglePlay]);
 
 		return (
 			<div
@@ -266,7 +266,6 @@ const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
 				}
 				onMouseMove={handleMouseMove}
 				ref={containerRef}
-				tabIndex={0}
 			>
 				<video
 					className="h-full w-full object-cover"

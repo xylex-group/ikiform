@@ -74,12 +74,12 @@ export function ActualFormPreview({
 	const formMargin = getMarginValue(layout.margin);
 	const formBorderRadius = getBorderRadiusValue(layout.borderRadius);
 
-	const containerStyle: React.CSSProperties = {
+	const _containerStyle: React.CSSProperties = {
 		maxWidth: formWidth,
 		margin: `${formMargin} auto`,
 	};
 
-	const cardStyle: React.CSSProperties = {
+	const _cardStyle: React.CSSProperties = {
 		backgroundColor: colors.background || undefined,
 		color: colors.text || undefined,
 		padding: formPadding,
@@ -192,8 +192,6 @@ export function ActualFormPreview({
 		layout?.borderRadius,
 		layout?.maxWidth,
 		layout?.customWidth,
-		layout?.padding,
-		layout?.margin,
 		colors?.primary,
 		colors?.text,
 		colors?.background,
@@ -204,7 +202,7 @@ export function ActualFormPreview({
 		typography?.fontWeight,
 	]);
 
-	const previewSchema = {
+	const _previewSchema = {
 		...schema,
 		settings: localSettings,
 	};
@@ -289,10 +287,11 @@ export function ActualFormPreview({
 									<h1 className="font-semibold text-2xl">
 										{getPublicFormTitle(schema)}
 									</h1>
-									{((schema as any).description ||
+									{((schema as unknown).description ||
 										localSettings.description) && (
 										<p className="text-muted-foreground">
-											{(schema as any).description || localSettings.description}
+											{(schema as unknown).description ||
+												localSettings.description}
 										</p>
 									)}
 								</div>
@@ -391,7 +390,8 @@ export function ActualFormPreview({
 							{}
 							{Boolean(
 								localSettings.branding &&
-									(localSettings.branding as any).showIkiformBranding !== false
+									(localSettings.branding as unknown).showIkiformBranding !==
+										false
 							) && (
 								<p className="text-muted-foreground text-sm">
 									Powered by{" "}

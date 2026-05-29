@@ -53,9 +53,9 @@ export function CheckboxFieldSettings({
 						<Button
 							aria-label="Add checkbox option"
 							className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
-							disabled={!(newOption && newOption.trim())}
+							disabled={!newOption?.trim()}
 							onClick={() => {
-								if (newOption && newOption.trim()) {
+								if (newOption?.trim()) {
 									onFieldUpdate({
 										...field,
 										options: [...(field.options || []), newOption.trim()],
@@ -66,7 +66,7 @@ export function CheckboxFieldSettings({
 							onKeyDown={(e) => {
 								if (e.key === "Enter" || e.key === " ") {
 									e.preventDefault();
-									if (newOption && newOption.trim()) {
+									if (newOption?.trim()) {
 										onFieldUpdate({
 											...field,
 											options: [...(field.options || []), newOption.trim()],

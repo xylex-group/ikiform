@@ -1,6 +1,6 @@
 import type { BaseFieldProps } from "../types";
 
-export function applyBuilderMode<T extends Record<string, any>>(
+export function applyBuilderMode<T extends Record<string, unknown>>(
 	props: T,
 	builderMode: boolean
 ): T {

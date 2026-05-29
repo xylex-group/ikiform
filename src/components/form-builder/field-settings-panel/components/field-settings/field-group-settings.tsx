@@ -49,7 +49,7 @@ export function FieldGroupSettings({
 	}>({});
 
 	const addFieldToGroup = (fieldType: string) => {
-		const newField = createFieldFromType(fieldType as any);
+		const newField = createFieldFromType(fieldType as unknown);
 		const updatedGroupFields = [...groupFields, newField];
 		onUpdateSettings({
 			groupFields: updatedGroupFields,
@@ -68,7 +68,7 @@ export function FieldGroupSettings({
 		});
 	};
 
-	const updateGroupField = (fieldId: string, updates: any) => {
+	const updateGroupField = (fieldId: string, updates: unknown) => {
 		const updatedGroupFields = groupFields.map((f) =>
 			f.id === fieldId ? { ...f, ...updates } : f
 		);
@@ -132,7 +132,7 @@ export function FieldGroupSettings({
 							<Select
 								onValueChange={(value) =>
 									onUpdateSettings({
-										groupColumns: Number.parseInt(value) as 2 | 3 | 4,
+										groupColumns: Number.parseInt(value, 10) as 2 | 3 | 4,
 									})
 								}
 								value={groupColumns.toString()}
@@ -220,7 +220,7 @@ export function FieldGroupSettings({
 												</div>
 												<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
 													{FIELD_TYPE_CONFIGS.filter(
-														(f) => f.category === (key as any)
+														(f) => f.category === (key as unknown)
 													).map((f) => (
 														<Button
 															className="h-19 w-full items-center justify-start text-left"

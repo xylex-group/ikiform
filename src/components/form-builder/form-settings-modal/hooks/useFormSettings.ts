@@ -39,7 +39,7 @@ export function useFormSettings(schema: FormSchema, userEmail?: string) {
 		},
 		duplicatePrevention: {
 			...DEFAULT_DUPLICATE_PREVENTION_SETTINGS,
-			...(schema.settings as any).duplicatePrevention,
+			...(schema.settings as unknown).duplicatePrevention,
 		},
 		profanityFilter: {
 			...DEFAULT_PROFANITY_FILTER_SETTINGS,
@@ -304,7 +304,7 @@ export function useFormSettings(schema: FormSchema, userEmail?: string) {
 			},
 			duplicatePrevention: {
 				...DEFAULT_DUPLICATE_PREVENTION_SETTINGS,
-				...(schema.settings as any).duplicatePrevention,
+				...(schema.settings as unknown).duplicatePrevention,
 			},
 			profanityFilter: {
 				...DEFAULT_PROFANITY_FILTER_SETTINGS,

@@ -84,7 +84,7 @@ export function EmailInputField(props: BaseFieldProps) {
 			setShowAutoComplete(false);
 		}
 
-		const validation = validateEmailField(newValue);
+		const _validation = validateEmailField(newValue);
 		onChange(newValue);
 	};
 
@@ -216,7 +216,7 @@ export function EmailInputField(props: BaseFieldProps) {
 		builderMode
 	);
 
-	const errorMessage = getErrorMessage();
+	const _errorMessage = getErrorMessage();
 
 	return (
 		<div className="flex flex-col gap-2">

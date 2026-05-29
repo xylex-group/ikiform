@@ -38,7 +38,7 @@ export function FormFieldsContainer({
 	const itemRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
 	const addButtonRef = React.useRef<HTMLButtonElement | null>(null);
 
-	const handleDragEnd = (result: any) => {
+	const handleDragEnd = (result: unknown) => {
 		if (!(result.destination && onFieldsReorder)) {
 			return;
 		}
@@ -121,7 +121,6 @@ export function FormFieldsContainer({
 			<section
 				aria-labelledby="form-fields-empty-heading"
 				className="flex flex-col items-center justify-center gap-4 py-16 text-center"
-				role="region"
 			>
 				<h2 className="sr-only" id="form-fields-empty-heading">
 					Form fields
@@ -146,7 +145,6 @@ export function FormFieldsContainer({
 		<section
 			aria-labelledby="form-fields-heading"
 			className="flex flex-col gap-4"
-			role="region"
 		>
 			<h2 className="sr-only" id="form-fields-heading">
 				Form fields
@@ -156,11 +154,10 @@ export function FormFieldsContainer({
 			</div>
 			<DragDropContext onDragEnd={handleDragEnd}>
 				<Droppable droppableId="fields">
-					{(provided, snapshot) => (
+					{(provided, _snapshot) => (
 						<ul
 							className="flex flex-col gap-4"
 							ref={provided.innerRef}
-							role="list"
 							{...provided.droppableProps}
 						>
 							{renderFields.map((field, index) => {
@@ -176,7 +173,6 @@ export function FormFieldsContainer({
 											<li
 												className="group relative"
 												ref={provided.innerRef}
-												role="listitem"
 												{...provided.draggableProps}
 												{...provided.dragHandleProps}
 											>

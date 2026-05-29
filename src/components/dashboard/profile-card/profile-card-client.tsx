@@ -1,8 +1,8 @@
 "use client";
 
-import type { AppAuthUser } from "@/lib/auth/types";
 import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
+import type { AppAuthUser } from "@/lib/auth/types";
 import { ProfileInfo, UserAvatar } from "./components";
 import type { ProfileCardProps } from "./types";
 import { extractAvatarUrl, extractUserName } from "./utils";

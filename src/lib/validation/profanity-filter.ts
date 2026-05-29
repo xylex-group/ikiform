@@ -61,9 +61,9 @@ export class ProfanityFilterService {
 		return this.filter.clean(text);
 	}
 
-	filterSubmissionData(submissionData: Record<string, any>): {
+	filterSubmissionData(submissionData: Record<string, unknown>): {
 		isValid: boolean;
-		filteredData: Record<string, any>;
+		filteredData: Record<string, unknown>;
 		violations: ProfanityCheckResult[];
 		message?: string;
 	} {
@@ -76,7 +76,7 @@ export class ProfanityFilterService {
 		}
 
 		const violations: ProfanityCheckResult[] = [];
-		const filteredData: Record<string, any> = {};
+		const filteredData: Record<string, unknown> = {};
 
 		for (const [key, value] of Object.entries(submissionData)) {
 			const result = this.checkValue(value);
@@ -113,7 +113,7 @@ export class ProfanityFilterService {
 		};
 	}
 
-	private checkValue(value: any): ProfanityCheckResult {
+	private checkValue(value: unknown): ProfanityCheckResult {
 		if (typeof value === "string") {
 			return this.checkText(value);
 		}
@@ -172,7 +172,7 @@ export class ProfanityFilterService {
 		const filtered: string[] = [];
 
 		for (let i = 0; i < originalWords.length; i++) {
-			if (cleanedWords[i] && cleanedWords[i].includes("*")) {
+			if (cleanedWords[i]?.includes("*")) {
 				filtered.push(originalWords[i]);
 			}
 		}

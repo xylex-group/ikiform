@@ -153,7 +153,7 @@ export default function LoginForm() {
 				await handleAuth();
 			}
 		},
-		[step, isSignUp, validateEmail, validateName, validatePassword]
+		[step, isSignUp, validateEmail, validateName, validatePassword, handleAuth]
 	);
 
 	const back = useCallback(() => {
@@ -285,7 +285,7 @@ export default function LoginForm() {
 			field: "email" | "name" | "password",
 			label: string,
 			type: string,
-			extraProps: Record<string, any> = {}
+			extraProps: Record<string, unknown> = {}
 		) => (
 			<div className="relative w-full">
 				<Input

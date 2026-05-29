@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ExpandableJsonBlockProps {
-	schema: any;
+	schema: unknown;
 }
 
-let highlighterInstance: any = null;
-let highlighterPromise: Promise<any> | null = null;
+let highlighterInstance: unknown = null;
+let highlighterPromise: Promise<unknown> | null = null;
 
 const getHighlighter = async () => {
 	if (highlighterInstance) {

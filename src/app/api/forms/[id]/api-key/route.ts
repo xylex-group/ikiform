@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createAthenaServerClient } from "@/utils/athena/server";
 
-type ApiKeyResponse = {
-	success: boolean;
+interface ApiKeyResponse {
 	apiKey?: string;
 	error?: string;
-};
+	success: boolean;
+}
 
 function generateApiKey(): string {
 	const timestamp = Date.now().toString(36);
@@ -55,7 +55,7 @@ async function updateFormApiSetting(
 function unauthorized() {
 	return NextResponse.json<ApiKeyResponse>(
 		{ success: false, error: "Authentication required" },
-		{ status: 401 },
+		{ status: 401 }
 	);
 }
 
@@ -84,7 +84,7 @@ export async function POST(
 				success: false,
 				error: "Failed to generate API key",
 			},
-			{ status: 400 },
+			{ status: 400 }
 		);
 	}
 
@@ -105,7 +105,7 @@ export async function PATCH(
 	if (!payload || typeof payload.enabled !== "boolean") {
 		return NextResponse.json<ApiKeyResponse>(
 			{ success: false, error: "Invalid request payload" },
-			{ status: 400 },
+			{ status: 400 }
 		);
 	}
 
@@ -116,7 +116,7 @@ export async function PATCH(
 	if (!success) {
 		return NextResponse.json<ApiKeyResponse>(
 			{ success: false, error: "Failed to update API status" },
-			{ status: 400 },
+			{ status: 400 }
 		);
 	}
 
@@ -142,7 +142,7 @@ export async function DELETE(
 	if (!success) {
 		return NextResponse.json<ApiKeyResponse>(
 			{ success: false, error: "Failed to revoke API key" },
-			{ status: 400 },
+			{ status: 400 }
 		);
 	}
 

@@ -49,7 +49,6 @@ export function DesignSection({ formId }: DesignSectionProps) {
 							<a
 								href={formId ? `/form-builder/${formId}/customize` : undefined}
 								rel="noreferrer noopener"
-								role="link"
 								target="_blank"
 							>
 								<ExternalLink className="size-4" />

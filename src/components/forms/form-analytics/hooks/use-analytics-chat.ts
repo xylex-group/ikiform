@@ -33,7 +33,7 @@ export const useAnalyticsChat = (
 
 	useEffect(() => {
 		scrollToBottom();
-	}, [chatMessages, streamedContent]);
+	}, [scrollToBottom]);
 
 	useEffect(() => {
 		if (chatOpen && chatInputRef.current) {
@@ -135,7 +135,7 @@ export const useAnalyticsChat = (
 						...prev,
 						{
 							role: "assistant",
-							content: partialResponse + "\n\n[Response stopped by user]",
+							content: `${partialResponse}\n\n[Response stopped by user]`,
 							timestamp: new Date(),
 						},
 					]);

@@ -32,10 +32,10 @@ import type { BaseFieldProps } from "../types";
 
 export function createFieldComponent(
 	field: FormField,
-	value: any,
-	onChange: (value: any) => void,
+	value: unknown,
+	onChange: (value: unknown) => void,
 	error?: string,
-	fieldRef?: React.RefObject<any>,
+	fieldRef?: React.RefObject<unknown>,
 	disabled?: boolean,
 	formId?: string,
 	builderMode?: boolean

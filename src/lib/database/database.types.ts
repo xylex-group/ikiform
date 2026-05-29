@@ -57,21 +57,21 @@ export interface Database {
 				Row: {
 					id: string;
 					form_id: string;
-					submission_data: Record<string, any>;
+					submission_data: Record<string, unknown>;
 					submitted_at: string;
 					ip_address: string | null;
 				};
 				Insert: {
 					id?: string;
 					form_id: string;
-					submission_data: Record<string, any>;
+					submission_data: Record<string, unknown>;
 					submitted_at?: string;
 					ip_address?: string | null;
 				};
 				Update: {
 					id?: string;
 					form_id?: string;
-					submission_data?: Record<string, any>;
+					submission_data?: Record<string, unknown>;
 					submitted_at?: string;
 					ip_address?: string | null;
 				};
@@ -83,7 +83,7 @@ export interface Database {
 					session_id: string;
 					role: "user" | "assistant" | "system";
 					content: string;
-					metadata: Record<string, any>;
+					metadata: Record<string, unknown>;
 					created_at: string;
 					updated_at: string;
 				};
@@ -93,7 +93,7 @@ export interface Database {
 					session_id: string;
 					role: "user" | "assistant" | "system";
 					content: string;
-					metadata?: Record<string, any>;
+					metadata?: Record<string, unknown>;
 					created_at?: string;
 					updated_at?: string;
 				};
@@ -103,7 +103,7 @@ export interface Database {
 					session_id?: string;
 					role?: "user" | "assistant" | "system";
 					content?: string;
-					metadata?: Record<string, any>;
+					metadata?: Record<string, unknown>;
 					created_at?: string;
 					updated_at?: string;
 				};
@@ -116,7 +116,7 @@ export interface Database {
 					session_id: string;
 					role: "user" | "assistant" | "system";
 					content: string;
-					metadata: Record<string, any>;
+					metadata: Record<string, unknown>;
 					created_at: string;
 					updated_at: string;
 				};
@@ -127,7 +127,7 @@ export interface Database {
 					session_id: string;
 					role: "user" | "assistant" | "system";
 					content: string;
-					metadata?: Record<string, any>;
+					metadata?: Record<string, unknown>;
 					created_at?: string;
 					updated_at?: string;
 				};
@@ -138,7 +138,7 @@ export interface Database {
 					session_id?: string;
 					role?: "user" | "assistant" | "system";
 					content?: string;
-					metadata?: Record<string, any>;
+					metadata?: Record<string, unknown>;
 					created_at?: string;
 					updated_at?: string;
 				};
@@ -466,7 +466,7 @@ export interface FormField {
 
 			templateId?: string;
 
-			fallbackValue?: any;
+			fallbackValue?: unknown;
 			overwriteExisting?: boolean;
 
 			requireConsent?: boolean;
@@ -480,7 +480,7 @@ export interface FormField {
 		max?: number;
 		step?: number;
 		sliderMode?: "single" | "range";
-		defaultValue?: any;
+		defaultValue?: unknown;
 		defaultRangeMin?: number;
 		defaultRangeMax?: number;
 		placeholder?: string;
@@ -805,7 +805,7 @@ export interface WebhookLog {
 	error?: string;
 	event: WebhookEventType;
 	id: string;
-	request_payload: any;
+	request_payload: unknown;
 	response_body?: string;
 	response_status?: number;
 	status: "success" | "failed" | "pending";

@@ -11,7 +11,7 @@ import type { FormField } from "@/lib/database";
 
 interface EmailValidationSettingsProps {
 	field: FormField;
-	onUpdateSettings: (settings: any) => void;
+	onUpdateSettings: (settings: unknown) => void;
 }
 
 export function EmailValidationSettings({
@@ -24,7 +24,7 @@ export function EmailValidationSettings({
 
 	const emailSettings = field.settings?.emailValidation || {};
 
-	const updateEmailSettings = (updates: any) => {
+	const updateEmailSettings = (updates: unknown) => {
 		onUpdateSettings({
 			...field.settings,
 			emailValidation: {

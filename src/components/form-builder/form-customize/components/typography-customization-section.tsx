@@ -63,11 +63,11 @@ export function TypographyCustomizationSection({
 
 	useEffect(() => {
 		setFontSizeSliderValue(getFontSizeSliderValue(fontSize));
-	}, [fontSize]);
+	}, [fontSize, getFontSizeSliderValue]);
 
 	useEffect(() => {
 		setFontWeightSliderValue(getFontWeightSliderValue(fontWeight));
-	}, [fontWeight]);
+	}, [fontWeight, getFontWeightSliderValue]);
 
 	const handleFontFamilyChange = (value: string) => {
 		if (typeof window !== "undefined") {

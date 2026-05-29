@@ -37,7 +37,7 @@ export function SelectField(props: BaseFieldProps) {
 			const response = await fetch(field.optionsApi);
 			const data = await response.json();
 
-			let options: Array<any> = [];
+			let options: unknown[] = [];
 			if (Array.isArray(data)) {
 				options = data;
 			} else if (Array.isArray(data.options)) {
@@ -45,7 +45,7 @@ export function SelectField(props: BaseFieldProps) {
 			}
 
 			if (field.valueKey || field.labelKey) {
-				options = options.map((item: any) => ({
+				options = options.map((item: unknown) => ({
 					value: field.valueKey ? item[field.valueKey] : item.value,
 					label: field.labelKey
 						? item[field.labelKey]
@@ -54,7 +54,7 @@ export function SelectField(props: BaseFieldProps) {
 			}
 
 			setApiOptions(sanitizeOptions(options));
-		} catch (error) {
+		} catch (_error) {
 			setFetchError("Failed to fetch options");
 		} finally {
 			setIsLoading(false);
@@ -63,7 +63,7 @@ export function SelectField(props: BaseFieldProps) {
 
 	React.useEffect(() => {
 		fetchOptions();
-	}, [field.optionsApi, field.valueKey ?? "", field.labelKey ?? ""]);
+	}, [fetchOptions]);
 
 	const getOptions = () => apiOptions ?? field.options ?? [];
 

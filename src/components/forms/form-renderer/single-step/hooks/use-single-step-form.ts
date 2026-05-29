@@ -18,7 +18,7 @@ import {
 	validateSingleStepForm,
 } from "../utils/form-utils";
 
-const getDefaultValueForField = (field: FormField): any => {
+const getDefaultValueForField = (field: FormField): unknown => {
 	switch (field.type) {
 		case "tags":
 			return [];
@@ -41,16 +41,13 @@ const getDefaultValueForField = (field: FormField): any => {
 			return "";
 		case "signature":
 			return "";
-		case "text":
-		case "email":
-		case "textarea":
 		default:
 			return "";
 	}
 };
 
-const initializeFormData = (fields: FormField[]): Record<string, any> => {
-	const formData: Record<string, any> = {};
+const _initializeFormData = (fields: FormField[]): Record<string, unknown> => {
+	const formData: Record<string, unknown> = {};
 
 	fields.forEach((field) => {
 		formData[field.id] = getDefaultValueForField(field);
@@ -68,7 +65,7 @@ export const useSingleStepForm = (
 		fieldVisibility: Record<string, { visible: boolean; disabled: boolean }>;
 		logicMessages: string[];
 	} => {
-	const [formData, setFormData] = useState<Record<string, any>>({});
+	const [formData, setFormData] = useState<Record<string, unknown>>({});
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [submitting, setSubmitting] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
@@ -165,9 +162,9 @@ export const useSingleStepForm = (
 	}, [prepopulatedData, fields]);
 
 	useEffect(() => {
-		Object.entries(prepopErrors).forEach(([fieldId, error]) => {
+		Object.entries(prepopErrors).forEach(([fieldId, _error]) => {
 			const field = fields.find((f) => f.id === fieldId);
-			const fieldLabel = field?.label || "Field";
+			const _fieldLabel = field?.label || "Field";
 		});
 	}, [prepopErrors, fields]);
 
@@ -196,7 +193,7 @@ export const useSingleStepForm = (
 	});
 	const logicMessages: string[] = [];
 
-	const handleFieldValueChange = (fieldId: string, value: any) => {
+	const handleFieldValueChange = (fieldId: string, value: unknown) => {
 		setFormData((prev) => ({ ...prev, [fieldId]: value }));
 		if (errors[fieldId]) {
 			setErrors((prev) => ({ ...prev, [fieldId]: "" }));
@@ -266,7 +263,7 @@ export const useSingleStepForm = (
 			} else {
 				toast.error(result.message || "Failed to submit form");
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			if (error?.error === "Bot detected") {
 				toast.error(error.message || "Bot detected. Access denied.");
 			} else if (error?.error === "Duplicate submission detected") {

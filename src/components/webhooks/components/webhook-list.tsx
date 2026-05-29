@@ -86,7 +86,7 @@ export function WebhookList({
 
 				return (
 					<Card
-						className={`${cardClass}${dynamicClasses ? " " + dynamicClasses : ""}`}
+						className={`${cardClass}${dynamicClasses ? ` ${dynamicClasses}` : ""}`}
 						key={webhook.id}
 						onBlur={() => setHoveredIdx(null)}
 						onClick={() => onViewLogs?.(webhook)}

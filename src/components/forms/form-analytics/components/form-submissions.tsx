@@ -45,7 +45,7 @@ const formatDate = (dateString: string) =>
 		minute: "2-digit",
 	});
 
-const getFieldLabel = (form: Form, fieldId: string) => {
+const _getFieldLabel = (form: Form, fieldId: string) => {
 	const allFields = [
 		...(form.schema.fields || []),
 		...(form.schema.blocks?.flatMap((block) => block.fields || []) || []),
@@ -125,7 +125,7 @@ const exportToJSON = (form: Form, submissions: FormSubmission[]) => {
 const ITEMS_PER_PAGE = 50;
 
 export function FormSubmissions({ form, submissions }: FormSubmissionsProps) {
-	const router = useRouter();
+	const _router = useRouter();
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedSubmission, setSelectedSubmission] =
 		useState<FormSubmission | null>(null);
@@ -146,7 +146,7 @@ export function FormSubmissions({ form, submissions }: FormSubmissionsProps) {
 		);
 	});
 
-	const allFields = [
+	const _allFields = [
 		...(form.schema.fields || []),
 		...(form.schema.blocks?.flatMap((block) => block.fields || []) || []),
 	];

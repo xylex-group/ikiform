@@ -30,7 +30,7 @@ export function ChatInput({
 		}
 		el.style.height = "auto";
 		const maxHeight = 160;
-		el.style.height = Math.min(el.scrollHeight, maxHeight) + "px";
+		el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
 		const minHeight = 44;
 		const currentHeight = Number.parseFloat(el.style.height || "0");
 		setIsMultiline(currentHeight > minHeight + 1);

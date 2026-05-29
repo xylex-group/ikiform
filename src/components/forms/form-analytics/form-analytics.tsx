@@ -71,7 +71,7 @@ export function FormAnalytics({ form }: FormAnalyticsProps) {
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 	const [isMobile, setIsMobile] = useState(false);
-	const [mounted, setMounted] = useState(false);
+	const [_mounted, setMounted] = useState(false);
 	const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
 	const { submissions, loading, refreshing, refreshData } = useFormSubmissions(
@@ -95,11 +95,11 @@ export function FormAnalytics({ form }: FormAnalyticsProps) {
 		handleStopGeneration,
 	} = useAnalyticsChat(form, submissions, analyticsData);
 
-	const getFieldLabelForForm = (fieldId: string) =>
+	const _getFieldLabelForForm = (fieldId: string) =>
 		getFieldLabel(form, fieldId);
 	const handleExportCsv = () => exportToCSV(form, submissions);
 	const handleExportJson = () => exportToJSON(form, submissions);
-	const handleExportSubmission = (submission: any) => {
+	const _handleExportSubmission = (submission: unknown) => {
 		const submissionData = {
 			id: submission.id,
 			submitted_at: submission.submitted_at,
@@ -118,7 +118,7 @@ export function FormAnalytics({ form }: FormAnalyticsProps) {
 		toast.success("Submission exported successfully");
 	};
 
-	const handleViewSubmission = (submission: any) => {
+	const handleViewSubmission = (submission: unknown) => {
 		setSelectedSubmission(submission);
 		setIsModalOpen(true);
 	};
@@ -433,7 +433,7 @@ export function FormAnalytics({ form }: FormAnalyticsProps) {
 
 										return (
 											<Card
-												className={`${cardClass}${dynamicClasses ? " " + dynamicClasses : ""}`}
+												className={`${cardClass}${dynamicClasses ? ` ${dynamicClasses}` : ""}`}
 												key={submission.id}
 												onClick={() => handleViewSubmission(submission)}
 												onMouseEnter={() => setHoveredIdx(idx)}

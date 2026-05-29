@@ -76,7 +76,7 @@ export function AIBuilderClient() {
 		if (isStreaming) {
 			scrollStreamingToBottom();
 		}
-	}, [streamedContent, isStreaming, scrollStreamingToBottom]);
+	}, [isStreaming, scrollStreamingToBottom]);
 
 	useEffect(() => {
 		if (streamError && errorLiveRegionRef.current) {
@@ -118,7 +118,6 @@ export function AIBuilderClient() {
 			streamingRef,
 			messagesEndRef,
 			showSuggestions,
-			setShowSuggestions,
 		]
 	);
 

@@ -42,7 +42,7 @@ function useInView(options?: IntersectionObserverInit) {
 
 		observer.observe(element);
 		return () => observer.disconnect();
-	}, []);
+	}, [options]);
 
 	return { ref, isInView };
 }
@@ -88,13 +88,13 @@ function FeatureCard({
 	);
 }
 
-type AiFormStep = {
+interface AiFormStep {
+	height?: string;
 	label: string;
+	placeholder?: string;
 	type: "input" | "field";
 	width: string;
-	height?: string;
-	placeholder?: string;
-};
+}
 
 const AI_FORM_STEPS: AiFormStep[] = [
 	{
@@ -112,10 +112,10 @@ const ANALYTICS_BASE_POINTS = [72, 68, 79, 61, 74, 70, 77, 59, 73, 66] as const;
 
 const AiFormBuilderPreview = React.memo(() => {
 	const { ref, isInView } = useInView();
-	type AiFormAnimationState = {
+	interface AiFormAnimationState {
 		currentStep: number;
 		status: "generating" | "success";
-	};
+	}
 	const [animationState, dispatchAnimation] = useReducer(
 		(
 			state: AiFormAnimationState,
@@ -168,7 +168,6 @@ const AiFormBuilderPreview = React.memo(() => {
 			aria-label="AI Form Builder Demo"
 			className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-primary/1 to-accent/20 p-0 shadow-inner"
 			ref={ref}
-			tabIndex={0}
 		>
 			<div className="flex flex-col gap-3 px-6 py-5">
 				<m.div
@@ -379,13 +378,13 @@ const AnalyticsPreview = React.memo(() => {
 		}, 500);
 
 		return () => clearInterval(interval);
-	}, [isHovered, basePoints.length, isInView]);
+	}, [isHovered, isInView]);
 
 	useEffect(() => {
 		if (!isHovered) {
 			setAnimatedPoints([...basePoints]);
 		}
-	}, [isHovered, basePoints]);
+	}, [isHovered]);
 
 	const WIDTH = 160;
 	const HEIGHT = 64;
@@ -545,7 +544,7 @@ const LogicBuilderPreview = React.memo(() => {
 			setVisibleIdx((idx) => (idx < steps.length - 1 ? idx + 1 : idx));
 		}, 700);
 		return () => clearInterval(interval);
-	}, [isInView]);
+	}, [isInView, steps.length]);
 
 	return (
 		<div
@@ -553,13 +552,9 @@ const LogicBuilderPreview = React.memo(() => {
 			className="flex h-full flex-col justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-primary/1 to-accent/20 p-5 shadow-inner"
 			ref={ref}
 			style={{ minHeight: 210 }}
-			tabIndex={0}
 		>
 			<div className="relative z-10 mx-auto flex w-full max-w-xs flex-col items-center gap-0">
-				<ol
-					className="flex w-full flex-col items-start gap-0 md:gap-2"
-					role="list"
-				>
+				<ol className="flex w-full flex-col items-start gap-0 md:gap-2">
 					{steps.map((step, idx) => (
 						<m.li
 							animate={
@@ -716,7 +711,6 @@ const ApiIntegrationPreview = React.memo(() => {
 			className="relative flex h-full flex-col justify-start overflow-hidden rounded-2xl bg-gradient-to-br from-primary/2 to-accent/20 p-4 shadow-inner"
 			ref={ref}
 			style={{ minHeight: 210 }}
-			tabIndex={0}
 		>
 			<div className="mb-3 flex items-center gap-3">
 				<m.div
@@ -854,7 +848,6 @@ const DigitalSignaturesPreview = React.memo(() => {
 				aria-label={statusLabel}
 				className="relative mx-auto flex min-h-[88px] w-full max-w-[290px] flex-col items-center rounded-lg border border-border bg-background/95 p-3 shadow"
 				style={{ outline: "none" }}
-				tabIndex={0}
 			>
 				<div className="mb-0.5 flex w-full items-center justify-between text-muted-foreground text-xs">
 					<span>Sign Agreement</span>
@@ -1165,131 +1158,127 @@ export default function BentoFeatures() {
 				<div className="mx-auto flex w-full max-w-7xl flex-col">
 					{}
 					<div className="grid grid-cols-1 gap-px bg-border p-px lg:grid-cols-4">
-						<>
-							{}
-							<FeatureCard
-								className="col-span-2 row-span-2 w-full"
-								description={
-									<>
-										<span className="font-medium opacity-100">
-											Instant form creation
-										</span>
-										<span className="opacity-50">
-											—just describe it and launch. Convert visitors in seconds.
-										</span>
-									</>
-								}
-								featured={true}
-								icon={<Bot className="size-5" />}
-								preview={<AiFormBuilderPreview />}
-								title="AI Form Builder"
-							/>
+						{}
+						<FeatureCard
+							className="col-span-2 row-span-2 w-full"
+							description={
+								<>
+									<span className="font-medium opacity-100">
+										Instant form creation
+									</span>
+									<span className="opacity-50">
+										—just describe it and launch. Convert visitors in seconds.
+									</span>
+								</>
+							}
+							featured={true}
+							icon={<Bot className="size-5" />}
+							preview={<AiFormBuilderPreview />}
+							title="AI Form Builder"
+						/>
 
-							{}
-							<FeatureCard
-								className="col-span-1 bg-card"
-								description={
-									<>
-										Truly{" "}
-										<span className="font-medium opacity-100">
-											unlimited forms and responses
-										</span>
-										.<span className="opacity-50"> Grow without limits.</span>
-									</>
-								}
-								icon={<InfinityIcon className="size-5" />}
-								preview={<UnlimitedPreview />}
-								title="Unlimited Everything"
-							/>
+						{}
+						<FeatureCard
+							className="col-span-1 bg-card"
+							description={
+								<>
+									Truly{" "}
+									<span className="font-medium opacity-100">
+										unlimited forms and responses
+									</span>
+									.<span className="opacity-50"> Grow without limits.</span>
+								</>
+							}
+							icon={<InfinityIcon className="size-5" />}
+							preview={<UnlimitedPreview />}
+							title="Unlimited Everything"
+						/>
 
-							{}
-							<FeatureCard
-								className="col-span-1"
-								description={
-									<>
-										<span className="opacity-50">
-											See who converts and why—
-										</span>
-										<span className="font-medium opacity-100">
-											get clear, actionable insights
-										</span>
-										<span className="opacity-50">.</span>
-									</>
-								}
-								icon={<TrendingUp className="size-5" />}
-								preview={<AnalyticsPreview />}
-								title="AI Analytics"
-							/>
+						{}
+						<FeatureCard
+							className="col-span-1"
+							description={
+								<>
+									<span className="opacity-50">See who converts and why—</span>
+									<span className="font-medium opacity-100">
+										get clear, actionable insights
+									</span>
+									<span className="opacity-50">.</span>
+								</>
+							}
+							icon={<TrendingUp className="size-5" />}
+							preview={<AnalyticsPreview />}
+							title="AI Analytics"
+						/>
 
-							{}
-							<FeatureCard
-								className="col-span-2"
-								description={
-									<>
-										<span className="opacity-50">Never miss a lead—</span>
-										<span className="font-medium opacity-100">
-											get instant alerts and automate follow-ups.
-										</span>
-									</>
-								}
-								icon={<Mail className="size-5" />}
-								preview={<EmailNotificationsPreview />}
-								title="Smart Notifications"
-							/>
+						{}
+						<FeatureCard
+							className="col-span-2"
+							description={
+								<>
+									<span className="opacity-50">Never miss a lead—</span>
+									<span className="font-medium opacity-100">
+										get instant alerts and automate follow-ups.
+									</span>
+								</>
+							}
+							icon={<Mail className="size-5" />}
+							preview={<EmailNotificationsPreview />}
+							title="Smart Notifications"
+						/>
 
-							{}
-							<FeatureCard
-								className="col-span-1 bg-card"
-								description={
-									<>
-										<span className="font-medium opacity-100">
-											Sync leads anywhere
-										</span>
-										<span className="opacity-50">
-											—connect with any service or workflow.
-										</span>
-									</>
-								}
-								icon={<Zap className="size-5" />}
-								preview={<ApiIntegrationPreview />}
-								title="API & Webhooks"
-							/>
+						{}
+						<FeatureCard
+							className="col-span-1 bg-card"
+							description={
+								<>
+									<span className="font-medium opacity-100">
+										Sync leads anywhere
+									</span>
+									<span className="opacity-50">
+										—connect with any service or workflow.
+									</span>
+								</>
+							}
+							icon={<Zap className="size-5" />}
+							preview={<ApiIntegrationPreview />}
+							title="API & Webhooks"
+						/>
 
-							{}
-							<FeatureCard
-								className="col-span-1"
-								description={
-									<>
-										<span className="opacity-50">Add signature fields to </span>
-										<span className="font-medium opacity-100">
-											collect e-signatures
-										</span>
-										<span className="opacity-50"> in any form.</span>
-									</>
-								}
-								icon={<PenTool className="size-5" />}
-								preview={<DigitalSignaturesPreview />}
-								title="Form Signatures"
-							/>
+						{}
+						<FeatureCard
+							className="col-span-1"
+							description={
+								<>
+									<span className="opacity-50">Add signature fields to </span>
+									<span className="font-medium opacity-100">
+										collect e-signatures
+									</span>
+									<span className="opacity-50"> in any form.</span>
+								</>
+							}
+							icon={<PenTool className="size-5" />}
+							preview={<DigitalSignaturesPreview />}
+							title="Form Signatures"
+						/>
 
-							{}
-							<FeatureCard
-								className="col-span-2"
-								description={
-									<>
-										<span className="font-medium opacity-100">
-											Personalize every journey
-										</span>
-										<span className="opacity-50">
-											—show or hide questions based on answers.
-										</span>
-									</>
-								}
-								icon={<GitBranch className="size-5" />}
-								preview={<LogicBuilderPreview />}
-								title="Visual Logic Builder"
-							/>
-						</>
+						{}
+						<FeatureCard
+							className="col-span-2"
+							description={
+								<>
+									<span className="font-medium opacity-100">
+										Personalize every journey
+									</span>
+									<span className="opacity-50">
+										—show or hide questions based on answers.
+									</span>
+								</>
+							}
+							icon={<GitBranch className="size-5" />}
+							preview={<LogicBuilderPreview />}
+							title="Visual Logic Builder"
+						/>
 					</div>
 				</div>
 			</div>

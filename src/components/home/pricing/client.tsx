@@ -97,7 +97,7 @@ export default function PricingClient({ products }: PricingClientProps) {
 
 	useEffect(() => {
 		setPurchaseLoading(false);
-	}, [user]);
+	}, []);
 
 	const handlePurchaseClick = () => {
 		setPurchaseLoading(true);
@@ -129,7 +129,7 @@ export default function PricingClient({ products }: PricingClientProps) {
 	function PlanFeatures({
 		features,
 	}: {
-		features: { label: string; icon: any }[];
+		features: { label: string; icon: unknown }[];
 	}) {
 		return (
 			<ul className="mb-8 flex list-none flex-col gap-3 p-0">
@@ -152,7 +152,7 @@ export default function PricingClient({ products }: PricingClientProps) {
 		isEdgeLeft,
 		isEdgeRight,
 	}: {
-		plan: any;
+		plan: unknown;
 		isEdgeLeft: boolean;
 		isEdgeRight: boolean;
 	}) {
@@ -179,11 +179,9 @@ export default function PricingClient({ products }: PricingClientProps) {
 				<div className="mb-6 flex flex-col gap-2">
 					<div className="flex items-baseline gap-2">
 						{plan.key === "lifetime" ? (
-							<>
-								<span className="font-semibold text-4xl tracking-tighter">
-									{plan.price}
-								</span>
-							</>
+							<span className="font-semibold text-4xl tracking-tighter">
+								{plan.price}
+							</span>
 						) : (
 							<span className="font-semibold text-3xl text-foreground tracking-tighter">
 								{plan.price}

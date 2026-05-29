@@ -162,14 +162,14 @@ export interface LocalSettings {
 export interface BasicInfoSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: any;
+	schema?: unknown;
 	updateSettings: (updates: Partial<LocalSettings>) => void;
 }
 
 export interface RateLimitSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: any;
+	schema?: unknown;
 	updateRateLimit: (
 		updates: Partial<NonNullable<LocalSettings["rateLimit"]>>
 	) => void;
@@ -178,7 +178,7 @@ export interface RateLimitSectionProps {
 export interface DuplicatePreventionSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: any;
+	schema?: unknown;
 	updateDuplicatePrevention: (
 		updates: Partial<NonNullable<LocalSettings["duplicatePrevention"]>>
 	) => void;
@@ -187,7 +187,7 @@ export interface DuplicatePreventionSectionProps {
 export interface ProfanityFilterSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: any;
+	schema?: unknown;
 	updateProfanityFilter: (
 		updates: Partial<NonNullable<LocalSettings["profanityFilter"]>>
 	) => void;
@@ -196,7 +196,7 @@ export interface ProfanityFilterSectionProps {
 export interface BotProtectionSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: any;
+	schema?: unknown;
 	updateBotProtection: (
 		updates: Partial<NonNullable<LocalSettings["botProtection"]>>
 	) => void;
@@ -214,7 +214,7 @@ export interface SocialMediaSectionProps {
 export interface ApiSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: any;
+	schema?: unknown;
 	updateApi: (updates: Partial<NonNullable<LocalSettings["api"]>>) => void;
 }
 

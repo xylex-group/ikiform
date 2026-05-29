@@ -176,7 +176,6 @@ export function FormBuilderHeaderSkeleton() {
 		<header
 			aria-busy="true"
 			className="z-20 flex-shrink-0 border-border border-b bg-card px-4 py-3 md:py-4"
-			role="status"
 		>
 			<span aria-live="polite" className="sr-only">
 				Loading form builder header…

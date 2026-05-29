@@ -1,5 +1,5 @@
 export const generateSessionId = () =>
-	"ai-builder-" + Date.now() + "-" + Math.random().toString(36).substr(2, 9);
+	`ai-builder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 export const extractJsonFromText = (text: string) => {
 	try {
@@ -13,7 +13,7 @@ export const extractJsonFromText = (text: string) => {
 	return null;
 };
 
-export const checkForDuplicateSchema = (forms: any[], schema: any) =>
+export const checkForDuplicateSchema = (forms: unknown[], schema: unknown) =>
 	forms.find((f) => JSON.stringify(f.schema) === JSON.stringify(schema));
 
 export const initializeScrollbarStyles = () => {

@@ -37,7 +37,7 @@ interface FormState {
 		attemptsRemaining?: number;
 	} | null;
 	errors: Record<string, string>;
-	formData: Record<string, any>;
+	formData: Record<string, unknown>;
 	submitted: boolean;
 	submitting: boolean;
 }
@@ -79,7 +79,7 @@ function SuccessScreen({ schema }: { schema: FormSchema }) {
 				</Card>
 				{Boolean(
 					schema.settings.branding &&
-						(schema.settings.branding as any).showIkiformBranding !== false
+						(schema.settings.branding as unknown).showIkiformBranding !== false
 				) && (
 					<p className="text-center text-muted-foreground text-sm">
 						Powered by{" "}
@@ -148,17 +148,17 @@ function FormContent({
 }: {
 	formId: string;
 	currentBlock: FormBlock;
-	formData: Record<string, any>;
+	formData: Record<string, unknown>;
 	errors: Record<string, string>;
-	onFieldValueChange: (fieldId: string, value: any) => void;
+	onFieldValueChange: (fieldId: string, value: unknown) => void;
 	title?: string;
 	description?: string;
 	schema: FormSchema;
 	fieldVisibility?: Record<string, { visible: boolean; disabled: boolean }>;
 	logicMessages?: string[];
-	customStyles?: any;
+	customStyles?: unknown;
 }) {
-	const firstFieldRef = React.useRef<any>(null);
+	const firstFieldRef = React.useRef<unknown>(null);
 
 	React.useEffect(() => {
 		if (
@@ -167,7 +167,7 @@ function FormContent({
 		) {
 			firstFieldRef.current.focus();
 		}
-	}, [currentBlock, schema.settings.behavior?.autoFocusFirstField]);
+	}, [schema.settings.behavior?.autoFocusFirstField]);
 
 	const visibleFields = fieldVisibility
 		? currentBlock.fields.filter(
@@ -257,8 +257,8 @@ function FormNavigation({
 	onNext: () => void;
 	onPrevious: () => void;
 	schema: FormSchema;
-	currentFields: any[];
-	formData: Record<string, any>;
+	currentFields: unknown[];
+	formData: Record<string, unknown>;
 	errors: Record<string, string>;
 }) {
 	const isLastStep = currentStep === totalSteps - 1;
@@ -350,7 +350,7 @@ function FormFooter({ schema }: { schema: FormSchema }) {
 				)}
 			{Boolean(
 				schema.settings.branding &&
-					(schema.settings.branding as any).showIkiformBranding !== false
+					(schema.settings.branding as unknown).showIkiformBranding !== false
 			) && (
 				<p className="text-muted-foreground text-sm">
 					Powered by{" "}
@@ -387,7 +387,7 @@ function MultiStepFormLoading() {
 
 export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 	const [currentStep, setCurrentStep] = useState(0);
-	const [formData, setFormData] = useState<Record<string, any>>({});
+	const [formData, setFormData] = useState<Record<string, unknown>>({});
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [submitting, setSubmitting] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
@@ -457,7 +457,7 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [currentStep, totalSteps, submitting, formData]);
+	}, [submitting, handleNext, handlePrevious]);
 
 	const validateCurrentStep = useCallback(() => {
 		const currentBlock = blocks[currentStep];
@@ -549,7 +549,7 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 		window.location.href = "/";
 	};
 
-	const handleFieldValueChange = (fieldId: string, value: any) => {
+	const handleFieldValueChange = (fieldId: string, value: unknown) => {
 		setFormData((prev) => ({ ...prev, [fieldId]: value }));
 		if (errors[fieldId]) {
 			setErrors((prev) => ({ ...prev, [fieldId]: "" }));
@@ -617,7 +617,7 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 			} else {
 				toast.error(result.message || "Failed to submit form");
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to submit form. Please try again.");
 		} finally {
 			setSubmitting(false);

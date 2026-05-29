@@ -31,7 +31,7 @@ export function AddressFieldSettings({
 						name="address-required-lines"
 						onChange={(e) =>
 							onUpdateSettings({
-								requiredLines: Number.parseInt(e.target.value),
+								requiredLines: Number.parseInt(e.target.value, 10),
 							})
 						}
 						onKeyDown={(e) => {

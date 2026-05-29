@@ -1,0 +1,31 @@
+@startuml
+skinparam backgroundColor white
+skinparam defaultFontColor black
+skinparam ArrowColor #222222
+skinparam packageStyle rectangle
+
+title Any-Type State After Cleanup
+
+package "TypeScript Surface" as TS #E8F7EC {
+  rectangle "UI & API Modules\n(any -> unknown / concrete types)" as UiApi #C7F9CC
+  rectangle "Athena Wrappers\n(bound methods + typed inputs)" as Athena #BDE0FE
+  rectangle "Utility Layer\n(explicitly typed mutable locals)" as Utils #D8F3DC
+}
+
+rectangle "Ultracite / Biome Lint Gate" as Lint #BFDBFE
+rectangle "Merge Readiness" as Merge #FDE68A
+rectangle "Remaining Backlog\n(non-any lint rules)" as Backlog #FFE4B5
+
+UiApi --> Lint : no explicit/implicit any diagnostics
+Athena --> Lint : no explicit/implicit any diagnostics
+Utils --> Lint : no evolving any diagnostics
+Backlog --> Lint : style/perf/complexity debt
+Lint --> Merge : unblocked for any-type policy
+
+note right of Backlog
+Any-related diagnostics are cleared.
+Separate repo-wide lint debt remains
+outside any-type scope.
+end note
+
+@enduml

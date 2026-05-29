@@ -28,7 +28,7 @@ interface WebhookLog {
 	error?: string;
 	event: string;
 	id: string;
-	request_payload: any;
+	request_payload: unknown;
 	response_body?: string;
 	response_status?: number;
 	status: "success" | "failed" | "pending";
@@ -53,7 +53,7 @@ function CodeBlock({
 		try {
 			await navigator.clipboard.writeText(code);
 			toast.success("Copied to clipboard");
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to copy");
 		}
 	};
@@ -108,7 +108,7 @@ function CodeBlock({
 	);
 }
 
-function PayloadViewer({ payload }: { payload: any }) {
+function PayloadViewer({ payload }: { payload: unknown }) {
 	const [viewMode, setViewMode] = useState<"formatted" | "raw">("formatted");
 
 	let parsedPayload = payload;
@@ -144,7 +144,7 @@ function PayloadViewer({ payload }: { payload: any }) {
 		);
 	}
 
-	function getEventName(payload: any): string | undefined {
+	function getEventName(payload: unknown): string | undefined {
 		if (payload.event) {
 			return payload.event;
 		}
@@ -161,7 +161,7 @@ function PayloadViewer({ payload }: { payload: any }) {
 		return;
 	}
 
-	function formatFormFields(fields: any[]) {
+	function formatFormFields(fields: unknown[]) {
 		if (!Array.isArray(fields)) {
 			return null;
 		}
@@ -189,7 +189,7 @@ function PayloadViewer({ payload }: { payload: any }) {
 		);
 	}
 
-	function formatValue(value: any): string {
+	function formatValue(value: unknown): string {
 		if (value === null || value === undefined) {
 			return "N/A";
 		}
@@ -219,7 +219,7 @@ function PayloadViewer({ payload }: { payload: any }) {
 		return String(value);
 	}
 
-	function getAdditionalDataKeys(payload: any) {
+	function getAdditionalDataKeys(payload: unknown) {
 		const knownKeys = [
 			"event",
 			"formId",
@@ -394,7 +394,7 @@ function LogItem({
 }: {
 	log: WebhookLog;
 	onResend: (log: WebhookLog) => void;
-	onViewPayload: (payload: any) => void;
+	onViewPayload: (payload: unknown) => void;
 }) {
 	const [expanded, setExpanded] = useState(false);
 	const [contentHeight, setContentHeight] = useState<number | null>(null);
@@ -415,7 +415,7 @@ function LogItem({
 		} else {
 			setContentHeight(0);
 		}
-	}, [expanded, log.id]);
+	}, [expanded]);
 
 	return (
 		<div
@@ -530,7 +530,7 @@ export function WebhookLogDialog({
 	const [logs, setLogs] = useState<WebhookLog[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [viewPayload, setViewPayload] = useState<any | null>(null);
+	const [viewPayload, setViewPayload] = useState<unknown | null>(null);
 
 	async function fetchLogs() {
 		if (!webhookId) {
@@ -545,7 +545,7 @@ export function WebhookLogDialog({
 			}
 			const data = await res.json();
 			setLogs(Array.isArray(data) ? data : []);
-		} catch (e: any) {
+		} catch (e: unknown) {
 			setError(e.message || "Failed to fetch logs");
 		} finally {
 			setLoading(false);
@@ -557,7 +557,7 @@ export function WebhookLogDialog({
 			return;
 		}
 		fetchLogs();
-	}, [open, webhookId]);
+	}, [open, webhookId, fetchLogs]);
 
 	async function handleResend(log: WebhookLog) {
 		if (!webhookId) {
@@ -576,7 +576,7 @@ export function WebhookLogDialog({
 				toast.error(data.error || "Failed to resend webhook");
 			}
 			fetchLogs();
-		} catch (e) {
+		} catch (_e) {
 			toast.error("Failed to resend webhook");
 		}
 	}

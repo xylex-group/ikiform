@@ -1,13 +1,13 @@
 import { Webhooks } from "@polar-sh/nextjs";
-import { sanitizeString } from "@/lib/utils/sanitize";
 import { createClient as createAdminClient } from "@/lib/athena/admin";
+import { sanitizeString } from "@/lib/utils/sanitize";
 
 const webhookSecret = process.env.POLAR_WEBHOOK_SECRET;
 if (!webhookSecret) {
 	throw new Error("POLAR_WEBHOOK_SECRET environment variable is not set");
 }
 
-const findUserByEmail = async (athena: any, email: string) => {
+const findUserByEmail = async (athena: unknown, email: string) => {
 	const { data: userData, error: lookupError } = await athena
 		.from("users")
 		.select("uid, email")
@@ -23,14 +23,14 @@ const findUserByEmail = async (athena: any, email: string) => {
 };
 
 const updateUserPremiumStatus = async (
-	athena: any,
+	athena: unknown,
 	uid: string,
-	email: string,
+	_email: string,
 	hasPremium: boolean,
 	polarCustomerId?: string,
 	customerName?: string
 ) => {
-	const updateData: any = { has_premium: hasPremium };
+	const updateData: unknown = { has_premium: hasPremium };
 
 	if (polarCustomerId) {
 		updateData.polar_customer_id = polarCustomerId;
@@ -280,5 +280,3 @@ export const POST = Webhooks({
 		}
 	},
 });
-
-

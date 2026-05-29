@@ -6,7 +6,7 @@ export interface PrepopulationConfig {
 	apiMethod?: "GET" | "POST";
 	consentMessage?: string;
 
-	fallbackValue?: any;
+	fallbackValue?: unknown;
 	jsonPath?: string;
 
 	lookbackDays?: number;
@@ -42,7 +42,7 @@ export interface PrepopulationTemplate {
 	description?: string;
 	id: string;
 	name: string;
-	template_data: Record<string, any>;
+	template_data: Record<string, unknown>;
 	updated_at: string;
 	user_id: string;
 }
@@ -71,14 +71,14 @@ export interface PrepopulationResult {
 	executionTime: number;
 	source: string;
 	success: boolean;
-	value?: any;
+	value?: unknown;
 }
 
 export interface FieldMapping {
 	sourceField: string;
 	targetFieldId: string;
-	transform?: (value: any) => any;
-	validation?: (value: any) => boolean;
+	transform?: (value: unknown) => unknown;
+	validation?: (value: unknown) => boolean;
 }
 
 export interface ApiEngineConfig extends PrepopulationConfig {
@@ -104,7 +104,7 @@ export type PrepopulationSource =
 export interface PrepopulationEngine {
 	getValue(
 		config: PrepopulationConfig,
-		context?: any
+		context?: unknown
 	): Promise<PrepopulationResult>;
 	validateConfig(config: PrepopulationConfig): boolean;
 }

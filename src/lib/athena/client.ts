@@ -1,4 +1,7 @@
-import { createClient as createAthenaClient, type AthenaClient } from "@xylex-group/athena";
+import {
+	type AthenaClient,
+	createClient as createAthenaClient,
+} from "@xylex-group/athena";
 import { createAthenaAuthClient } from "./auth";
 
 /**
@@ -11,13 +14,13 @@ import { createAthenaAuthClient } from "./auth";
  */
 export function createClient(): AthenaClient & {
 	auth: ReturnType<typeof createAthenaAuthClient> & {
-		getUser: () => Promise<{ data: { user: any }; error: any }>;
-		getSession: () => Promise<{ data: { session: any }; error: any }>;
-		signOut: () => Promise<any>;
-		signInWithPassword: (creds: any) => any;
-		signUp: (creds: any) => any;
-		signInWithOAuth: (options: any) => any;
-		resetPasswordForEmail: (email: string, options?: any) => any;
+		getUser: () => Promise<{ data: { user: unknown }; error: unknown }>;
+		getSession: () => Promise<{ data: { session: unknown }; error: unknown }>;
+		signOut: () => Promise<unknown>;
+		signInWithPassword: (creds: unknown) => unknown;
+		signUp: (creds: unknown) => unknown;
+		signInWithOAuth: (options: unknown) => unknown;
+		resetPasswordForEmail: (email: string, options?: unknown) => unknown;
 	};
 } {
 	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
@@ -38,8 +41,8 @@ export function createClient(): AthenaClient & {
 	const authClient = createAthenaAuthClient();
 
 	return {
-		from: (dbClient as any).from.bind(dbClient),
-		rpc: (dbClient as any).rpc?.bind(dbClient),
+		from: (dbClient as unknown).from.bind(dbClient),
+		rpc: (dbClient as unknown).rpc?.bind(dbClient),
 
 		auth: {
 			...authClient,
@@ -58,11 +61,11 @@ export function createClient(): AthenaClient & {
 				};
 			},
 			signOut: () => authClient.signOut(),
-			signInWithPassword: (creds: any) => authClient.signIn.email(creds),
-			signUp: (creds: any) => authClient.signUp.email(creds),
-			signInWithOAuth: (options: any) => authClient.signIn.social(options),
-			resetPasswordForEmail: (email: string, options?: any) =>
+			signInWithPassword: (creds: unknown) => authClient.signIn.email(creds),
+			signUp: (creds: unknown) => authClient.signUp.email(creds),
+			signInWithOAuth: (options: unknown) => authClient.signIn.social(options),
+			resetPasswordForEmail: (email: string, options?: unknown) =>
 				authClient.forgetPassword({ email, ...options }),
 		},
-	} as any;
+	} as unknown;
 }

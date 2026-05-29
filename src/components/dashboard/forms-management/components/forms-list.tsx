@@ -210,7 +210,7 @@ export const FormsList = memo(function FormsList({
 				return (
 					<Card
 						aria-label={`View analytics for ${internalTitle}`}
-						className={`${cardClass}${dynamicClasses ? " " + dynamicClasses : ""}`}
+						className={`${cardClass}${dynamicClasses ? ` ${dynamicClasses}` : ""}`}
 						key={form.id}
 						onBlur={() => setHoveredIdx(null)}
 						onClick={(e) => handleCardClick(e, form.id)}
@@ -344,8 +344,6 @@ export const FormsList = memo(function FormsList({
 		[
 			forms,
 			hoveredIdx,
-			shareModalOpen,
-			modalJustClosed,
 			handleCardClick,
 			handleEdit,
 			handleShare,

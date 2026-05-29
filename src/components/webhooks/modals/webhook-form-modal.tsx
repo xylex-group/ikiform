@@ -124,7 +124,7 @@ export function WebhookFormModal({
 		setNotificationEmail(initialWebhook?.notificationEmail || "");
 		setNotifyOnSuccess(initialWebhook?.notifyOnSuccess ?? false);
 		setNotifyOnFailure(initialWebhook?.notifyOnFailure ?? true);
-	}, [initialWebhook, open]);
+	}, [initialWebhook]);
 
 	function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -236,7 +236,7 @@ export function WebhookFormModal({
 			notificationEmailRef.current?.focus();
 			return;
 		}
-	}, [currentStep]);
+	}, [currentStep, steps]);
 
 	function canProceedFromStep(stepIndex: number) {
 		const stepId = steps[stepIndex]?.id;

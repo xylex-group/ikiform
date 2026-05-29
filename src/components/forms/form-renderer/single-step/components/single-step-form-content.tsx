@@ -19,10 +19,10 @@ interface SingleStepFormContentProps {
 	errors: Record<string, string>;
 	fields: FormField[];
 	fieldVisibility?: Record<string, { visible: boolean; disabled: boolean }>;
-	formData: Record<string, any>;
+	formData: Record<string, unknown>;
 	formId: string;
 	logicMessages?: string[];
-	onFieldValueChange: (fieldId: string, value: any) => void;
+	onFieldValueChange: (fieldId: string, value: unknown) => void;
 	onSubmit: (e: React.FormEvent) => Promise<void>;
 	schema: FormSchema;
 	submitting: boolean;
@@ -41,7 +41,7 @@ export const SingleStepFormContent: React.FC<SingleStepFormContentProps> = ({
 	logicMessages,
 	duplicateError,
 }) => {
-	const firstFieldRef = useRef<any>(null);
+	const firstFieldRef = useRef<unknown>(null);
 	const { customStyles, getFieldStyles, getButtonStyles } =
 		useFormStyling(schema);
 

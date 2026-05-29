@@ -32,7 +32,7 @@ export function DuplicatePreventionSection({
 	schema,
 	onSchemaUpdate,
 }: DuplicatePreventionSectionProps & {
-	onSchemaUpdate?: (updates: Partial<any>) => void;
+	onSchemaUpdate?: (updates: Partial<unknown>) => void;
 }) {
 	const [duplicatePreventionSettings, setDuplicatePreventionSettings] =
 		useState({
@@ -68,7 +68,7 @@ export function DuplicatePreventionSection({
 			);
 	}, [hasChanges]);
 
-	const handleDuplicatePreventionChange = (field: string, value: any) => {
+	const handleDuplicatePreventionChange = (field: string, value: unknown) => {
 		setDuplicatePreventionSettings((prev) => ({ ...prev, [field]: value }));
 		setSaved(false);
 		setHasChanges(true);
@@ -317,8 +317,8 @@ function PreventionModeSection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: any;
-	updateSettings: (field: string, value: any) => void;
+	duplicatePrevention: unknown;
+	updateSettings: (field: string, value: unknown) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">
@@ -371,8 +371,8 @@ function PreventionStrategySection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: any;
-	updateSettings: (field: string, value: any) => void;
+	duplicatePrevention: unknown;
+	updateSettings: (field: string, value: unknown) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">
@@ -414,8 +414,8 @@ function TimeBasedSettingsSection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: any;
-	updateSettings: (field: string, value: any) => void;
+	duplicatePrevention: unknown;
+	updateSettings: (field: string, value: unknown) => void;
 }) {
 	return (
 		<div className="grid grid-cols-2 gap-4">
@@ -447,8 +447,8 @@ function ErrorMessageSection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: any;
-	updateSettings: (field: string, value: any) => void;
+	duplicatePrevention: unknown;
+	updateSettings: (field: string, value: unknown) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">
@@ -487,8 +487,8 @@ function OverrideSection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: any;
-	updateSettings: (field: string, value: any) => void;
+	duplicatePrevention: unknown;
+	updateSettings: (field: string, value: unknown) => void;
 }) {
 	return (
 		<div className="flex items-start gap-2">
@@ -539,7 +539,7 @@ function DuplicatePreventionInput({
 				max={max}
 				min={min}
 				name={id}
-				onChange={(e) => onChange(Number.parseInt(e.target.value) || min)}
+				onChange={(e) => onChange(Number.parseInt(e.target.value, 10) || min)}
 				onKeyDown={(e) => {
 					if (e.key === "Escape") {
 						(e.target as HTMLElement).blur();
@@ -557,7 +557,7 @@ function DuplicatePreventionInput({
 function DuplicatePreventionSummary({
 	duplicatePrevention,
 }: {
-	duplicatePrevention: any;
+	duplicatePrevention: unknown;
 }) {
 	const modeText =
 		duplicatePrevention.mode === "one-time"
