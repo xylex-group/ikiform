@@ -35,6 +35,15 @@ const stepTitlesSignUp: Record<string, string> = {
 	password: "Enter your password",
 };
 
+const getAuthErrorMessage = (
+	error: string | { message?: string } | null | undefined
+): string => {
+	if (typeof error === "string") {
+		return error;
+	}
+	return error?.message || "Authentication failed";
+};
+
 export default function LoginForm() {
 	const { user } = useAuth();
 	const [isSignUp, setIsSignUp] = useState(false);
@@ -133,29 +142,6 @@ export default function LoginForm() {
 		return true;
 	}, [form.name]);
 
-	const next = useCallback(
-		async (e: React.FormEvent) => {
-			e.preventDefault();
-			if (step === "email") {
-				if (!validateEmail()) {
-					return emailRef.current?.focus();
-				}
-				setStep(isSignUp ? "name" : "password");
-			} else if (step === "name") {
-				if (!validateName()) {
-					return nameRef.current?.focus();
-				}
-				setStep("password");
-			} else if (step === "password") {
-				if (!validatePassword()) {
-					return passwordRef.current?.focus();
-				}
-				await handleAuth();
-			}
-		},
-		[step, isSignUp, validateEmail, validateName, validatePassword, handleAuth]
-	);
-
 	const back = useCallback(() => {
 		if (step === "password") {
 			setStep(isSignUp ? "name" : "email");
@@ -188,7 +174,7 @@ export default function LoginForm() {
 			});
 			const error = result.ok ? null : result.error;
 			if (error) {
-				toast.error(error.message);
+				toast.error(getAuthErrorMessage(error));
 			} else {
 				toast.success("Password reset link sent!");
 			}
@@ -207,25 +193,34 @@ export default function LoginForm() {
 				const result = await auth.signUp.email({
 					email: form.email,
 					password: form.password,
-					// Athena Auth accepts extra data in a similar way
-					// @ts-expect-error - extra data handling depends on your Athena Auth server config
 					data: { name: form.name, full_name: form.name },
 				});
 				const data = result.ok ? result.data : null;
 				const error = result.ok ? null : result.error;
 				if (error) {
-					if (error.message.includes("already registered")) {
+					const errorMessage = getAuthErrorMessage(error);
+					if (errorMessage.includes("already registered")) {
 						toast.error(
 							"This email is already registered. Try signing in instead."
 						);
 					} else {
-						toast.error(error.message);
+						toast.error(errorMessage);
 					}
 				} else {
 					try {
 						await fetch("/api/user", { method: "POST" });
 					} catch {}
-					if (data.user?.email_confirmed_at) {
+					const emailConfirmedAt =
+						data &&
+						typeof data === "object" &&
+						"user" in data &&
+						data.user &&
+						typeof data.user === "object" &&
+						"email_confirmed_at" in data.user
+							? (data.user as Record<string, unknown>).email_confirmed_at
+							: null;
+
+					if (emailConfirmedAt) {
 						toast.success("Account created and verified!");
 					} else {
 						toast.success(
@@ -240,15 +235,16 @@ export default function LoginForm() {
 				});
 				const error = result.ok ? null : result.error;
 				if (error) {
-					if (error.message?.includes("Invalid login credentials")) {
+					const errorMessage = getAuthErrorMessage(error);
+					if (errorMessage.includes("Invalid login credentials")) {
 						setErrors((e) => ({ ...e, password: "Invalid email or password" }));
 						passwordRef.current?.focus();
-					} else if (error.message?.includes("Email not confirmed")) {
+					} else if (errorMessage.includes("Email not confirmed")) {
 						toast.error(
 							"Please check your email and click the verification link before signing in."
 						);
 					} else {
-						toast.error(error.message || "Login failed");
+						toast.error(errorMessage || "Login failed");
 					}
 				} else {
 					try {
@@ -267,6 +263,29 @@ export default function LoginForm() {
 			setLoading(false);
 		}
 	}, [isSignUp, form.email, form.password, form.name]);
+
+	const next = useCallback(
+		async (e: React.FormEvent) => {
+			e.preventDefault();
+			if (step === "email") {
+				if (!validateEmail()) {
+					return emailRef.current?.focus();
+				}
+				setStep(isSignUp ? "name" : "password");
+			} else if (step === "name") {
+				if (!validateName()) {
+					return nameRef.current?.focus();
+				}
+				setStep("password");
+			} else if (step === "password") {
+				if (!validatePassword()) {
+					return passwordRef.current?.focus();
+				}
+				await handleAuth();
+			}
+		},
+		[step, isSignUp, validateEmail, validateName, validatePassword, handleAuth]
+	);
 
 	const handleOAuth = useCallback(async (provider: "github" | "google") => {
 		localStorage.setItem("lastLoginMethod", provider);

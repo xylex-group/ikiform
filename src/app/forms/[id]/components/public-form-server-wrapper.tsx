@@ -1,11 +1,12 @@
 import { Suspense } from "react";
+import type { FormSchema } from "@/lib/database";
 import { ensureDefaultRateLimitSettings } from "@/lib/forms/form-defaults";
 import PublicFormClient from "../public-form-client";
 import { FormSkeleton } from "./form-skeletons";
 
 interface PublicFormServerWrapperProps {
 	formId: string;
-	schema: unknown;
+	schema: FormSchema;
 }
 
 export default function PublicFormServerWrapper({

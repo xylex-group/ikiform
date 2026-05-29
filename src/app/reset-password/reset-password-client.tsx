@@ -16,6 +16,15 @@ import { constantTimeCompare } from "@/lib/utils/constant-time-compare";
 
 const getAuthClient = async () => athenaBrowserAuth;
 
+const getAuthErrorMessage = (
+	error: string | { message?: string } | null | undefined
+): string => {
+	if (typeof error === "string") {
+		return error;
+	}
+	return error?.message || "Failed to update password";
+};
+
 export default function ResetPasswordClient() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
@@ -92,7 +101,7 @@ export default function ResetPasswordClient() {
 				toast.success("Password updated successfully!");
 				router.push("/dashboard");
 			} else {
-				toast.error(result.error || "Failed to update password");
+				toast.error(getAuthErrorMessage(result.error));
 			}
 		} catch (error) {
 			console.error("Password reset error:", error);

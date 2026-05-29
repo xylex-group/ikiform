@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
+import type { FormSchema } from "@/lib/database";
 
 const PublicFormContent = dynamic(
 	() => import("./components/public-form-content"),
@@ -13,7 +14,7 @@ const PublicFormContent = dynamic(
 
 interface PublicFormClientProps {
 	formId: string;
-	schema: unknown;
+	schema: FormSchema;
 }
 
 export default function PublicFormClient({

@@ -32,6 +32,31 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 			created_at: string;
 			[key: string]: unknown;
 		} & ({ type: "ai_builder" } | { type: "ai_analytics" });
+
+		const toSession = (
+			session: unknown,
+			type: Session["type"]
+		): Session | null => {
+			if (typeof session !== "object" || session === null) {
+				return null;
+			}
+
+			const row = session as Record<string, unknown>;
+			const rawId = row.id ?? row.session_id;
+			const rawCreatedAt = row.created_at;
+
+			if (!(rawId && rawCreatedAt)) {
+				return null;
+			}
+
+			return {
+				...row,
+				id: String(rawId),
+				created_at: String(rawCreatedAt),
+				type,
+			};
+		};
+
 		let sessions: Session[] = [];
 
 		if (type === "builder" || type === "both") {
@@ -40,15 +65,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 				limit
 			);
 			sessions = sessions.concat(
-				builderSessions.map(
-					(session: Record<string, unknown>) =>
-						({
-							...session,
-							id: String(session.id),
-							created_at: String(session.created_at),
-							type: "ai_builder",
-						}) as Session
-				)
+				builderSessions
+					.map((session) => toSession(session, "ai_builder"))
+					.filter((session): session is Session => session !== null)
 			);
 		}
 
@@ -59,15 +78,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 				limit
 			);
 			sessions = sessions.concat(
-				analyticsSessions.map(
-					(session: Record<string, unknown>) =>
-						({
-							...session,
-							id: String(session.id),
-							created_at: String(session.created_at),
-							type: "ai_analytics",
-						}) as Session
-				)
+				analyticsSessions
+					.map((session) => toSession(session, "ai_analytics"))
+					.filter((session): session is Session => session !== null)
 			);
 		}
 

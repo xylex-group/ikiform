@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 		if (error) {
 			console.error("Error updating trial users:", error);
 			return NextResponse.json(
-				{ error: "Failed to update users", details: error.message },
+				{ error: "Failed to update users", details: error },
 				{ status: 500 }
 			);
 		}

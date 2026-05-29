@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import { Suspense, useEffect } from "react";
+import type { FormSchema } from "@/lib/database";
 import { CSSPropertiesProvider } from "./css-properties-provider";
 import { FormSkeleton } from "./form-skeletons";
 
@@ -63,7 +64,7 @@ const SingleStepForm = dynamic(
 
 interface PublicFormContentProps {
 	formId: string;
-	schema: unknown;
+	schema: FormSchema;
 }
 
 export default function PublicFormContent({
@@ -80,9 +81,16 @@ export default function PublicFormContent({
 		}
 
 		const colors = schema.settings?.colors;
-		if (colors?.websiteBackground) {
+		const websiteBackground =
+			(colors && typeof colors.background === "string" && colors.background) ||
+			(colors &&
+				typeof (colors as Record<string, unknown>).websiteBackground ===
+					"string" &&
+				((colors as Record<string, unknown>).websiteBackground as string));
+
+		if (websiteBackground) {
 			const root = document.documentElement;
-			const hslValues = hexToHsl(colors.websiteBackground);
+			const hslValues = hexToHsl(websiteBackground);
 			root.style.setProperty("--hu-background", hslValues);
 			root.style.setProperty("--color-background", `hsl(${hslValues})`);
 
@@ -91,7 +99,7 @@ export default function PublicFormContent({
 				root.style.removeProperty("--color-background");
 			};
 		}
-	}, [schema.settings?.colors?.websiteBackground, schema.settings?.colors]);
+	}, [schema.settings?.colors]);
 
 	return (
 		<CSSPropertiesProvider borderRadius={borderRadius}>

@@ -38,10 +38,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 			);
 		}
 
-		const chatHistory = await formsDbServer.getAIBuilderChatHistory(
-			user.id,
-			sessionId
-		);
+		const chatHistory =
+			(await formsDbServer.getAIBuilderChatHistory(user.id, sessionId)) ?? [];
 
 		return NextResponse.json({
 			success: true,

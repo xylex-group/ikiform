@@ -34,7 +34,11 @@ function PremiumRequired() {
 	);
 }
 
-export default function FormBuilderClient() {
+interface FormBuilderClientProps {
+	formId?: string;
+}
+
+export default function FormBuilderClient({ formId }: FormBuilderClientProps) {
 	const { user, loading } = useAuth();
 	const { hasPremium, checkingPremium: checking } = usePremiumStatus();
 
@@ -48,7 +52,7 @@ export default function FormBuilderClient() {
 
 	return (
 		<Suspense fallback={<FormBuilderSkeleton />}>
-			<FormBuilder />
+			<FormBuilder formId={formId} />
 		</Suspense>
 	);
 }

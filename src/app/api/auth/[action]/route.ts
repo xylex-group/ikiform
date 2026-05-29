@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createAthenaAuthClient } from "@/utils/athena/auth-client";
 
 interface ActionParam {
-	params: { action: string };
+	params: Promise<{ action: string }>;
 }
 
 type AuthAction =
@@ -162,9 +162,11 @@ const handleRequest = async (request: NextRequest, action: string) => {
 };
 
 export async function GET(request: NextRequest, context: ActionParam) {
-	return handleRequest(request, context.params.action);
+	const { action } = await context.params;
+	return handleRequest(request, action);
 }
 
 export async function POST(request: NextRequest, context: ActionParam) {
-	return handleRequest(request, context.params.action);
+	const { action } = await context.params;
+	return handleRequest(request, action);
 }

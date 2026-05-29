@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
@@ -18,81 +19,64 @@ function formatChangelogDate(dateString: string): string {
 	}
 }
 
-const markdownComponents = {
-	code: ({ inline, className, children, ...props }: unknown) => {
+const markdownComponents: Components = {
+	code: ({ className, children, ...props }) => {
+		const inline =
+			"inline" in props && Boolean((props as { inline?: boolean }).inline);
 		const match = /language-(\w+)/.exec(className || "");
+		const { node: _node, ...codeProps } = props;
+
 		return !inline && match ? (
 			<code
 				className="block rounded-lg bg-muted p-4 font-mono text-sm"
-				{...props}
+				{...codeProps}
 			>
 				{String(children).replace(/\n$/, "")}
 			</code>
 		) : (
 			<code
 				className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm"
-				{...props}
+				{...codeProps}
 			>
 				{children}
 			</code>
 		);
 	},
-	p: ({ children, ...props }: unknown) => (
-		<p className="mb-4 leading-relaxed last:mb-0" {...props}>
-			{children}
-		</p>
+	p: ({ children }) => (
+		<p className="mb-4 leading-relaxed last:mb-0">{children}</p>
 	),
-	h1: ({ children, ...props }: unknown) => (
-		<h1 className="my-4 font-bold text-3xl first:mt-0" {...props}>
-			{children}
-		</h1>
+	h1: ({ children }) => (
+		<h1 className="my-4 font-bold text-3xl first:mt-0">{children}</h1>
 	),
-	h2: ({ children, ...props }: unknown) => (
-		<h2 className="my-3 font-semibold text-2xl" {...props}>
-			{children}
-		</h2>
+	h2: ({ children }) => (
+		<h2 className="my-3 font-semibold text-2xl">{children}</h2>
 	),
-	h3: ({ children, ...props }: unknown) => (
-		<h3 className="my-0 font-medium text-lg" {...props}>
-			{children}
-		</h3>
+	h3: ({ children }) => (
+		<h3 className="my-0 font-medium text-lg">{children}</h3>
 	),
-	ul: ({ children, ...props }: unknown) => (
-		<ul className="my-4 flex list-inside list-disc flex-col gap-2" {...props}>
+	ul: ({ children }) => (
+		<ul className="my-4 flex list-inside list-disc flex-col gap-2">
 			{children}
 		</ul>
 	),
-	ol: ({ children, ...props }: unknown) => (
-		<ol
-			className="my-4 flex list-inside list-decimal flex-col gap-2"
-			{...props}
-		>
+	ol: ({ children }) => (
+		<ol className="my-4 flex list-inside list-decimal flex-col gap-2">
 			{children}
 		</ol>
 	),
-	li: ({ children, ...props }: unknown) => (
-		<li className="pl-4" {...props}>
-			{children}
-		</li>
-	),
-	blockquote: ({ children, ...props }: unknown) => (
-		<blockquote
-			className="mb-4 border-primary border-l-4 pl-4 italic"
-			{...props}
-		>
+	li: ({ children }) => <li className="pl-4">{children}</li>,
+	blockquote: ({ children }) => (
+		<blockquote className="mb-4 border-primary border-l-4 pl-4 italic">
 			{children}
 		</blockquote>
 	),
-	strong: ({ children, ...props }: unknown) => (
-		<strong className="font-semibold" {...props}>
-			{children}
-		</strong>
+	strong: ({ children }) => (
+		<strong className="font-semibold">{children}</strong>
 	),
-	a: ({ children, href, ...props }: unknown) => (
+	a: ({ children, href }) => (
 		<a
 			className="text-primary underline-offset-4 hover:underline"
-			href={href}
-			{...props}
+			href={typeof href === "string" ? href : "#"}
 		>
 			{children}
 		</a>
