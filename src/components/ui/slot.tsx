@@ -26,6 +26,7 @@ const Slot = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
 
 		const child = children as React.ReactElement<{
 			className?: string;
+			ref?: React.Ref<HTMLElement>;
 			style?: React.CSSProperties;
 		}>;
 
@@ -34,7 +35,7 @@ const Slot = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
 			...child.props,
 			className: cn(className, child.props.className),
 			style: { ...style, ...child.props.style },
-			ref: composeRefs(forwardedRef, (child as unknown).ref),
+			ref: composeRefs(forwardedRef, child.props.ref),
 		};
 
 		return React.cloneElement(child, mergedProps);

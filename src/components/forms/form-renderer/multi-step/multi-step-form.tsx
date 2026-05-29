@@ -11,13 +11,14 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SocialMediaIcons } from "@/components/ui/social-media-icons";
 import { useFormStyling } from "@/hooks/use-form-styling";
-import type { FormBlock, FormSchema } from "@/lib/database";
+import type { FormBlock, FormField, FormSchema } from "@/lib/database";
 import {
 	isRangeSliderMode,
 	isSliderRangeValue,
 } from "@/lib/fields/slider-utils";
 import { cn } from "@/lib/utils";
 import { constantTimeCompare } from "@/lib/utils/constant-time-compare";
+import type { FormCustomStyles } from "@/lib/utils/form-layout";
 import { getFormLayoutClasses } from "@/lib/utils/form-layout";
 import { getPublicFormTitle } from "@/lib/utils/form-utils";
 import { validateEmail } from "@/lib/validation/email-validation";
@@ -79,7 +80,7 @@ function SuccessScreen({ schema }: { schema: FormSchema }) {
 				</Card>
 				{Boolean(
 					schema.settings.branding &&
-						(schema.settings.branding as unknown).showIkiformBranding !== false
+						schema.settings.branding.showIkiformBranding !== false
 				) && (
 					<p className="text-center text-muted-foreground text-sm">
 						Powered by{" "}
@@ -156,9 +157,9 @@ function FormContent({
 	schema: FormSchema;
 	fieldVisibility?: Record<string, { visible: boolean; disabled: boolean }>;
 	logicMessages?: string[];
-	customStyles?: unknown;
+	customStyles?: FormCustomStyles;
 }) {
-	const firstFieldRef = React.useRef<unknown>(null);
+	const firstFieldRef = React.useRef<{ focus: () => void } | null>(null);
 
 	React.useEffect(() => {
 		if (
@@ -257,18 +258,23 @@ function FormNavigation({
 	onNext: () => void;
 	onPrevious: () => void;
 	schema: FormSchema;
-	currentFields: unknown[];
+	currentFields: FormField[];
 	formData: Record<string, unknown>;
 	errors: Record<string, string>;
 }) {
 	const isLastStep = currentStep === totalSteps - 1;
 	const { getButtonStyles } = useFormStyling(schema);
 
-	const hasLivePatternError = currentFields.some(
-		(field) =>
-			["text", "email", "textarea"].includes(field.type) &&
-			getLivePatternError(field, formData[field.id])
-	);
+	const hasLivePatternError = currentFields.some((field) => {
+		if (!["text", "email", "textarea"].includes(field.type)) {
+			return false;
+		}
+		const fieldValue = formData[field.id];
+		return getLivePatternError(
+			field,
+			typeof fieldValue === "string" ? fieldValue : ""
+		);
+	});
 
 	const hasValidationErrors = Object.keys(errors).length > 0;
 	const isNextDisabled =
@@ -350,7 +356,7 @@ function FormFooter({ schema }: { schema: FormSchema }) {
 				)}
 			{Boolean(
 				schema.settings.branding &&
-					(schema.settings.branding as unknown).showIkiformBranding !== false
+					schema.settings.branding.showIkiformBranding !== false
 			) && (
 				<p className="text-muted-foreground text-sm">
 					Powered by{" "}
@@ -498,9 +504,16 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 				}
 			}
 
-			if (value && field.type === "email") {
+			if (
+				field.type === "email" &&
+				value !== undefined &&
+				value !== null &&
+				value !== ""
+			) {
+				const emailValue =
+					typeof value === "string" ? value : String(value);
 				const emailValidation = validateEmail(
-					value,
+					emailValue,
 					field.settings?.emailValidation
 				);
 				if (!emailValidation.isValid) {
@@ -509,10 +522,17 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 				}
 			}
 
-			if (["text", "textarea", "email"].includes(field.type) && value) {
+			if (
+				["text", "textarea", "email"].includes(field.type) &&
+				value !== undefined &&
+				value !== null &&
+				value !== ""
+			) {
+				const textValue =
+					typeof value === "string" ? value : String(value);
 				if (
 					field.validation?.minLength &&
-					value.length < field.validation.minLength
+					textValue.length < field.validation.minLength
 				) {
 					stepErrors[field.id] =
 						field.validation?.minLengthMessage ||
@@ -520,7 +540,7 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 				}
 				if (
 					field.validation?.maxLength &&
-					value.length > field.validation.maxLength
+					textValue.length > field.validation.maxLength
 				) {
 					stepErrors[field.id] =
 						field.validation?.maxLengthMessage ||
@@ -556,7 +576,7 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 		}
 	};
 
-	const handleNext = () => {
+	function handleNext() {
 		const { errors: validationErrors, isValid } = validateCurrentStep();
 
 		if (!isValid) {
@@ -571,13 +591,13 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 		} else {
 			handleSubmit();
 		}
-	};
+	}
 
-	const handlePrevious = () => {
+	function handlePrevious() {
 		if (currentStep > 0) {
 			setCurrentStep(currentStep - 1);
 		}
-	};
+	}
 
 	const handleSubmit = async () => {
 		setSubmitting(true);

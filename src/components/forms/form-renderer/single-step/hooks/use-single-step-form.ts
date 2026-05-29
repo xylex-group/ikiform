@@ -264,25 +264,38 @@ export const useSingleStepForm = (
 				toast.error(result.message || "Failed to submit form");
 			}
 		} catch (error: unknown) {
-			if (error?.error === "Bot detected") {
-				toast.error(error.message || "Bot detected. Access denied.");
-			} else if (error?.error === "Duplicate submission detected") {
+			const submitError =
+				typeof error === "object" && error !== null
+					? (error as {
+							error?: string;
+							message?: string;
+							timeRemaining?: number;
+							attemptsRemaining?: number;
+						})
+					: {};
+
+			if (submitError.error === "Bot detected") {
+				toast.error(submitError.message || "Bot detected. Access denied.");
+			} else if (submitError.error === "Duplicate submission detected") {
 				setDuplicateError({
-					message: error.message || "You have already submitted this form.",
-					timeRemaining: error.timeRemaining,
-					attemptsRemaining: error.attemptsRemaining,
+					message:
+						submitError.message || "You have already submitted this form.",
+					timeRemaining: submitError.timeRemaining,
+					attemptsRemaining: submitError.attemptsRemaining,
 				});
-			} else if (error?.error === "Rate limit exceeded") {
+			} else if (submitError.error === "Rate limit exceeded") {
 				toast.error(
-					error.message || "Too many requests. Please try again later."
+					submitError.message || "Too many requests. Please try again later."
 				);
-			} else if (error?.error === "Response limit reached") {
+			} else if (submitError.error === "Response limit reached") {
 				toast.error(
-					error.message || "This form is no longer accepting responses."
+					submitError.message ||
+						"This form is no longer accepting responses."
 				);
-			} else if (error?.error === "Content validation failed") {
+			} else if (submitError.error === "Content validation failed") {
 				toast.error(
-					error.message || "Your submission contains inappropriate content."
+					submitError.message ||
+						"Your submission contains inappropriate content."
 				);
 			} else {
 				toast.error("Failed to submit form. Please try again.");

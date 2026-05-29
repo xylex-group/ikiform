@@ -44,7 +44,9 @@ export function AddressField(props: BaseFieldProps) {
 	const { field, value, onChange, error, disabled } = props;
 	const builderMode = getBuilderMode(props);
 	const baseClasses = getBaseClasses(field, error);
-	const [address, setAddress] = useState<AddressValue>(() => toAddressValue(value));
+	const [address, setAddress] = useState<AddressValue>(() =>
+		toAddressValue(value)
+	);
 
 	const getAddressFields = () => ADDRESS_FIELD_CONFIGS;
 

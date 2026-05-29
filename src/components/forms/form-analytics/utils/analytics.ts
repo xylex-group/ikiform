@@ -150,14 +150,24 @@ export const calculateFieldAnalytics = (
 				if (Array.isArray(response)) {
 					const fileCount = response.length;
 					const fileTypes = response.map((file) => {
-						if (typeof file === "object" && file.type) {
+						if (
+							typeof file === "object" &&
+							file !== null &&
+							"type" in file &&
+							typeof file.type === "string"
+						) {
 							return file.type.split("/")[0];
 						}
 						return "unknown";
 					});
 					const uniqueTypes = [...new Set(fileTypes)];
 					stringValue = `${fileCount} file${fileCount !== 1 ? "s" : ""} (${uniqueTypes.join(", ")})`;
-				} else if (typeof response === "object" && response.type) {
+				} else if (
+					typeof response === "object" &&
+					response !== null &&
+					"type" in response &&
+					typeof response.type === "string"
+				) {
 					stringValue = `1 file (${response.type.split("/")[0]})`;
 				} else {
 					stringValue = "1 file";
@@ -287,7 +297,6 @@ export const calculateConversionFunnel = (
 					? Math.round((completedCount / submissions.length) * 100)
 					: 0,
 		};
-		(" 12q ");
 	});
 
 	return funnel;

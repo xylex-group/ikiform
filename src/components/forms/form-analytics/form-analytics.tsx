@@ -40,7 +40,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
-import { formsDb } from "@/lib/database";
+import { formsDb, type FormSubmission } from "@/lib/database";
 
 import {
 	AnalyticsCards,
@@ -66,7 +66,8 @@ import { exportToCSV, exportToJSON, formatDate, getFieldLabel } from "./utils";
 
 export function FormAnalytics({ form }: FormAnalyticsProps) {
 	const router = useRouter();
-	const [selectedSubmission, setSelectedSubmission] = useState(null);
+	const [selectedSubmission, setSelectedSubmission] =
+		useState<FormSubmission | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -99,7 +100,7 @@ export function FormAnalytics({ form }: FormAnalyticsProps) {
 		getFieldLabel(form, fieldId);
 	const handleExportCsv = () => exportToCSV(form, submissions);
 	const handleExportJson = () => exportToJSON(form, submissions);
-	const _handleExportSubmission = (submission: unknown) => {
+	const _handleExportSubmission = (submission: FormSubmission) => {
 		const submissionData = {
 			id: submission.id,
 			submitted_at: submission.submitted_at,
@@ -118,7 +119,7 @@ export function FormAnalytics({ form }: FormAnalyticsProps) {
 		toast.success("Submission exported successfully");
 	};
 
-	const handleViewSubmission = (submission: unknown) => {
+	const handleViewSubmission = (submission: FormSubmission) => {
 		setSelectedSubmission(submission);
 		setIsModalOpen(true);
 	};

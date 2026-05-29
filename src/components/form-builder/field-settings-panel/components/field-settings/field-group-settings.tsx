@@ -25,13 +25,13 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import type { FormField } from "@/lib/database";
+import type { FieldTypeConfig } from "@/lib/fields/field-config";
 import {
 	createFieldFromType,
 	FIELD_CATEGORIES,
 	FIELD_TYPE_CONFIGS,
 } from "@/lib/fields/field-config";
-import type { FieldTypeConfig } from "@/lib/fields/field-config";
-import type { FormField } from "@/lib/database";
 import { FieldSpecificSettings } from "../field-specific-settings";
 import type { FieldSettingsProps } from "./types";
 

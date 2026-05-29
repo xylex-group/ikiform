@@ -56,7 +56,7 @@ export const exportToCSV = (form: Form, submissions: FormSubmission[]) => {
 		...Array.from(allFields),
 	];
 	const rows = submissions.map((submission) => {
-		const row = [
+		const row: string[] = [
 			submission.id,
 			new Date(submission.submitted_at).toISOString(),
 			submission.ip_address || "",
@@ -64,13 +64,14 @@ export const exportToCSV = (form: Form, submissions: FormSubmission[]) => {
 
 		Array.from(allFields).forEach((field) => {
 			const value = submission.submission_data[field];
-			row.push(
-				Array.isArray(value)
-					? value.join(", ")
-					: typeof value === "object" && value !== null
-						? JSON.stringify(value)
-						: value || ""
-			);
+			const serializedValue = Array.isArray(value)
+				? value.map((item) => String(item)).join(", ")
+				: typeof value === "object" && value !== null
+					? JSON.stringify(value)
+					: value === undefined || value === null
+						? ""
+						: String(value);
+			row.push(serializedValue);
 		});
 
 		return row;

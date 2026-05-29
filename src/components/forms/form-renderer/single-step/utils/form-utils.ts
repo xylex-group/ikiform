@@ -34,8 +34,10 @@ export const validateSingleStepForm = (
 			errors[field.id] =
 				field.validation?.requiredMessage || "This field is required";
 		} else if (field.type === "email" && value) {
+			const emailValue =
+				typeof value === "string" ? value : String(value);
 			const emailValidation = validateEmail(
-				value,
+				emailValue,
 				field.settings?.emailValidation
 			);
 			if (!emailValidation.isValid) {
@@ -45,9 +47,11 @@ export const validateSingleStepForm = (
 					"Please enter a valid email address";
 			}
 		} else if (["text", "textarea", "email"].includes(field.type) && value) {
+			const textValue =
+				typeof value === "string" ? value : String(value);
 			if (
 				field.validation?.minLength &&
-				value.length < field.validation.minLength
+				textValue.length < field.validation.minLength
 			) {
 				errors[field.id] =
 					field.validation?.minLengthMessage ||
@@ -55,14 +59,16 @@ export const validateSingleStepForm = (
 			}
 			if (
 				field.validation?.maxLength &&
-				value.length > field.validation.maxLength
+				textValue.length > field.validation.maxLength
 			) {
 				errors[field.id] =
 					field.validation?.maxLengthMessage ||
 					`Must be no more than ${field.validation.maxLength} characters`;
 			}
 		} else if (field.type === "number" && value) {
-			const numValue = Number.parseFloat(value);
+			const numberText =
+				typeof value === "string" ? value : String(value);
+			const numValue = Number.parseFloat(numberText);
 			if (Number.isNaN(numValue)) {
 				errors[field.id] =
 					field.validation?.numberMessage || "Please enter a valid number";
@@ -85,22 +91,34 @@ export const validateSingleStepForm = (
 				}
 			}
 		} else if (field.type === "phone" && value) {
+			const phoneValue =
+				typeof value === "string" ? value : String(value);
 			const phoneValidation =
-				require("@/lib/validation/phone-validation").validatePhoneNumber(value);
+				require("@/lib/validation/phone-validation").validatePhoneNumber(
+					phoneValue
+				);
 			if (!phoneValidation.isValid) {
 				errors[field.id] =
 					phoneValidation.message || "Please enter a valid phone number";
 			}
 		} else if (field.type === "link" && value) {
+			const linkValue =
+				typeof value === "string" ? value : String(value);
 			const urlValidation =
-				require("@/lib/validation/url-validation").validateUrl(value);
+				require("@/lib/validation/url-validation").validateUrl(linkValue);
 			if (!urlValidation.isValid) {
 				errors[field.id] = urlValidation.message || "Please enter a valid URL";
 			}
-		} else if (field.type === "address" && value) {
+		} else if (
+			field.type === "address" &&
+			value &&
+			typeof value === "object" &&
+			!Array.isArray(value)
+		) {
+			const addressValue = value as Record<string, unknown>;
 			const requiredKeys = ["line1", "city", "state", "zip", "country"];
 			for (const key of requiredKeys) {
-				if (!value[key]) {
+				if (!addressValue[key]) {
 					errors[field.id] =
 						`Please enter ${key.replace(/\b\w/g, (c) => c.toUpperCase())}`;
 					break;
@@ -109,7 +127,10 @@ export const validateSingleStepForm = (
 		} else if (
 			field.validation?.pattern &&
 			value &&
-			!safeRegexTest(field.validation.pattern, value)
+			!safeRegexTest(
+				field.validation.pattern,
+				typeof value === "string" ? value : String(value)
+			)
 		) {
 			errors[field.id] = field.validation?.patternMessage || "Invalid format";
 		}

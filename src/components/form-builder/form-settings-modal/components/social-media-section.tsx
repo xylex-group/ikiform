@@ -22,7 +22,7 @@ import { Switch } from "@/components/ui/switch";
 
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { formsDb, type FormSchema } from "@/lib/database";
+import { type FormSchema, formsDb } from "@/lib/database";
 import type { LocalSettings, SocialMediaSectionProps } from "../types";
 
 interface BrandingSectionProps extends SocialMediaSectionProps {
@@ -83,7 +83,9 @@ export function BrandingSection({
 
 	const handleSettingChange = (
 		key: keyof NonNullable<typeof socialMedia>,
-		value: NonNullable<typeof socialMedia>[keyof NonNullable<typeof socialMedia>]
+		value: NonNullable<typeof socialMedia>[keyof NonNullable<
+			typeof socialMedia
+		>]
 	) => {
 		wrappedUpdateSocial({ [key]: value });
 	};

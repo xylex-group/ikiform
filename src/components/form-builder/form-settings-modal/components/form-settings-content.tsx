@@ -30,14 +30,18 @@ export interface FormSettingsContentProps {
 	updateDuplicatePrevention: (
 		updates: Partial<NonNullable<LocalSettings["duplicatePrevention"]>>
 	) => void;
-	updateNotifications: (updates: Partial<LocalSettings["notifications"]>) => void;
+	updateNotifications: (
+		updates: Partial<LocalSettings["notifications"]>
+	) => void;
 	updatePasswordProtection: (
 		updates: Partial<NonNullable<LocalSettings["passwordProtection"]>>
 	) => void;
 	updateProfanityFilter: (
 		updates: Partial<NonNullable<LocalSettings["profanityFilter"]>>
 	) => void;
-	updateRateLimit: (updates: Partial<NonNullable<LocalSettings["rateLimit"]>>) => void;
+	updateRateLimit: (
+		updates: Partial<NonNullable<LocalSettings["rateLimit"]>>
+	) => void;
 	updateResponseLimit: (
 		updates: Partial<NonNullable<LocalSettings["responseLimit"]>>
 	) => void;

@@ -206,7 +206,8 @@ export function ActualFormPreview({
 		...schema,
 		settings: localSettings,
 	};
-	const formDescription = schema.settings.description || localSettings.description;
+	const formDescription =
+		schema.settings.description || localSettings.description;
 
 	const isMultiStep = schema.settings.multiStep || schema.blocks?.length > 1;
 	const currentStep = 0;
@@ -289,9 +290,7 @@ export function ActualFormPreview({
 										{getPublicFormTitle(schema)}
 									</h1>
 									{formDescription && (
-										<p className="text-muted-foreground">
-											{formDescription}
-										</p>
+										<p className="text-muted-foreground">{formDescription}</p>
 									)}
 								</div>
 							)}

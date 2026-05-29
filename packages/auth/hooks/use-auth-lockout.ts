@@ -39,7 +39,10 @@ export function isRateLimitMessage(message: string): boolean {
 	);
 }
 
-export function extractLockoutSeconds(message: string, fallbackSeconds: number) {
+export function extractLockoutSeconds(
+	message: string,
+	fallbackSeconds: number
+) {
 	const match = message.match(/(\d+)\s*(second|sec|minute|min|hour|hr)/i);
 	if (!match) {
 		return fallbackSeconds;
@@ -87,20 +90,20 @@ export function useAuthLockout() {
 				clearStoredLockout();
 				setLockoutUntilMs(0);
 			}
-		}, 1_000);
+		}, 1000);
 
 		return () => window.clearInterval(intervalId);
 	}, [lockoutUntilMs]);
 
 	const remainingSeconds = Math.max(
 		0,
-		Math.ceil((lockoutUntilMs - Date.now()) / 1_000)
+		Math.ceil((lockoutUntilMs - Date.now()) / 1000)
 	);
 	const isLockedOut = remainingSeconds > 0;
 
 	const setLockoutForSeconds = useCallback((seconds: number) => {
 		const safeSeconds = Math.max(1, Math.floor(seconds));
-		const untilMs = Date.now() + safeSeconds * 1_000;
+		const untilMs = Date.now() + safeSeconds * 1000;
 		writeLockoutUntil(untilMs);
 		setLockoutUntilMs(untilMs);
 	}, []);

@@ -40,13 +40,13 @@ export function ProfanityFilterSection({
 	const schemaSettings = schema?.settings ?? localSettings;
 	const [profanityFilterSettings, setProfanityFilterSettings] =
 		useState<ProfanityFilterState>({
-		enabled: localSettings.profanityFilter?.enabled,
-		strictMode: true,
-		replaceWithAsterisks: localSettings.profanityFilter?.replaceWithAsterisks,
-		customMessage: localSettings.profanityFilter?.customMessage || "",
-		customWords: localSettings.profanityFilter?.customWords || [],
-		whitelistedWords: localSettings.profanityFilter?.whitelistedWords || [],
-	});
+			enabled: localSettings.profanityFilter?.enabled,
+			strictMode: true,
+			replaceWithAsterisks: localSettings.profanityFilter?.replaceWithAsterisks,
+			customMessage: localSettings.profanityFilter?.customMessage || "",
+			customWords: localSettings.profanityFilter?.customWords || [],
+			whitelistedWords: localSettings.profanityFilter?.whitelistedWords || [],
+		});
 
 	const [saving, setSaving] = useState(false);
 	const [saved, setSaved] = useState(false);

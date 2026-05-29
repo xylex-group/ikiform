@@ -1,9 +1,6 @@
 import type { AppAuthUser } from "@/lib/auth/types";
 
-function getMetadataString(
-	user: AppAuthUser,
-	key: string
-): string | undefined {
+function getMetadataString(user: AppAuthUser, key: string): string | undefined {
 	const value = user.user_metadata?.[key];
 	return typeof value === "string" && value.length > 0 ? value : undefined;
 }

@@ -221,7 +221,9 @@ export function QuizSection({
 								label="Passing Score (%)"
 								max={100}
 								min={0}
-								onChange={(value) => updateQuizLocal({ passingScore: value })}
+								onChange={(value) =>
+									updateQuizLocal({ passingScore: Number(value) })
+								}
 								step={5}
 								type="slider"
 								value={quizSettings.passingScore || 70}
@@ -280,7 +282,7 @@ export function QuizSection({
 										updateQuizLocal({
 											resultMessage: {
 												...quizSettings.resultMessage,
-												pass,
+												pass: String(pass),
 											},
 										})
 									}
@@ -298,7 +300,7 @@ export function QuizSection({
 										updateQuizLocal({
 											resultMessage: {
 												...quizSettings.resultMessage,
-												fail,
+												fail: String(fail),
 											},
 										})
 									}

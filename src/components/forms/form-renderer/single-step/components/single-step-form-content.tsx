@@ -41,7 +41,7 @@ export const SingleStepFormContent: React.FC<SingleStepFormContentProps> = ({
 	logicMessages,
 	duplicateError,
 }) => {
-	const firstFieldRef = useRef<unknown>(null);
+	const firstFieldRef = useRef<{ focus: () => void } | null>(null);
 	const { customStyles, getFieldStyles, getButtonStyles } =
 		useFormStyling(schema);
 
@@ -57,6 +57,17 @@ export const SingleStepFormContent: React.FC<SingleStepFormContentProps> = ({
 	const visibleFields = fieldVisibility
 		? fields.filter((field) => fieldVisibility[field.id]?.visible !== false)
 		: fields;
+
+	const hasLivePatternError = (field: FormField) => {
+		if (!["text", "email", "textarea"].includes(field.type)) {
+			return false;
+		}
+		const fieldValue = formData[field.id];
+		return getLivePatternError(
+			field,
+			typeof fieldValue === "string" ? fieldValue : ""
+		);
+	};
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -129,10 +140,7 @@ export const SingleStepFormContent: React.FC<SingleStepFormContentProps> = ({
 
 				{(() => {
 					for (const field of visibleFields) {
-						if (
-							["text", "email", "textarea"].includes(field.type) &&
-							getLivePatternError(field, formData[field.id])
-						) {
+						if (hasLivePatternError(field)) {
 							return (
 								<div className="mb-2 text-destructive text-xs">
 									Please fix the highlighted errors before submitting.
@@ -148,11 +156,7 @@ export const SingleStepFormContent: React.FC<SingleStepFormContentProps> = ({
 						className="w-fit sm:w-auto"
 						disabled={
 							submitting ||
-							visibleFields.some(
-								(field) =>
-									["text", "email", "textarea"].includes(field.type) &&
-									getLivePatternError(field, formData[field.id])
-							)
+							visibleFields.some((field) => hasLivePatternError(field))
 						}
 						loading={submitting}
 						style={getButtonStyles(true)}

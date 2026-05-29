@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import LoginForm from "../../login/client";
-import ResetPasswordClient from "../../reset-password/reset-password-client";
 import { athenaBrowserAuth } from "@/lib/auth/athena-browser-auth";
 import type { AuthView } from "../../../../athena/auth-config";
+import LoginForm from "../../login/client";
+import ResetPasswordClient from "../../reset-password/reset-password-client";
 
 interface AuthPageClientProps {
 	searchParams?: Record<string, string | string[] | undefined>;

@@ -37,12 +37,24 @@ const getAllTrends = (trends: Record<string, number>) => {
 	return dates.map((date) => ({ date, value: trends[date] }));
 };
 
-const CustomTooltip = ({ active, payload, label }: unknown) => {
+interface TooltipPayloadEntry {
+	value?: number | string;
+}
+
+interface CustomTooltipProps {
+	active?: boolean;
+	label?: number | string;
+	payload?: TooltipPayloadEntry[];
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 	if (active && payload && payload.length) {
+		const labelValue =
+			typeof label === "string" ? label : label !== undefined ? String(label) : "";
 		return (
 			<div className="rounded-xl border border-border bg-card px-3 py-2">
 				<p className="mb-1 font-semibold text-foreground">
-					{formatDate(label)}
+					{formatDate(labelValue)}
 				</p>
 				<p className="m-0 text-muted-foreground">
 					Submissions:{" "}

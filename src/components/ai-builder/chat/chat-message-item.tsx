@@ -16,7 +16,8 @@ export const ChatMessageItem = memo(function ChatMessageItem({
 	index,
 }: ChatMessageItemProps) {
 	const isAssistant = message.role === "assistant";
-	const hasSchema = isAssistant && message.schema !== undefined && message.schema !== null;
+	const hasSchema =
+		isAssistant && message.schema !== undefined && message.schema !== null;
 
 	const contentLines = useMemo(() => {
 		if (message.role === "user") {
@@ -62,9 +63,7 @@ export const ChatMessageItem = memo(function ChatMessageItem({
 									))}
 								</div>
 							)}
-							{hasSchema && (
-								<ExpandableJsonBlock schema={message.schema} />
-							)}
+							{hasSchema && <ExpandableJsonBlock schema={message.schema} />}
 							{isAssistant && !hasSchema && (
 								<div className="whitespace-pre-wrap break-words text-sm">
 									{message.content}

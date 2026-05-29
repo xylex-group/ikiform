@@ -20,6 +20,22 @@ interface EnhancedColorPickerProps {
 	value: string;
 }
 
+interface EyeDropperResult {
+	sRGBHex: string;
+}
+
+interface EyeDropperApi {
+	open: () => Promise<EyeDropperResult>;
+}
+
+interface EyeDropperWindow extends Window {
+	EyeDropper?: new () => EyeDropperApi;
+}
+
+const hasEyeDropper = (target: Window): target is EyeDropperWindow =>
+	"EyeDropper" in target &&
+	typeof (target as EyeDropperWindow).EyeDropper === "function";
+
 export function EnhancedColorPicker({
 	value,
 	onChange,
@@ -30,6 +46,8 @@ export function EnhancedColorPicker({
 	const [opacity, setOpacity] = useState(100);
 	const [brightness, setBrightness] = useState(100);
 	const colorInputRef = useRef<HTMLInputElement>(null);
+	const canUseEyeDropper =
+		typeof window !== "undefined" && hasEyeDropper(window);
 
 	const hexColor = value === "transparent" ? "#ffffff" : value;
 
@@ -80,9 +98,9 @@ export function EnhancedColorPicker({
 	};
 
 	const handleEyeDropper = async () => {
-		if ("EyeDropper" in window) {
+		if (canUseEyeDropper && window.EyeDropper) {
 			try {
-				const eyeDropper = new (window as unknown).EyeDropper();
+				const eyeDropper = new window.EyeDropper();
 				const result = await eyeDropper.open();
 				onChange(result.sRGBHex);
 			} catch (_e) {}
@@ -135,7 +153,7 @@ export function EnhancedColorPicker({
 										placeholder="#000000"
 										value={hexColor}
 									/>
-									{"EyeDropper" in window && (
+									{canUseEyeDropper && (
 										<Button
 											aria-label="Eyedropper"
 											onClick={handleEyeDropper}

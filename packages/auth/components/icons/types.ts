@@ -1,13 +1,9 @@
-import type {
-  ForwardRefExoticComponent,
-  RefAttributes,
-  SVGProps,
-} from "react";
+import type { ForwardRefExoticComponent, RefAttributes, SVGProps } from "react";
 
 export interface IconProps extends Omit<SVGProps<SVGSVGElement>, "children"> {
-  size?: number | string;
+	size?: number | string;
 }
 
 export type IconComponent = ForwardRefExoticComponent<
-  IconProps & RefAttributes<SVGSVGElement>
+	IconProps & RefAttributes<SVGSVGElement>
 >;

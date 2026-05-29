@@ -95,7 +95,7 @@ export const DropoffAnalytics: React.FC<DropoffAnalyticsProps> = ({
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{form.schema.blocks.map((block: unknown, idx: number) => {
+						{form.schema.blocks.map((block, idx: number) => {
 							const reached = dropoffCounts[block.id] || 0;
 							const dropoff =
 								total > 0 ? 100 - Math.round((reached / total) * 100) : 0;
@@ -109,7 +109,7 @@ export const DropoffAnalytics: React.FC<DropoffAnalyticsProps> = ({
 											<div className="flex size-6 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xs">
 												{idx + 1}
 											</div>
-											{block.label ? block.label : `Step ${idx + 1}`}
+											{block.title ? block.title : `Step ${idx + 1}`}
 										</div>
 									</TableCell>
 									<TableCell>

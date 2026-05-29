@@ -32,11 +32,12 @@ export const isDatabaseFormSchema = (
 	);
 };
 
-export const checkForDuplicateSchema = <T extends { schema: DatabaseFormSchema }>(
+export const checkForDuplicateSchema = <
+	T extends { schema: DatabaseFormSchema },
+>(
 	forms: T[],
 	schema: DatabaseFormSchema
-) =>
-	forms.find((f) => JSON.stringify(f.schema) === JSON.stringify(schema));
+) => forms.find((f) => JSON.stringify(f.schema) === JSON.stringify(schema));
 
 export const initializeScrollbarStyles = () => {
 	if (typeof window !== "undefined") {

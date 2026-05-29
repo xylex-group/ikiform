@@ -82,7 +82,10 @@ export const authClient = {
 			"Unable to reset password."
 		),
 
-	sendVerificationEmail: async (_input: { callbackURL: string; email: string }) => {
+	sendVerificationEmail: async (_input: {
+		callbackURL: string;
+		email: string;
+	}) => {
 		return {
 			error: asClientError(
 				"Email verification resend is not available on this Athena client yet.",
@@ -109,7 +112,10 @@ export const authClient = {
 			if (result.ok) {
 				maybeRedirectFromSocialResult(result.data);
 			}
-			return fromAthenaResult(result, "Unable to sign in with social provider.");
+			return fromAthenaResult(
+				result,
+				"Unable to sign in with social provider."
+			);
 		},
 	},
 

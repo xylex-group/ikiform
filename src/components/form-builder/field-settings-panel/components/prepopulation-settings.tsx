@@ -72,7 +72,8 @@ export function PrepopulationSettings({
 	const [previewUrl, setPreviewUrl] = useState("");
 	const [apiHeadersText, setApiHeadersText] = useState("{}");
 
-	const prepopulation: Prepopulation = field.prepopulation ?? DEFAULT_PREPOPULATION;
+	const prepopulation: Prepopulation =
+		field.prepopulation ?? DEFAULT_PREPOPULATION;
 
 	useEffect(() => {
 		setApiHeadersText(

@@ -26,7 +26,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { formsDb } from "@/lib/database";
+import { formsDb, type FormSchema } from "@/lib/database";
 import {
 	isRangeSliderMode,
 	normalizeRangeSliderValue,
@@ -153,29 +153,33 @@ export function ApiSection({
 		if (!formId) {
 			return;
 		}
-		if (!user) {
-			toast.error("User authentication required");
-			return;
-		}
+	if (!user) {
+		toast.error("User authentication required");
+		return;
+	}
+	if (!schema) {
+		toast.error("Form schema is required to generate an API key");
+		return;
+	}
 
-		setIsGenerating(true);
-		try {
-			const result = await manageFormApiKey(formId, "POST");
-			if (result.success && result.apiKey) {
-				const newSchema = {
-					...schema,
-					settings: {
-						...schema?.settings,
-						api: {
-							...(schema?.settings?.api || {}),
-							apiKey: result.apiKey,
-							enabled: true,
-						},
+	setIsGenerating(true);
+	try {
+		const result = await manageFormApiKey(formId, "POST");
+		if (result.success && result.apiKey) {
+			const newSchema: FormSchema = {
+				...schema,
+				settings: {
+					...schema.settings,
+					api: {
+						...(schema.settings.api || {}),
+						apiKey: result.apiKey,
+						enabled: true,
 					},
-				};
-				await formsDb.updateForm(formId, user.id, {
-					schema: newSchema as unknown,
-				});
+				},
+			};
+			await formsDb.updateForm(formId, user.id, {
+				schema: newSchema,
+			});
 				updateApi({ apiKey: result.apiKey, enabled: true });
 				setDraftEnabled(true);
 				setSaved(true);
@@ -194,29 +198,33 @@ export function ApiSection({
 		if (!formId) {
 			return;
 		}
-		if (!user) {
-			toast.error("User authentication required");
-			return;
-		}
+	if (!user) {
+		toast.error("User authentication required");
+		return;
+	}
+	if (!schema) {
+		toast.error("Form schema is required to revoke an API key");
+		return;
+	}
 
-		setIsRevoking(true);
-		try {
-			const result = await manageFormApiKey(formId, "DELETE");
-			if (result.success) {
-				const newSchema = {
-					...schema,
-					settings: {
-						...schema?.settings,
-						api: {
-							...(schema?.settings?.api || {}),
-							apiKey: undefined,
-							enabled: false,
-						},
+	setIsRevoking(true);
+	try {
+		const result = await manageFormApiKey(formId, "DELETE");
+		if (result.success) {
+			const newSchema: FormSchema = {
+				...schema,
+				settings: {
+					...schema.settings,
+					api: {
+						...(schema.settings.api || {}),
+						apiKey: undefined,
+						enabled: false,
 					},
-				};
-				await formsDb.updateForm(formId, user.id, {
-					schema: newSchema as unknown,
-				});
+				},
+			};
+			await formsDb.updateForm(formId, user.id, {
+				schema: newSchema,
+			});
 				updateApi({ apiKey: undefined, enabled: false });
 				setDraftEnabled(false);
 				setSaved(true);
@@ -257,7 +265,13 @@ export function ApiSection({
 		const formFields = schema ? getAllFields(schema) : [];
 		const sampleData: Record<string, unknown> = {};
 
-		formFields.forEach((field: unknown) => {
+		formFields.forEach((field) => {
+			const firstOption = field.options?.[0];
+			const firstOptionValue =
+				typeof firstOption === "string"
+					? firstOption
+					: firstOption?.value || "option1";
+
 			switch (field.type) {
 				case "text":
 				case "email":
@@ -272,10 +286,10 @@ export function ApiSection({
 					break;
 				case "select":
 				case "radio":
-					sampleData[field.id] = field.options?.[0]?.value || "option1";
+					sampleData[field.id] = firstOptionValue;
 					break;
 				case "checkbox":
-					sampleData[field.id] = field.options?.[0]?.value || "option1";
+					sampleData[field.id] = firstOptionValue;
 					break;
 				case "date":
 					sampleData[field.id] = "2024-01-15";

@@ -1,7 +1,5 @@
 import { Label } from "@/components/ui/label";
-
-import type { FieldWrapperProps } from "../types";
-import type { FieldWidth } from "../types";
+import type { FieldWidth, FieldWrapperProps } from "../types";
 
 import { getWidthClass } from "../utils";
 

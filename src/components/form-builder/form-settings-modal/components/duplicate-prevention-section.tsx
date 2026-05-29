@@ -24,10 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import type { FormSchema } from "@/lib/database";
 
-import type {
-	DuplicatePreventionSectionProps,
-	LocalSettings,
-} from "../types";
+import type { DuplicatePreventionSectionProps, LocalSettings } from "../types";
 
 type DuplicatePreventionSettings = NonNullable<
 	LocalSettings["duplicatePrevention"]

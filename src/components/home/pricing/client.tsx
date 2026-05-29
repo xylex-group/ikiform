@@ -11,6 +11,7 @@ import {
 	ShieldBan,
 	ShieldCheck,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui";
@@ -27,7 +28,24 @@ interface PricingClientProps {
 	products: Product[];
 }
 
-const featureList = [
+interface PlanFeature {
+	icon: LucideIcon;
+	label: string;
+}
+
+interface PricingPlan {
+	byline: string;
+	ctaLabel: string;
+	features: PlanFeature[];
+	key: "lifetime" | "monthly" | "yearly";
+	period: string;
+	popular?: boolean;
+	price: string;
+	productId: string;
+	title: string;
+}
+
+const featureList: PlanFeature[] = [
 	{
 		label: "Unlimited forms & responses",
 		icon: Infinity,
@@ -129,7 +147,7 @@ export default function PricingClient({ products }: PricingClientProps) {
 	function PlanFeatures({
 		features,
 	}: {
-		features: { label: string; icon: unknown }[];
+		features: PlanFeature[];
 	}) {
 		return (
 			<ul className="mb-8 flex list-none flex-col gap-3 p-0">
@@ -152,7 +170,7 @@ export default function PricingClient({ products }: PricingClientProps) {
 		isEdgeLeft,
 		isEdgeRight,
 	}: {
-		plan: unknown;
+		plan: PricingPlan;
 		isEdgeLeft: boolean;
 		isEdgeRight: boolean;
 	}) {
@@ -226,7 +244,7 @@ export default function PricingClient({ products }: PricingClientProps) {
 		);
 	}
 
-	const plans = React.useMemo(
+	const plans = React.useMemo<PricingPlan[]>(
 		() => [
 			{
 				key: "monthly",

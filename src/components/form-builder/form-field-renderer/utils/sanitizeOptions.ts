@@ -8,7 +8,7 @@ export function remapOptionsByKeys(
 	valueKey?: string,
 	labelKey?: string
 ): unknown[] {
-	if (!valueKey && !labelKey) {
+	if (!(valueKey || labelKey)) {
 		return options;
 	}
 
@@ -23,11 +23,13 @@ export function remapOptionsByKeys(
 			}
 
 			const rawValue = valueKey ? item[valueKey] : item.value;
-			const rawLabel = labelKey ? item[labelKey] : item.label ?? rawValue;
+			const rawLabel = labelKey ? item[labelKey] : (item.label ?? rawValue);
 
 			return { value: rawValue, label: rawLabel };
 		})
-		.filter((item): item is { value: unknown; label: unknown } => item !== null);
+		.filter(
+			(item): item is { value: unknown; label: unknown } => item !== null
+		);
 }
 
 export function sanitizeOptions(options: unknown[]): SanitizedOption[] {

@@ -97,11 +97,7 @@ export async function POST(request: NextRequest) {
 				if (!isFormSchema(schema)) {
 					throw new Error("Invalid schema");
 				}
-				data = await formsDb.createForm(
-					userId,
-					title,
-					schema
-				);
+				data = await formsDb.createForm(userId, title, schema);
 				break;
 			}
 			case "duplicateForm": {
