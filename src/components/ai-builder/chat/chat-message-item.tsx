@@ -15,6 +15,9 @@ export const ChatMessageItem = memo(function ChatMessageItem({
 	message,
 	index,
 }: ChatMessageItemProps) {
+	const isAssistant = message.role === "assistant";
+	const hasSchema = isAssistant && message.schema !== undefined && message.schema !== null;
+
 	const contentLines = useMemo(() => {
 		if (message.role === "user") {
 			return message.content.split("\n");
@@ -40,7 +43,7 @@ export const ChatMessageItem = memo(function ChatMessageItem({
 				}`}
 			>
 				<CardContent className="p-1">
-					{message.role === "assistant" && (
+					{isAssistant && (
 						<CardHeader className="px-0">
 							<div className="flex items-center gap-1">
 								<div className="size-2 rounded-2xl bg-muted-foreground" />
@@ -59,10 +62,10 @@ export const ChatMessageItem = memo(function ChatMessageItem({
 									))}
 								</div>
 							)}
-							{message.role === "assistant" && message.schema && (
+							{hasSchema && (
 								<ExpandableJsonBlock schema={message.schema} />
 							)}
-							{message.role === "assistant" && !message.schema && (
+							{isAssistant && !hasSchema && (
 								<div className="whitespace-pre-wrap break-words text-sm">
 									{message.content}
 								</div>
