@@ -14,12 +14,13 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import type { FormSchema } from "@/lib/database";
 import type { LocalSettings } from "../types";
 
 interface QuizSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: unknown;
+	schema?: FormSchema;
 	updateSettings: (updates: Partial<LocalSettings>) => void;
 }
 
@@ -30,8 +31,9 @@ export function QuizSection({
 	schema,
 	onSchemaUpdate,
 }: QuizSectionProps & {
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
+	const schemaSettings = schema?.settings ?? localSettings;
 	const initialQuiz = localSettings.quiz || {};
 	const [quizSettings, setQuizSettings] = useState({
 		enabled: initialQuiz.enabled,
@@ -59,11 +61,7 @@ export function QuizSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasChanges]);
 
 	useEffect(() => {
@@ -98,11 +96,11 @@ export function QuizSection({
 					quizSettings.timeLimit === "" || quizSettings.timeLimit === undefined
 						? undefined
 						: Number(quizSettings.timeLimit),
-			} as unknown;
+			};
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						quiz: trimmed,
 					},
 				});
@@ -370,8 +368,8 @@ function QuizField({
 	id: string;
 	label: string;
 	description?: string;
-	value: unknown;
-	onChange: (value: unknown) => void;
+	value: number | string;
+	onChange: (value: number | string) => void;
 	type?: "text" | "number" | "textarea" | "slider";
 	placeholder?: string;
 	rows?: number;
@@ -395,7 +393,7 @@ function QuizField({
 						min={min}
 						onValueChange={([newValue]) => onChange(newValue)}
 						step={step}
-						value={[value]}
+						value={[typeof value === "number" ? value : Number(value) || 0]}
 					/>
 				</div>
 			) : type === "textarea" ? (
