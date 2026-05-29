@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import type { FormSchema } from "@/lib/database";
 
 import type { BotProtectionSectionProps } from "../types";
 
@@ -23,8 +24,10 @@ export function BotProtectionSection({
 	schema,
 	onSchemaUpdate,
 }: BotProtectionSectionProps & {
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
+	const schemaSettings = schema?.settings ?? localSettings;
+
 	const [botProtectionSettings, setBotProtectionSettings] = useState({
 		enabled: localSettings.botProtection?.enabled,
 		message: localSettings.botProtection?.message || "",
@@ -44,11 +47,7 @@ export function BotProtectionSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasChanges]);
 
 	const handleBotProtectionChange = (field: string, value: unknown) => {
@@ -80,7 +79,7 @@ export function BotProtectionSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						botProtection: trimmed,
 					},
 				});

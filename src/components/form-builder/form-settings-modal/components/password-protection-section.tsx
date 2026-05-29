@@ -14,12 +14,16 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import type { FormSchema } from "@/lib/database";
+import type { LocalSettings } from "../types";
 
 interface PasswordProtectionSectionProps {
 	formId?: string;
-	localSettings: unknown;
-	schema?: unknown;
-	updatePasswordProtection: (updates: unknown) => void;
+	localSettings: LocalSettings;
+	schema?: FormSchema;
+	updatePasswordProtection: (
+		updates: Partial<NonNullable<LocalSettings["passwordProtection"]>>
+	) => void;
 }
 
 export function PasswordProtectionSection({
@@ -29,8 +33,10 @@ export function PasswordProtectionSection({
 	schema,
 	onSchemaUpdate,
 }: PasswordProtectionSectionProps & {
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
+	const schemaSettings = schema?.settings ?? localSettings;
+
 	const [showPassword, setShowPassword] = useState(false);
 	const [passwordProtectionSettings, setPasswordProtectionSettings] = useState({
 		enabled: localSettings.passwordProtection?.enabled,
@@ -54,11 +60,7 @@ export function PasswordProtectionSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasChanges]);
 
 	const handlePasswordProtectionChange = (field: string, value: unknown) => {
@@ -94,7 +96,7 @@ export function PasswordProtectionSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						passwordProtection: trimmed,
 					},
 				});

@@ -22,13 +22,13 @@ import { Switch } from "@/components/ui/switch";
 
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { formsDb } from "@/lib/database";
-import type { SocialMediaSectionProps } from "../types";
+import { formsDb, type FormSchema } from "@/lib/database";
+import type { LocalSettings, SocialMediaSectionProps } from "../types";
 
 interface BrandingSectionProps extends SocialMediaSectionProps {
 	formId?: string;
-	schema?: unknown;
-	updateSettings: (updates: unknown) => void;
+	schema?: FormSchema;
+	updateSettings: (updates: Partial<LocalSettings>) => void;
 }
 
 export function BrandingSection({
@@ -38,6 +38,7 @@ export function BrandingSection({
 	formId,
 	schema,
 }: BrandingSectionProps) {
+	const schemaSettings = schema?.settings ?? localSettings;
 	const { user } = useAuth();
 	const socialMedia = localSettings.branding?.socialMedia || {};
 	const showIkiformBranding =
@@ -56,19 +57,17 @@ export function BrandingSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasChanges]);
 
-	const wrappedUpdateSocial = (updates: unknown) => {
+	const wrappedUpdateSocial = (
+		updates: Partial<NonNullable<typeof socialMedia>>
+	) => {
 		updateSocialMedia(updates);
 		setHasChanges(true);
 		setSaved(false);
 	};
-	const wrappedUpdateSettings = (updates: unknown) => {
+	const wrappedUpdateSettings = (updates: Partial<LocalSettings>) => {
 		updateSettings(updates);
 		setHasChanges(true);
 		setSaved(false);
@@ -82,7 +81,10 @@ export function BrandingSection({
 		wrappedUpdateSocial({ platforms: updatedPlatforms });
 	};
 
-	const handleSettingChange = (key: string, value: unknown) => {
+	const handleSettingChange = (
+		key: keyof NonNullable<typeof socialMedia>,
+		value: NonNullable<typeof socialMedia>[keyof NonNullable<typeof socialMedia>]
+	) => {
 		wrappedUpdateSocial({ [key]: value });
 	};
 
@@ -93,7 +95,7 @@ export function BrandingSection({
 	};
 
 	const resetBranding = () => {
-		const original = (schema?.settings as unknown)?.branding || {};
+		const original = schemaSettings.branding || {};
 		wrappedUpdateSettings({ branding: original });
 		setHasChanges(false);
 	};
@@ -105,6 +107,10 @@ export function BrandingSection({
 		}
 		if (!user) {
 			toast.error("User authentication required");
+			return;
+		}
+		if (!schema) {
+			toast.error("Form schema is required to save branding settings");
 			return;
 		}
 		setSaving(true);
@@ -123,12 +129,12 @@ export function BrandingSection({
 			const newSchema = {
 				...schema,
 				settings: {
-					...schema.settings,
+					...schemaSettings,
 					branding: trimmed,
 				},
 			};
 			await formsDb.updateForm(formId, user.id, {
-				schema: newSchema as unknown,
+				schema: newSchema,
 			});
 			setSaved(true);
 			setHasChanges(false);

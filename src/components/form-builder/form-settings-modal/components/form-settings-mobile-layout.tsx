@@ -4,14 +4,17 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FORM_SETTINGS_SECTIONS } from "../index";
 import type { FormSettingsSection } from "../types";
-import { FormSettingsContent } from "./form-settings-content";
+import {
+	FormSettingsContent,
+	type FormSettingsContentProps,
+} from "./form-settings-content";
 import { SettingsSearch } from "./settings-search";
 
 interface FormSettingsMobileLayoutProps {
 	activeSection: FormSettingsSection;
 	onClose: () => void;
 	onSectionChange: (section: FormSettingsSection) => void;
-	sectionProps: unknown;
+	sectionProps: Omit<FormSettingsContentProps, "section">;
 }
 
 export function FormSettingsMobileLayout({

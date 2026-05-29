@@ -22,8 +22,17 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import type { FormSchema } from "@/lib/database";
 
-import type { DuplicatePreventionSectionProps } from "../types";
+import type {
+	DuplicatePreventionSectionProps,
+	LocalSettings,
+} from "../types";
+
+type DuplicatePreventionSettings = NonNullable<
+	LocalSettings["duplicatePrevention"]
+>;
+type DuplicatePreventionField = keyof DuplicatePreventionSettings;
 
 export function DuplicatePreventionSection({
 	localSettings,
@@ -32,10 +41,12 @@ export function DuplicatePreventionSection({
 	schema,
 	onSchemaUpdate,
 }: DuplicatePreventionSectionProps & {
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
+	const schemaSettings = schema?.settings ?? localSettings;
+
 	const [duplicatePreventionSettings, setDuplicatePreventionSettings] =
-		useState({
+		useState<DuplicatePreventionSettings>({
 			enabled: localSettings.duplicatePrevention?.enabled,
 			strategy: localSettings.duplicatePrevention?.strategy || "combined",
 			mode: localSettings.duplicatePrevention?.mode || "one-time",
@@ -61,14 +72,13 @@ export function DuplicatePreventionSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasChanges]);
 
-	const handleDuplicatePreventionChange = (field: string, value: unknown) => {
+	const handleDuplicatePreventionChange = <K extends DuplicatePreventionField>(
+		field: K,
+		value: DuplicatePreventionSettings[K]
+	) => {
 		setDuplicatePreventionSettings((prev) => ({ ...prev, [field]: value }));
 		setSaved(false);
 		setHasChanges(true);
@@ -104,7 +114,7 @@ export function DuplicatePreventionSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						duplicatePrevention: trimmed,
 					},
 				});
@@ -317,8 +327,11 @@ function PreventionModeSection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: unknown;
-	updateSettings: (field: string, value: unknown) => void;
+	duplicatePrevention: DuplicatePreventionSettings;
+	updateSettings: <K extends DuplicatePreventionField>(
+		field: K,
+		value: DuplicatePreventionSettings[K]
+	) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">
@@ -371,8 +384,11 @@ function PreventionStrategySection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: unknown;
-	updateSettings: (field: string, value: unknown) => void;
+	duplicatePrevention: DuplicatePreventionSettings;
+	updateSettings: <K extends DuplicatePreventionField>(
+		field: K,
+		value: DuplicatePreventionSettings[K]
+	) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">
@@ -414,8 +430,11 @@ function TimeBasedSettingsSection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: unknown;
-	updateSettings: (field: string, value: unknown) => void;
+	duplicatePrevention: DuplicatePreventionSettings;
+	updateSettings: <K extends DuplicatePreventionField>(
+		field: K,
+		value: DuplicatePreventionSettings[K]
+	) => void;
 }) {
 	return (
 		<div className="grid grid-cols-2 gap-4">
@@ -447,8 +466,11 @@ function ErrorMessageSection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: unknown;
-	updateSettings: (field: string, value: unknown) => void;
+	duplicatePrevention: DuplicatePreventionSettings;
+	updateSettings: <K extends DuplicatePreventionField>(
+		field: K,
+		value: DuplicatePreventionSettings[K]
+	) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">
@@ -487,8 +509,11 @@ function OverrideSection({
 	duplicatePrevention,
 	updateSettings,
 }: {
-	duplicatePrevention: unknown;
-	updateSettings: (field: string, value: unknown) => void;
+	duplicatePrevention: DuplicatePreventionSettings;
+	updateSettings: <K extends DuplicatePreventionField>(
+		field: K,
+		value: DuplicatePreventionSettings[K]
+	) => void;
 }) {
 	return (
 		<div className="flex items-start gap-2">
@@ -557,7 +582,7 @@ function DuplicatePreventionInput({
 function DuplicatePreventionSummary({
 	duplicatePrevention,
 }: {
-	duplicatePrevention: unknown;
+	duplicatePrevention: DuplicatePreventionSettings;
 }) {
 	const modeText =
 		duplicatePrevention.mode === "one-time"

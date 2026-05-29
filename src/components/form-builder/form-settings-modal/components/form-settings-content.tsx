@@ -1,7 +1,8 @@
 import { useParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import type { FormSchema } from "@/lib/database";
 import { ApiSection } from "../sections/api-section";
-import type { FormSettingsSection } from "../types";
+import type { FormSettingsSection, LocalSettings } from "../types";
 import { BasicInfoSection } from "./basic-info-section";
 import { BotProtectionSection } from "./bot-protection-section";
 import { DesignSection } from "./design-section";
@@ -16,22 +17,36 @@ import { ResponseLimitSection } from "./response-limit-section";
 import { BrandingSection } from "./social-media-section";
 import { WebhooksSettingsSection } from "./webhooks-settings-section";
 
-interface FormSettingsContentProps {
+export interface FormSettingsContentProps {
 	formId?: string;
-	localSettings: unknown;
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
-	schema?: unknown;
+	localSettings: LocalSettings;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
+	schema?: FormSchema;
 	section: FormSettingsSection;
-	updateApi: unknown;
-	updateBotProtection: unknown;
-	updateDuplicatePrevention: unknown;
-	updateNotifications: unknown;
-	updatePasswordProtection: unknown;
-	updateProfanityFilter: unknown;
-	updateRateLimit: unknown;
-	updateResponseLimit: unknown;
-	updateSettings: unknown;
-	updateSocialMedia: unknown;
+	updateApi: (updates: Partial<NonNullable<LocalSettings["api"]>>) => void;
+	updateBotProtection: (
+		updates: Partial<NonNullable<LocalSettings["botProtection"]>>
+	) => void;
+	updateDuplicatePrevention: (
+		updates: Partial<NonNullable<LocalSettings["duplicatePrevention"]>>
+	) => void;
+	updateNotifications: (updates: Partial<LocalSettings["notifications"]>) => void;
+	updatePasswordProtection: (
+		updates: Partial<NonNullable<LocalSettings["passwordProtection"]>>
+	) => void;
+	updateProfanityFilter: (
+		updates: Partial<NonNullable<LocalSettings["profanityFilter"]>>
+	) => void;
+	updateRateLimit: (updates: Partial<NonNullable<LocalSettings["rateLimit"]>>) => void;
+	updateResponseLimit: (
+		updates: Partial<NonNullable<LocalSettings["responseLimit"]>>
+	) => void;
+	updateSettings: (updates: Partial<LocalSettings>) => void;
+	updateSocialMedia: (
+		updates: Partial<
+			NonNullable<NonNullable<LocalSettings["branding"]>["socialMedia"]>
+		>
+	) => void;
 }
 
 export function FormSettingsContent({

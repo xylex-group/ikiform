@@ -14,6 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import type { FormSchema } from "@/lib/database";
 import type { RateLimitSectionProps } from "../types";
 
 export function RateLimitSection({
@@ -23,8 +24,10 @@ export function RateLimitSection({
 	schema,
 	onSchemaUpdate,
 }: RateLimitSectionProps & {
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
+	const schemaSettings = schema?.settings ?? localSettings;
+
 	const [rateLimitSettings, setRateLimitSettings] = useState({
 		enabled: localSettings.rateLimit?.enabled,
 		maxSubmissions: localSettings.rateLimit?.maxSubmissions || 5,
@@ -49,11 +52,7 @@ export function RateLimitSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasChanges]);
 
 	const handleRateLimitChange = (field: string, value: unknown) => {
@@ -90,7 +89,7 @@ export function RateLimitSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						rateLimit: trimmed,
 					},
 				});

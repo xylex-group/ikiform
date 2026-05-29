@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import type { FormSchema } from "@/lib/database";
+import type { LocalSettings } from "../types";
 
 export function ResponseLimitSection({
 	localSettings,
@@ -21,12 +23,16 @@ export function ResponseLimitSection({
 	schema,
 	onSchemaUpdate,
 }: {
-	localSettings: unknown;
-	updateResponseLimit: (updates: Partial<unknown>) => void;
+	localSettings: LocalSettings;
+	updateResponseLimit: (
+		updates: Partial<NonNullable<LocalSettings["responseLimit"]>>
+	) => void;
 	formId?: string;
-	schema?: unknown;
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	schema?: FormSchema;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
+	const schemaSettings = schema?.settings ?? localSettings;
+
 	const [settings, setSettings] = useState({
 		enabled: !!localSettings.responseLimit?.enabled,
 		maxResponses: localSettings.responseLimit?.maxResponses || 100,
@@ -49,11 +55,7 @@ export function ResponseLimitSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasChanges]);
 
 	const handleChange = (field: string, value: unknown) => {
@@ -87,7 +89,7 @@ export function ResponseLimitSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						responseLimit: trimmed,
 					},
 				});
