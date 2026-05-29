@@ -52,7 +52,8 @@
         "noParameterAssign": "off",
         "useConsistentMemberAccessibility": "off",
         "useDefaultSwitchClause": "off",
-        "useFilenamingConvention": "off"
+        "useFilenamingConvention": "off",
+        "useConsistentTypeDefinitions": "off"
       },
       "suspicious": {
         "noArrayIndexKey": "off",

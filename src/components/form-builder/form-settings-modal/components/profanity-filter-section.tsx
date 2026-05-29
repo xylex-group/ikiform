@@ -15,8 +15,18 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import type { FormSchema } from "@/lib/database";
 
 import type { ProfanityFilterSectionProps } from "../types";
+
+type ProfanityFilterState = {
+	customMessage: string;
+	customWords: string[];
+	enabled?: boolean;
+	replaceWithAsterisks?: boolean;
+	strictMode: boolean;
+	whitelistedWords: string[];
+};
 
 export function ProfanityFilterSection({
 	localSettings,
@@ -25,9 +35,11 @@ export function ProfanityFilterSection({
 	schema,
 	onSchemaUpdate,
 }: ProfanityFilterSectionProps & {
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
-	const [profanityFilterSettings, setProfanityFilterSettings] = useState({
+	const schemaSettings = schema?.settings ?? localSettings;
+	const [profanityFilterSettings, setProfanityFilterSettings] =
+		useState<ProfanityFilterState>({
 		enabled: localSettings.profanityFilter?.enabled,
 		strictMode: true,
 		replaceWithAsterisks: localSettings.profanityFilter?.replaceWithAsterisks,
@@ -50,14 +62,13 @@ export function ProfanityFilterSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasChanges]);
 
-	const handleProfanityFilterChange = (field: string, value: unknown) => {
+	const handleProfanityFilterChange = <K extends keyof ProfanityFilterState>(
+		field: K,
+		value: ProfanityFilterState[K]
+	) => {
 		setProfanityFilterSettings((prev) => ({ ...prev, [field]: value }));
 		setSaved(false);
 		setHasChanges(true);
@@ -96,7 +107,7 @@ export function ProfanityFilterSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						profanityFilter: trimmed,
 					},
 				});
@@ -332,8 +343,11 @@ function FilterModeSection({
 	profanityFilter,
 	updateProfanityFilter,
 }: {
-	profanityFilter: unknown;
-	updateProfanityFilter: (field: string, value: unknown) => void;
+	profanityFilter: ProfanityFilterState;
+	updateProfanityFilter: <K extends keyof ProfanityFilterState>(
+		field: K,
+		value: ProfanityFilterState[K]
+	) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">
@@ -372,8 +386,11 @@ function CustomMessageSection({
 	profanityFilter,
 	updateProfanityFilter,
 }: {
-	profanityFilter: unknown;
-	updateProfanityFilter: (field: string, value: unknown) => void;
+	profanityFilter: Pick<ProfanityFilterState, "customMessage">;
+	updateProfanityFilter: <K extends keyof ProfanityFilterState>(
+		field: K,
+		value: ProfanityFilterState[K]
+	) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-2">

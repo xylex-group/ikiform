@@ -23,8 +23,34 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { formsDb } from "@/lib/database";
-import type { MetadataSectionProps } from "../types";
+import { formsDb, type FormSchema } from "@/lib/database";
+import type { LocalSettings, MetadataSectionProps } from "../types";
+
+type MetadataSettings = NonNullable<LocalSettings["metadata"]>;
+type RobotsValue = NonNullable<MetadataSettings["robots"]>;
+type TwitterCardValue = NonNullable<MetadataSettings["twitterCard"]>;
+
+const ROBOTS_SETTINGS: Record<
+	RobotsValue,
+	{ noFollow: boolean; noIndex: boolean }
+> = {
+	index: { noIndex: false, noFollow: false },
+	noindex: { noIndex: true, noFollow: false },
+	nofollow: { noIndex: false, noFollow: true },
+	"noindex,nofollow": { noIndex: true, noFollow: true },
+};
+
+const isRobotsValue = (value: string): value is RobotsValue =>
+	value === "index" ||
+	value === "noindex" ||
+	value === "nofollow" ||
+	value === "noindex,nofollow";
+
+const isTwitterCardValue = (value: string): value is TwitterCardValue =>
+	value === "summary" ||
+	value === "summary_large_image" ||
+	value === "app" ||
+	value === "player";
 
 export function MetadataSection({
 	localSettings,
@@ -34,9 +60,10 @@ export function MetadataSection({
 	onSchemaUpdate,
 }: MetadataSectionProps & {
 	formId?: string;
-	schema?: unknown;
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	schema?: FormSchema;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
+	const schemaSettings = schema?.settings ?? localSettings;
 	const { user } = useAuth();
 	const metadata = localSettings.metadata || {};
 	const [hasBasicChanges, setHasBasicChanges] = useState(false as boolean);
@@ -59,47 +86,35 @@ export function MetadataSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasBasicChanges, hasIndexingChanges, hasSocialChanges]);
 
-	const updateBasicMetadata = (updates: Partial<typeof metadata>) => {
+	const updateBasicMetadata = (updates: Partial<MetadataSettings>) => {
 		updateSettings({ metadata: { ...metadata, ...updates } });
 		setHasBasicChanges(true);
 		setSavedBasic(false);
 	};
 
-	const updateIndexingMetadata = (updates: Partial<typeof metadata>) => {
+	const updateIndexingMetadata = (updates: Partial<MetadataSettings>) => {
 		updateSettings({ metadata: { ...metadata, ...updates } });
 		setHasIndexingChanges(true);
 		setSavedIndexing(false);
 	};
 
-	const updateSocialMetadata = (updates: Partial<typeof metadata>) => {
+	const updateSocialMetadata = (updates: Partial<MetadataSettings>) => {
 		updateSettings({ metadata: { ...metadata, ...updates } });
 		setHasSocialChanges(true);
 		setSavedSocial(false);
 	};
 
 	const handleRobotsChange = (value: string) => {
-		const robotsMap: Record<string, { noIndex?: boolean; noFollow?: boolean }> =
-			{
-				index: { noIndex: false, noFollow: false },
-				noindex: { noIndex: true, noFollow: false },
-				nofollow: { noIndex: false, noFollow: true },
-				"noindex,nofollow": { noIndex: true, noFollow: true },
-			};
-
-		const robotsValue = robotsMap[value];
-		if (robotsValue) {
-			updateIndexingMetadata({
-				robots: value as unknown,
-				...robotsValue,
-			});
+		if (!isRobotsValue(value)) {
+			return;
 		}
+		updateIndexingMetadata({
+			robots: value,
+			...ROBOTS_SETTINGS[value],
+		});
 	};
 
 	const getRobotsValue = () => {
@@ -116,7 +131,7 @@ export function MetadataSection({
 	};
 
 	const resetBasic = () => {
-		const original = (schema?.settings as unknown)?.metadata || {};
+		const original = schemaSettings.metadata || {};
 		updateSettings({
 			metadata: {
 				...metadata,
@@ -131,7 +146,7 @@ export function MetadataSection({
 	};
 
 	const resetIndexing = () => {
-		const original = (schema?.settings as unknown)?.metadata || {};
+		const original = schemaSettings.metadata || {};
 		updateSettings({
 			metadata: {
 				...metadata,
@@ -148,7 +163,7 @@ export function MetadataSection({
 	};
 
 	const resetSocial = () => {
-		const original = (schema?.settings as unknown)?.metadata || {};
+		const original = schemaSettings.metadata || {};
 		updateSettings({
 			metadata: {
 				...metadata,
@@ -185,7 +200,7 @@ export function MetadataSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						metadata: trimmed,
 					},
 				});
@@ -211,17 +226,21 @@ export function MetadataSection({
 			toast.error("User authentication required");
 			return;
 		}
+		if (!schema) {
+			toast.error("Form schema is required to save indexing settings");
+			return;
+		}
 		setSavingIndexing(true);
 		try {
 			const newSchema = {
 				...schema,
 				settings: {
-					...schema.settings,
+					...schemaSettings,
 					metadata: { ...localSettings.metadata },
 				},
 			};
 			await formsDb.updateForm(formId, user.id, {
-				schema: newSchema as unknown,
+				schema: newSchema,
 			});
 			setSavedIndexing(true);
 			setHasIndexingChanges(false);
@@ -258,7 +277,7 @@ export function MetadataSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						metadata: trimmed,
 					},
 				});
@@ -585,7 +604,8 @@ export function MetadataSection({
 						<Label htmlFor="twitter-card">Twitter Card Type</Label>
 						<Select
 							onValueChange={(value) =>
-								updateSocialMetadata({ twitterCard: value as unknown })
+								isTwitterCardValue(value) &&
+								updateSocialMetadata({ twitterCard: value })
 							}
 							value={metadata.twitterCard || "summary"}
 						>

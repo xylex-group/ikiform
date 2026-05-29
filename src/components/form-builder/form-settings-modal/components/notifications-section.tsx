@@ -13,12 +13,13 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import type { FormSchema } from "@/lib/database";
 import type { LocalSettings, NotificationSettings } from "../types";
 
 interface NotificationsSectionProps {
 	formId?: string;
 	localSettings: LocalSettings;
-	schema?: unknown;
+	schema?: FormSchema;
 	updateNotifications: (updates: Partial<NotificationSettings>) => void;
 }
 
@@ -29,8 +30,9 @@ export function NotificationsSection({
 	schema,
 	onSchemaUpdate,
 }: NotificationsSectionProps & {
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
+	const schemaSettings = schema?.settings ?? localSettings;
 	const notifications = localSettings.notifications || {};
 	const customLinks = notifications.customLinks || [];
 	const [newLink, setNewLink] = useState({ label: "", url: "" });
@@ -46,11 +48,7 @@ export function NotificationsSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasChanges]);
 
 	const wrappedUpdate = (updates: Partial<NotificationSettings>) => {
@@ -72,7 +70,7 @@ export function NotificationsSection({
 	};
 
 	const resetNotifications = () => {
-		const original = (schema?.settings as unknown)?.notifications || {};
+		const original = schemaSettings.notifications || {};
 		updateNotifications(original);
 		setHasChanges(false);
 	};
@@ -99,7 +97,7 @@ export function NotificationsSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						notifications: trimmed,
 					},
 				});
