@@ -191,18 +191,15 @@ export const useAIBuilder = (initialPrompt?: string) => {
 		[state.sessionId, state.forms]
 	);
 
-	const autoSendPrompt = useCallback(
-		async (promptText: string) => {
-			if (!promptText.trim()) {
-				return;
-			}
+	async function autoSendPrompt(promptText: string) {
+		if (!promptText.trim()) {
+			return;
+		}
 
-			const newMessage: ChatMessage = { role: "user", content: promptText };
-			dispatch({ type: "ADD_MESSAGE", payload: newMessage });
-			await processAiResponse(promptText, [...state.messages, newMessage]);
-		},
-		[state.messages, processAiResponse]
-	);
+		const newMessage: ChatMessage = { role: "user", content: promptText };
+		dispatch({ type: "ADD_MESSAGE", payload: newMessage });
+		await processAiResponse(promptText, [...state.messages, newMessage]);
+	}
 
 	const handleSend = useCallback(
 		async (e: React.FormEvent<HTMLFormElement>) => {
