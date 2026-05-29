@@ -28,37 +28,17 @@ const nextConfig: NextConfig = {
 		return [
 			{
 				source: "/feedback",
-				destination: "https://www.ikiform.com/f/feedback-form-ag334n",
+				destination: "https://app.formations.company/f/feedback-form",
 				permanent: false,
 			},
 			{
 				source: "/feature-request",
-				destination: "https://www.ikiform.com/f/feature-request-form-zo0tg5",
+				destination: "https://app.formations.company/f/feature-request-form",
 				permanent: false,
 			},
 			{
 				source: "/bug-report",
-				destination: "https://www.ikiform.com/f/bug-report-form-82iwa5",
-				permanent: false,
-			},
-			{
-				source: "/github",
-				destination: "https://github.com/preetsuthar17/ikiform",
-				permanent: false,
-			},
-			{
-				source: "/discord",
-				destination: "https://discord.gg/jM5BgDMaGX",
-				permanent: false,
-			},
-			{
-				source: "/email",
-				destination: "mailto:hi@ikiform.com",
-				permanent: false,
-			},
-			{
-				source: "/twitter",
-				destination: "https://x.com/preetsuthar17",
+				destination: "https://app.formations.company/f/bug-report-form",
 				permanent: false,
 			},
 		];

@@ -14,6 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import type { FormSchema } from "@/lib/database";
 import type { BasicInfoSectionProps } from "../types";
 
 export function BasicInfoSection({
@@ -23,8 +24,10 @@ export function BasicInfoSection({
 	schema,
 	onSchemaUpdate,
 }: BasicInfoSectionProps & {
-	onSchemaUpdate?: (updates: Partial<unknown>) => void;
+	onSchemaUpdate?: (updates: Partial<FormSchema>) => void | Promise<void>;
 }) {
+	const schemaSettings = schema?.settings ?? localSettings;
+
 	const [basicInfo, setBasicInfo] = useState({
 		title: localSettings.title || "",
 		publicTitle: localSettings.publicTitle || "",
@@ -58,11 +61,7 @@ export function BasicInfoSection({
 			}
 		};
 		window.addEventListener("beforeunload", onBeforeUnload);
-		return () =>
-			window.removeEventListener(
-				"beforeunload",
-				onBeforeUnload as unknown as EventListener
-			);
+		return () => window.removeEventListener("beforeunload", onBeforeUnload);
 	}, [hasBasicChanges, hasBehaviorChanges]);
 
 	const handleBasicInfoChange = (field: string, value: string) => {
@@ -126,7 +125,7 @@ export function BasicInfoSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						...trimmed,
 					},
 				});
@@ -156,11 +155,11 @@ export function BasicInfoSection({
 			if (onSchemaUpdate) {
 				await onSchemaUpdate({
 					settings: {
-						...schema.settings,
+						...schemaSettings,
 						hideHeader: behaviorSettings.hideHeader,
 						rtl: behaviorSettings.rtl,
 						behavior: {
-							...schema.settings.behavior,
+							...schemaSettings.behavior,
 							autoFocusFirstField: behaviorSettings.autoFocusFirstField,
 						},
 					},

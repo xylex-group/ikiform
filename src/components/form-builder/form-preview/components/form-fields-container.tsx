@@ -115,6 +115,27 @@ export function FormFieldsContainer({
 		</DropdownMenu>
 	);
 
+	const getFieldRenderValue = (fieldId: string): unknown => {
+		const fieldValue = formData[fieldId];
+
+		if (fieldValue && typeof fieldValue === "object") {
+			if (
+				"text" in fieldValue &&
+				typeof (fieldValue as { text?: unknown }).text === "string"
+			) {
+				return (fieldValue as { text: string }).text;
+			}
+
+			try {
+				return JSON.stringify(fieldValue);
+			} catch {
+				return "";
+			}
+		}
+
+		return fieldValue;
+	};
+
 	const renderFields = showLogicCues
 		? fields
 		: fieldVisibility
@@ -315,12 +336,7 @@ export function FormFieldsContainer({
 															onChange={(value) =>
 																onFieldValueChange(field.id, value)
 															}
-															value={
-																typeof formData[field.id] === "object"
-																	? (formData[field.id].text ??
-																		JSON.stringify(formData[field.id]))
-																	: formData[field.id]
-															}
+															value={getFieldRenderValue(field.id)}
 														/>
 													</Card>
 												</div>
