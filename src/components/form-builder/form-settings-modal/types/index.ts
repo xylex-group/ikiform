@@ -1,4 +1,4 @@
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 
 export interface FormSettingsModalProps {
 	formId?: string;
@@ -240,3 +240,4 @@ export interface FormSettingsSectionConfig {
 	id: FormSettingsSection;
 	label: string;
 }
+

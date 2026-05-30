@@ -26,7 +26,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { type FormSchema, formsDb } from "@/lib/database";
+import { type FormSchema, formsDb } from "@/utils/athena/forms";
 import {
 	isRangeSliderMode,
 	normalizeRangeSliderValue,
@@ -725,3 +725,4 @@ print_r($result);
 		</Card>
 	);
 }
+

@@ -1,0 +1,36 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultFontColor Black
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam packageBorderColor Black
+skinparam componentBorderColor Black
+skinparam componentFontColor Black
+skinparam componentBackgroundColor #FFE5E5
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor Black
+
+title Athena client call shape before fix
+
+package "App routes/services" {
+  component "Auth callback" as AUTH
+  component "User API" as USER
+  component "Webhook/Form services" as SRV
+}
+
+component "Athena SDK" as ATHENA #FFF4CC
+
+AUTH --> ATHENA : from<Row,Insert,Update>(...)
+USER --> ATHENA : upsert(...).single("col1,col2")
+SRV --> ATHENA : from<Row,Insert,Update>(...)
+
+note right of ATHENA
+Compatibility issues:
+- 3 generic parameters on from(...)
+- mutation single("...") style
+
+These patterns mirror Supabase semantics,
+not Athena's preferred runtime shape.
+end note
+
+@enduml

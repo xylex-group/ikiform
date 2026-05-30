@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { FormBlock } from "@/lib/database";
+import type { FormBlock } from "@/utils/athena/forms";
 import type { BlockEditingState } from "../types";
 
 export function useBlockEditing(
@@ -69,3 +69,4 @@ export function useBlockEditing(
 		updateEditDescription,
 	};
 }
+

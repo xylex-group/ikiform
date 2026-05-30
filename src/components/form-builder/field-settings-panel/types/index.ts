@@ -1,4 +1,4 @@
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 export interface FieldSettingsPanelProps {
 	field: FormField | null;
@@ -49,3 +49,4 @@ export interface FieldHelpers {
 	isTextareaType: boolean;
 	isTextType: boolean;
 }
+

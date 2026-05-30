@@ -23,7 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { type FormSchema, formsDb } from "@/lib/database";
+import { type FormSchema, formsDb } from "@/utils/athena/forms";
 import type { LocalSettings, MetadataSectionProps } from "../types";
 
 type MetadataSettings = NonNullable<LocalSettings["metadata"]>;
@@ -849,3 +849,4 @@ export function MetadataSection({
 		</div>
 	);
 }
+

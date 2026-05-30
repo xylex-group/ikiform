@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import type { Database } from "@/lib/database/database.types";
+import type { Database } from "@/utils/athena/forms/types";
 import {
 	sendNewLoginEmail,
 	sendWelcomeEmail,
@@ -9,9 +9,7 @@ import { createAthenaAuthClient } from "@/utils/athena/auth-client";
 import { createAthenaServerClient } from "@/utils/athena/server";
 
 type UserTable = Database["public"]["Tables"]["users"];
-type UserInsert = UserTable["Insert"];
 type UserRow = UserTable["Row"];
-type UserUpdate = UserTable["Update"];
 
 const toRecord = (value: unknown): Record<string, unknown> | null =>
 	typeof value === "object" && value !== null
@@ -104,7 +102,7 @@ export async function GET(request: NextRequest) {
 						"";
 					const athena = await createAthenaServerClient();
 					const { data: existingUser } = await athena
-						.from<UserRow, UserInsert, UserUpdate>("public.users")
+						.from<UserRow>("public.users")
 						.select("email, has_premium, has_free_trial, polar_customer_id")
 						.eq("email", email)
 						.single();
@@ -139,7 +137,7 @@ export async function GET(request: NextRequest) {
 					}
 
 					const { error: upsertError } = await athena
-						.from<UserRow, UserInsert, UserUpdate>("public.users")
+						.from<UserRow>("public.users")
 						.upsert(upsertData, { onConflict: "email" });
 
 					if (!upsertError) {
@@ -162,3 +160,5 @@ export async function GET(request: NextRequest) {
 	appendSetCookieHeaders(errorResponse, setCookieHeaders);
 	return errorResponse;
 }
+
+

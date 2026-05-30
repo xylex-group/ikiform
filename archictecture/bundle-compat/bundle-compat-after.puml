@@ -23,8 +23,8 @@ rectangle "Next.js Runtime" {
   component "Forms DB API Route\n/api/forms/db" as DbApi
 }
 
-component "Client DB module\nsrc/lib/database/database.client.ts" as DbClient #86EFAC
-component "Server DB module\nsrc/lib/database/database.server.ts" as DbServer #93C5FD
+component "Client DB module\nsrc/utils/athena/forms/client.ts" as DbClient #86EFAC
+component "Server DB module\nsrc/utils/athena/forms/server.ts" as DbServer #93C5FD
 component "Client Athena Factory\nsrc/utils/athena/client.ts" as AthClient
 component "Server Athena Factory\nsrc/utils/athena/server.ts" as AthServer
 component "Admin Athena Factory\nsrc/utils/athena/admin.ts" as AthAdmin

@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import type { FormSubmission } from "@/lib/database";
-import { formsDb } from "@/lib/database";
+import type { FormSubmission } from "@/utils/athena/forms";
+import { formsDb } from "@/utils/athena/forms";
 
 export const useFormSubmissions = (formId: string) => {
 	const { user } = useAuth();
@@ -45,3 +45,4 @@ export const useFormSubmissions = (formId: string) => {
 		refreshData,
 	};
 };
+

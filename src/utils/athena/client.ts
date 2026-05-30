@@ -4,14 +4,13 @@ import {
 } from "@xylex-group/athena";
 
 const resolveAthenaDbConfig = () => {
-	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
-	const apiKey =
-		process.env.ATHENA_API_KEY || process.env.NEXT_PUBLIC_ATHENA_API_KEY;
-	const client = process.env.ATHENA_CLIENT || "ikiform-client";
+	const url = process.env.NEXT_PUBLIC_ATHENA_URL;
+	const apiKey = process.env.NEXT_PUBLIC_ATHENA_API_KEY;
+	const client = process.env.NEXT_PUBLIC_ATHENA_CLIENT || "the-ark-of-floris";
 
 	if (!(url && apiKey)) {
 		throw new Error(
-			"Missing Athena environment variables. Please check ATHENA_URL / NEXT_PUBLIC_ATHENA_URL and ATHENA_API_KEY / NEXT_PUBLIC_ATHENA_API_KEY."
+			"Missing Athena environment variables. Please check NEXT_PUBLIC_ATHENA_URL and NEXT_PUBLIC_ATHENA_API_KEY."
 		);
 	}
 
@@ -19,17 +18,12 @@ const resolveAthenaDbConfig = () => {
 };
 
 const resolveAthenaAuthConfig = () => {
-	const baseUrl =
-		process.env.ATHENA_AUTH_URL ||
-		process.env.NEXT_PUBLIC_ATHENA_AUTH_URL ||
-		process.env.ATHENA_AUTH_BASE_URL ||
-		process.env.NEXT_PUBLIC_ATHENA_AUTH_BASE_URL;
-	const bearerToken =
-		process.env.AUTH_BEARER_TOKEN || process.env.ATHENA_AUTH_BEARER_TOKEN;
+	const baseUrl = process.env.NEXT_PUBLIC_ATHENA_AUTH_URL;
+	const bearerToken = process.env.NEXT_PUBLIC_BEARER_TOKEN;
 
 	if (!baseUrl) {
 		throw new Error(
-			"Missing ATHENA_AUTH_URL. Set this to your Athena Auth server endpoint."
+			"Missing NEXT_PUBLIC_ATHENA_AUTH_URL. Set this to your Athena Auth server endpoint."
 		);
 	}
 

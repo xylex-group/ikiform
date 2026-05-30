@@ -1,7 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 import {
 	BasicSettings,
 	EmptyState,
@@ -78,3 +78,4 @@ export function FieldSettingsPanel({
 		</div>
 	);
 }
+

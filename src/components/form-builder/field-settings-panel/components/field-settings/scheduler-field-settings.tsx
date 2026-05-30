@@ -17,7 +17,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 import type { FieldSettingsProps } from "./types";
 
 type SchedulerProvider = NonNullable<
@@ -233,3 +233,4 @@ export function SchedulerFieldSettings({
 		</Card>
 	);
 }
+

@@ -1,5 +1,5 @@
 -- ============================================================================
--- Row Level Security Policies (Derived from src/lib/database/rls-policies.sql)
+-- Row Level Security Policies (Athena migration baseline)
 -- ============================================================================
 
 -- Enable RLS on all tables

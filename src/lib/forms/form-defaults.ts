@@ -1,4 +1,4 @@
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 
 export const DEFAULT_RATE_LIMIT_SETTINGS = {
 	enabled: true,
@@ -290,3 +290,4 @@ export function createDefaultFormSchema(options: {
 		},
 	};
 }
+

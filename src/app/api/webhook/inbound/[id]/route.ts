@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import type { Database } from "@/lib/database/database.types";
+import type { Database } from "@/utils/athena/forms/types";
 import {
 	deleteInboundMapping,
 	type InboundWebhookMapping,
@@ -38,7 +38,7 @@ async function validateMappingAccess(
 ): Promise<{ error?: NextResponse; mapping?: InboundMappingRow }> {
 	const athena = await createClient();
 	const { data: mapping, error: mappingError } = await athena
-		.from<InboundMappingRow, InboundMappingInsert, InboundMappingUpdate>(
+		.from<InboundMappingRow>(
 			"forms.inbound_webhook_mappings"
 		)
 		.select("id, target_form_id")
@@ -52,7 +52,7 @@ async function validateMappingAccess(
 	}
 
 	const { data: form, error: formError } = await athena
-		.from<FormRow, FormInsert, FormUpdate>("forms.forms")
+		.from<FormRow>("forms.forms")
 		.select("id, user_id")
 		.eq("id", mapping.target_form_id)
 		.eq("user_id", userId)
@@ -129,3 +129,5 @@ export async function DELETE(
 		return NextResponse.json({ error: message }, { status: 400 });
 	}
 }
+
+

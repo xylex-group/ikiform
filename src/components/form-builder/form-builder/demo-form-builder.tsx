@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
-import type { FormBlock, FormField, FormSchema } from "@/lib/database";
+import type { FormBlock, FormField, FormSchema } from "@/utils/athena/forms";
 import { createFieldFromType } from "@/lib/fields/field-config";
 import { createDefaultFormSchema } from "@/lib/forms/form-defaults";
 import { FieldPalette } from "../field-palette";
@@ -422,3 +422,4 @@ export default function DemoFormBuilder() {
 		</div>
 	);
 }
+

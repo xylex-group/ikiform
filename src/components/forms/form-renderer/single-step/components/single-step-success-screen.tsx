@@ -3,7 +3,7 @@ import type React from "react";
 import { QuizResults } from "@/components/quiz/results/quiz-results";
 import { Card } from "@/components/ui/card";
 
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import type { QuizResult } from "@/lib/quiz/scoring";
 
 interface SingleStepSuccessScreenProps {
@@ -83,3 +83,4 @@ export const SingleStepSuccessScreen: React.FC<
 		</div>
 	);
 };
+

@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import type { AppAuthUser } from "@/lib/auth/types";
-import type { Form } from "@/lib/database";
-import { formsDb } from "@/lib/database";
+import type { Form } from "@/utils/athena/forms";
+import { formsDb } from "@/utils/athena/forms";
 import type { NormalizedImportedFormData } from "@/lib/forms/import-normalize";
 import { getInternalFormTitle } from "@/lib/utils/form-utils";
 import { ConfirmationModal } from "../modals/form-delete-confirmation-modal";
@@ -422,3 +422,4 @@ export function FormsManagementClient({
 		</div>
 	);
 }
+

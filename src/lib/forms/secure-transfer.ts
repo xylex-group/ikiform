@@ -1,4 +1,4 @@
-import type { Form, FormSchema } from "@/lib/database";
+import type { Form, FormSchema } from "@/utils/athena/forms";
 
 const ENVELOPE_FORMAT = "ikiform-form-export";
 const ENVELOPE_VERSION = 1;
@@ -354,3 +354,4 @@ export async function decryptImportedFormFile(
 	assertDecryptedPayload(parsedPayload);
 	return parsedPayload;
 }
+

@@ -5,8 +5,8 @@ import {
 	DEFAULT_PROFANITY_FILTER_SETTINGS,
 	DEFAULT_RATE_LIMIT_SETTINGS,
 } from "@/lib";
-import * as formsDbServer from "@/lib/database/database.server";
-import type { FormField } from "@/lib/database/database.types";
+import * as formsDbServer from "@/utils/athena/forms/server";
+import type { FormField } from "@/utils/athena/forms/types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { validateFormApiAccess } from "@/lib/forms/api-keys";
 import {
@@ -304,3 +304,4 @@ export async function GET(
 		);
 	}
 }
+

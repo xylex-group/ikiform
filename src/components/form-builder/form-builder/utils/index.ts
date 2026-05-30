@@ -1,4 +1,4 @@
-import type { FormField, FormSchema } from "@/lib/database";
+import type { FormField, FormSchema } from "@/utils/athena/forms";
 
 import { FORM_BUILDER_CONSTANTS } from "../constants";
 
@@ -192,3 +192,4 @@ export const addFieldToSchema = (
 		fields: updatedFields,
 	};
 };
+

@@ -20,7 +20,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 
 interface JsonViewModalProps {
 	isOpen: boolean;
@@ -355,3 +355,4 @@ export function JsonViewModal({ schema, isOpen, onClose }: JsonViewModalProps) {
 		</Dialog>
 	);
 }
+

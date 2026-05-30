@@ -1,0 +1,39 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultFontColor Black
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam packageBorderColor Black
+skinparam componentBorderColor Black
+skinparam componentFontColor Black
+skinparam componentBackgroundColor #E7F7E7
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor Black
+
+title forms/types after refactor
+
+package "src/utils/athena/forms" {
+  component "types.ts" as DBT
+  component "PublicSchemaTables\n(model-derived aliases)" as PUBLIC #D9F2D9
+  component "forms.Tables\n(imported Athena model types)" as FORMS #DCEBFF
+  DBT --> PUBLIC
+  DBT --> FORMS
+}
+
+package "athena/models" {
+  component "forms/*" as AFORMS #DCEBFF
+  component "public/users.ts" as AUSER #DCEBFF
+}
+
+PUBLIC ..> AFORMS : row/insert/update source
+PUBLIC ..> AUSER : user row source
+FORMS ..> AFORMS : direct source
+
+note right of PUBLIC
+Single type source strategy:
+- public table aliases derive from Athena models
+- selective compatibility overrides kept in one place
+- lower drift and easier Athena regeneration adoption
+end note
+
+@enduml

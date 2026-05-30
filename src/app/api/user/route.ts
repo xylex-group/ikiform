@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import type { Database } from "@/lib/database/database.types";
+import type { Database } from "@/utils/athena/forms/types";
 import {
 	sendNewLoginEmail,
 	sendWelcomeEmail,
@@ -9,26 +9,33 @@ import { createClient } from "@/utils/athena/server";
 
 type UserTable = Database["public"]["Tables"]["users"];
 type UserRow = UserTable["Row"];
-type UserInsert = UserTable["Insert"];
-type UserUpdate = UserTable["Update"];
 
 const userCache = new Map<string, { data: UserRow; timestamp: number }>();
 const CACHE_TTL = 30_000;
 
 function getCachedUser(email: string): UserRow | null {
 	const cached = userCache.get(email);
+	console.log("cached", cached);
+
 	if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+		console.log("cached", cached);
 		return cached.data;
 	}
 	return null;
 }
 
 function setCachedUser(email: string, data: UserRow): void {
+	console.log("email", email);
+	console.log("data", data);
+	console.log("userCache", userCache);
 	userCache.set(email, { data, timestamp: Date.now() });
+	console.log("userCache", userCache);
+
 	if (userCache.size > 1000) {
 		const cutoff = Date.now() - CACHE_TTL;
 		for (const [key, value] of userCache.entries()) {
 			if (value.timestamp < cutoff) {
+				console.log("Deleted userCache(key)", userCache);
 				userCache.delete(key);
 			}
 		}
@@ -38,7 +45,11 @@ function setCachedUser(email: string, data: UserRow): void {
 export async function POST(request: NextRequest) {
 	try {
 		const athena = await createClient();
+		console.log("athena", athena);
+
 		const body = await request.json().catch(() => ({}));
+		console.log("body", body);
+
 		const { ensureOnly } = body;
 		void ensureOnly;
 
@@ -47,12 +58,24 @@ export async function POST(request: NextRequest) {
 			error: authError,
 		} = await athena.auth.getUser();
 
+		console.log("user", user);
+		console.log("data", user);
+
 		if (authError || !user?.email) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+			console.log("unauthorized", authError, user?.email);
+			return NextResponse.json(
+				{
+					error: "Unauthorized",
+				},
+				{
+					status: 401,
+				}
+			);
 		}
 
 		const { id: uid, email } = user;
 		const sanitizedEmail = sanitizeString(email);
+		console.log("sanitizedEmail", sanitizedEmail);
 
 		const name =
 			sanitizeString(
@@ -61,6 +84,8 @@ export async function POST(request: NextRequest) {
 					user.username ||
 					email.split("@")[0]
 			) || "";
+
+		console.log("name", name);
 
 		const cachedUser = getCachedUser(sanitizedEmail);
 		if (cachedUser) {
@@ -75,13 +100,15 @@ export async function POST(request: NextRequest) {
 		}
 
 		const { data: existingUser } = await athena
-			.from<UserRow, UserInsert, UserUpdate>("public.users")
+			.from<UserRow>("public.users")
 			.select("has_premium, has_free_trial, polar_customer_id")
 			.eq("email", sanitizedEmail)
 			.single();
 
+		console.log("existingUser", existingUser);
+
 		const { data: upsertedUser, error: upsertError } = await athena
-			.from<UserRow, UserInsert, UserUpdate>("public.users")
+			.from<UserRow>("public.users")
 			.upsert(
 				{
 					uid,
@@ -95,17 +122,23 @@ export async function POST(request: NextRequest) {
 					onConflict: "email",
 				}
 			)
-			.single(
+			.select(
 				"uid, email, name, has_premium, has_free_trial, polar_customer_id, created_at, updated_at"
-			);
+			)
+			.single();
+
+		console.log("upsertedUser", upsertedUser);
+		console.log("upsertError", upsertError);
 
 		if (upsertError) {
+			console.log("upsertError", upsertError);
 			return NextResponse.json(
 				{ error: "Failed to create/update user", details: upsertError },
 				{ status: 500 }
 			);
 		}
 		if (!upsertedUser) {
+			console.log("Failed to create/update user", upsertedUser);
 			return NextResponse.json(
 				{ error: "Failed to create/update user", details: "No user returned" },
 				{ status: 500 }
@@ -169,7 +202,7 @@ export async function GET(_request: NextRequest) {
 		}
 
 		const { data, error } = await athena
-			.from<UserRow, UserInsert, UserUpdate>("public.users")
+			.from<UserRow>("public.users")
 			.select(
 				"uid, email, name, has_premium, has_free_trial, polar_customer_id, created_at, updated_at"
 			)
@@ -212,3 +245,4 @@ export async function GET(_request: NextRequest) {
 		);
 	}
 }
+

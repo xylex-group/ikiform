@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { formsDb } from "@/lib/database";
-import type { FormSchema } from "@/lib/database/database.types";
+import { formsDb } from "@/utils/athena/forms";
+import type { FormSchema } from "@/utils/athena/forms/types";
 import { createClient } from "@/utils/athena/server";
 
 interface FormDbActionBody {
@@ -318,3 +318,4 @@ export async function GET() {
 		{ status: 405 }
 	);
 }
+

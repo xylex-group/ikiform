@@ -32,8 +32,8 @@ sql/
 
 ## How This Was Derived
 
-- Table definitions were reverse-engineered from `src/lib/database/database.types.ts`
-- RLS policies were taken from `src/lib/database/rls-policies.sql`
+- Table definitions were reverse-engineered from `src/utils/athena/forms/types.ts`
+- RLS policies were consolidated under `sql/rls/01_policies.sql`
 - Functions were derived from current PostgreSQL migration utilities and existing Athena-compatible usage patterns
 - Additional indexes were added based on common query patterns in the codebase
 

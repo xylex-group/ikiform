@@ -1,4 +1,4 @@
-import type { FormSchema as DatabaseFormSchema } from "@/lib/database";
+import type { FormSchema as DatabaseFormSchema } from "@/utils/athena/forms";
 import type { ChatMessage } from "./types";
 import { extractJsonFromText, isDatabaseFormSchema } from "./utils";
 
@@ -50,3 +50,4 @@ export class AIBuilderService {
 		}
 	}
 }
+

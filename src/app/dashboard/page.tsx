@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import type { Form } from "@/lib/database";
-import type { Database } from "@/lib/database/database.types";
+import type { Form } from "@/utils/athena/forms";
+import type { Database } from "@/utils/athena/forms/types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createClient } from "@/utils/athena/server";
 import DashboardClient from "./dashboard-client";
@@ -109,3 +109,4 @@ export default function DashboardPage() {
 		</Suspense>
 	);
 }
+

@@ -1,4 +1,4 @@
-import type { FormBlock, FormField, FormSchema } from "@/lib/database";
+import type { FormBlock, FormField, FormSchema } from "@/utils/athena/forms";
 
 export interface FormBuilderProps {
 	formId?: string;
@@ -106,3 +106,4 @@ export interface FormBuilderModalsProps {
 	showShareModal: boolean;
 	userEmail?: string;
 }
+

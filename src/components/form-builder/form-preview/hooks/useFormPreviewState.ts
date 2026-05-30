@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import type { FormField, FormSchema } from "@/lib/database";
+import type { FormField, FormSchema } from "@/utils/athena/forms";
 import {
 	isRangeSliderMode,
 	normalizeRangeSliderValue,
@@ -132,3 +132,4 @@ export function useFormPreviewState(
 		fieldVisibility,
 	};
 }
+

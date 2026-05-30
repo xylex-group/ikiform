@@ -25,7 +25,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 import type { FieldTypeConfig } from "@/lib/fields/field-config";
 import {
 	createFieldFromType,
@@ -472,3 +472,4 @@ export function FieldGroupSettings({
 		</div>
 	);
 }
+

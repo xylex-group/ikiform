@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import type { FormCustomStyles } from "@/lib/utils/form-layout";
 import { getFormCustomStyles } from "@/lib/utils/form-layout";
 import { getFontSizeValue, getFontWeightValue } from "@/lib/utils/form-styles";
@@ -176,3 +176,4 @@ export function useFormStyling(schema: FormSchema) {
 		getButtonStyles,
 	};
 }
+

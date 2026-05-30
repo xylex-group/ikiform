@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 interface ValidationSettingsProps {
 	field: FormField;
@@ -176,3 +176,4 @@ export function ValidationSettings({
 		</Card>
 	);
 }
+

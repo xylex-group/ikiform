@@ -5,7 +5,7 @@ import {
 	ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import { BlockManager } from "../../block-manager";
 import { FieldPalette } from "../../field-palette";
 import { FieldSettingsPanel } from "../../field-settings-panel";
@@ -152,3 +152,4 @@ export const FormBuilderPanels: React.FC<FormBuilderPanelsProps> = ({
 		</ResizablePanelGroup>
 	);
 };
+

@@ -11,7 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SocialMediaIcons } from "@/components/ui/social-media-icons";
 import { useFormStyling } from "@/hooks/use-form-styling";
-import type { FormBlock, FormField, FormSchema } from "@/lib/database";
+import type { FormBlock, FormField, FormSchema } from "@/utils/athena/forms";
 import {
 	isRangeSliderMode,
 	isSliderRangeValue,
@@ -720,3 +720,4 @@ export function MultiStepForm({ formId, schema, dir }: MultiStepFormProps) {
 		</div>
 	);
 }
+

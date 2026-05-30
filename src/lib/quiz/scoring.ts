@@ -1,4 +1,4 @@
-import type { FormField, FormSchema, FormSubmission } from "@/lib/database";
+import type { FormField, FormSchema, FormSubmission } from "@/utils/athena/forms";
 
 export interface QuizResult {
 	answeredQuestions: number;
@@ -270,3 +270,4 @@ export function getQuizStatistics(
 		questionStats,
 	};
 }
+

@@ -1,4 +1,4 @@
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 export type SliderMode = "single" | "range";
 
@@ -153,3 +153,4 @@ export function normalizeSliderSettings(settings?: FormField["settings"]): {
 		defaultRangeMax: rangeValue.max,
 	};
 }
+

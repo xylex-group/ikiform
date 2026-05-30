@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { type Form, formsDb } from "@/lib/database";
+import { type Form, formsDb } from "@/utils/athena/forms";
 import {
 	FormSettingsDesktopLayout,
 	FormSettingsMobileLayout,
@@ -147,3 +147,4 @@ export function FormSettingsModal({
 		</>
 	);
 }
+

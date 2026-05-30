@@ -1,4 +1,4 @@
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import type { FormProgress } from "@/lib/form-progress/types";
 import type { QuizResult } from "@/lib/quiz/scoring";
 
@@ -35,3 +35,4 @@ export interface SingleStepFormActions {
 	setSubmitted: (submitted: boolean) => void;
 	setSubmitting: (submitting: boolean) => void;
 }
+

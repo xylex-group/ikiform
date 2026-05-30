@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import {
 	DEFAULT_BEHAVIOR_SETTINGS,
 	DEFAULT_BOT_PROTECTION_SETTINGS,
@@ -285,3 +285,4 @@ export function useFormSettings(
 		resetSettings,
 	};
 }
+

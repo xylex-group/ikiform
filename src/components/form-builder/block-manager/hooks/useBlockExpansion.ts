@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { FormBlock } from "@/lib/database";
+import type { FormBlock } from "@/utils/athena/forms";
 
 export function useBlockExpansion(blocks: FormBlock[]) {
 	const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(
@@ -22,3 +22,4 @@ export function useBlockExpansion(blocks: FormBlock[]) {
 		toggleBlockExpansion,
 	};
 }
+

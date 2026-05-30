@@ -1,5 +1,5 @@
 import type { AthenaSdkClientWithAuth } from "@xylex-group/athena";
-import type { Database, FormSchema } from "@/lib/database/database.types";
+import type { Database, FormSchema } from "@/utils/athena/forms/types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createAthenaAdminClient } from "@/utils/athena/admin";
 import { createAthenaServerClient } from "@/utils/athena/server";
@@ -35,25 +35,25 @@ interface AthenaFromClient {
 }
 
 const fromForms = (athena: AthenaFromClient) =>
-	athena.from<Form, FormInsert, FormUpdate>("forms.forms");
+	athena.from<Form>("forms.forms");
 
 const fromFormSubmissions = (athena: AthenaFromClient) =>
-	athena.from<FormSubmission, FormSubmissionInsert, FormSubmissionUpdate>(
+	athena.from<FormSubmission>(
 		"forms.form_submissions"
 	);
 
 const fromAIBuilderChat = (athena: AthenaFromClient) =>
-	athena.from<AIBuilderChatRow, AIBuilderChatInsert, AIBuilderChatUpdate>(
+	athena.from<AIBuilderChatRow>(
 		"forms.ai_builder_chat"
 	);
 
 const fromAIAnalyticsChat = (athena: AthenaFromClient) =>
-	athena.from<AIAnalyticsChatRow, AIAnalyticsChatInsert, AIAnalyticsChatUpdate>(
+	athena.from<AIAnalyticsChatRow>(
 		"forms.ai_analytics_chat"
 	);
 
 const fromUsers = (athena: AthenaFromClient) =>
-	athena.from<User, UserInsert, UserUpdate>("public.users");
+	athena.from<User>("public.users");
 
 const formsDbServer = {
 	async getPublicForm(identifier: string) {
@@ -556,3 +556,5 @@ export async function updateUserProfile(
 export async function countFormSubmissions(formId: string) {
 	return formsDbServer.countFormSubmissions(formId);
 }
+
+

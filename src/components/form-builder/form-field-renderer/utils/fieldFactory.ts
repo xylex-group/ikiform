@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 import {
 	BannerField,
@@ -109,3 +109,4 @@ export function createFieldComponent(
 			return React.createElement("div", {}, "Unsupported field type");
 	}
 }
+

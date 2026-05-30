@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { FormAnalytics } from "@/components/forms/form-analytics/form-analytics";
-import type { Form } from "@/lib/database";
-import type { Database } from "@/lib/database/database.types";
+import type { Form } from "@/utils/athena/forms";
+import type { Database } from "@/utils/athena/forms/types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createClient } from "@/utils/athena/server";
 
@@ -30,7 +30,7 @@ export default async function FormAnalyticsPage({
 	}
 
 	const { data: form, error } = await athena
-		.from<FormRow, FormInsert, FormUpdate>("forms.forms")
+		.from<FormRow>("forms.forms")
 		.select("*")
 		.eq("id", id)
 		.eq("user_id", user.id)
@@ -47,3 +47,5 @@ export default async function FormAnalyticsPage({
 
 	return <FormAnalytics form={normalizedForm} />;
 }
+
+

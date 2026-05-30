@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 import { ApiEngine } from "@/lib/prepopulation/engines/api-engine";
 import { UrlEngine } from "@/lib/prepopulation/engines/url-engine";
 import type { PrepopulationResult } from "@/lib/prepopulation/types";
@@ -188,3 +188,4 @@ export function useApiPrepopulation(fields: FormField[]) {
 
 	return { prepopulatedData, loading, errors };
 }
+

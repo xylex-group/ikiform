@@ -1,6 +1,6 @@
 import { getStoredSessionToken } from "@/lib/auth/session-token";
-import type { Form, FormSubmission, User } from "@/lib/database/database";
-import type { FormSchema } from "@/lib/database/database.types";
+import type { Form, FormSubmission, User } from "@/utils/athena/forms/db";
+import type { FormSchema } from "@/utils/athena/forms/types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 
 type AnyRecord = Record<string, unknown>;
@@ -440,3 +440,4 @@ export const formsDb = {
 };
 
 export type { Form, FormSubmission, User };
+

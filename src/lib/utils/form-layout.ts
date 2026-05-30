@@ -1,4 +1,4 @@
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import {
 	getBorderRadiusValue,
 	getFontSizeValue,
@@ -176,3 +176,4 @@ export const getFormCustomStyles = async (
 
 export const getDesignModeClass = () =>
 	"bg-transparent border-none  hover:bg-transparent";
+

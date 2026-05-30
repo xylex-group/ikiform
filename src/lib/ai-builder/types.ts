@@ -1,4 +1,4 @@
-import type { FormSchema as DatabaseFormSchema } from "@/lib/database";
+import type { FormSchema as DatabaseFormSchema } from "@/utils/athena/forms";
 
 export interface ChatMessage {
 	content: string;
@@ -41,3 +41,4 @@ export interface PreviewPanelProps {
 	setActiveFormId: (id: string) => void;
 	setShowJsonModal: (v: boolean) => void;
 }
+

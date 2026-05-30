@@ -1,0 +1,30 @@
+@startuml
+title Browser Auth Bundle Boundary (Before)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #000000
+skinparam ArrowColor #000000
+skinparam componentStyle rectangle
+skinparam defaultFontName Consolas
+
+actor "Browser User" as User #DCEBFA
+component "Client Component\n(header/login/reset-password)" as Client #FDE2E2
+component "lib/auth/athena-browser-auth.ts" as BrowserAuth #FDE2E2
+component "utils/athena/auth-client.ts" as SharedAuthFactory #FDE2E2
+component "@xylex-group/athena dist/index.js" as AthenaSdk #FDE2E2
+component "Node-only deps\npg, fs/promises, net, tls, util/types" as NodeDeps #FCA5A5
+component "Next.js client bundler" as Bundler #FDE68A
+
+User --> Client : interacts with auth UI
+Client --> BrowserAuth : import + call auth methods
+BrowserAuth --> SharedAuthFactory : imports createAthenaAuthClient()
+SharedAuthFactory --> AthenaSdk : imports createClient()
+AthenaSdk --> NodeDeps : static runtime imports
+Bundler --> NodeDeps : tries to resolve for browser
+
+note right of Bundler
+Client build fails with
+\"Can't resolve fs/promises/net/tls\"
+because server runtime code
+crosses into client graph.
+end note
+@enduml

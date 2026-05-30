@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import type { LocalSettings, NotificationSettings } from "../types";
 
 interface NotificationsSectionProps {
@@ -374,3 +374,4 @@ export function NotificationsSection({
 		</Card>
 	);
 }
+

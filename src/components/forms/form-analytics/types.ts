@@ -1,4 +1,4 @@
-import type { Form, FormSubmission } from "@/lib/database";
+import type { Form, FormSubmission } from "@/utils/athena/forms";
 
 export interface FormAnalyticsProps {
 	form: Form;
@@ -142,3 +142,4 @@ export interface ChatModalProps {
 	setChatInput: (value: string) => void;
 	streamedContent: string;
 }
+

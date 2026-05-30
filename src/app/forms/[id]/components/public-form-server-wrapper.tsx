@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import { ensureDefaultRateLimitSettings } from "@/lib/forms/form-defaults";
 import PublicFormClient from "../public-form-client";
 import { FormSkeleton } from "./form-skeletons";
@@ -30,3 +30,4 @@ export default function PublicFormServerWrapper({
 		</Suspense>
 	);
 }
+

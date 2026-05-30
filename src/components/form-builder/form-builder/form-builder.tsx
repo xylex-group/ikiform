@@ -9,9 +9,9 @@ import { Drawer, DrawerContent } from "@/components/ui/drawer";
 
 import { toast } from "@/hooks/use-toast";
 
-import type { FormBlock, FormField, FormSchema } from "@/lib/database";
+import type { FormBlock, FormField, FormSchema } from "@/utils/athena/forms";
 
-import { formsDb } from "@/lib/database";
+import { formsDb } from "@/utils/athena/forms";
 import { createFieldFromType } from "@/lib/fields/field-config";
 import { FieldPalette } from "../field-palette";
 import { FieldSettingsPanel } from "../field-settings-panel";
@@ -681,3 +681,4 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 		</div>
 	);
 };
+

@@ -22,7 +22,7 @@ import { Switch } from "@/components/ui/switch";
 
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { type FormSchema, formsDb } from "@/lib/database";
+import { type FormSchema, formsDb } from "@/utils/athena/forms";
 import type { LocalSettings, SocialMediaSectionProps } from "../types";
 
 interface BrandingSectionProps extends SocialMediaSectionProps {
@@ -419,3 +419,4 @@ export function BrandingSection({
 		</Card>
 	);
 }
+

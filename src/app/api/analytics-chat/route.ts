@@ -2,7 +2,7 @@ import { cohere } from "@ai-sdk/cohere";
 import { streamText } from "ai";
 import type { NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import * as formsDbServer from "@/lib/database/database.server";
+import * as formsDbServer from "@/utils/athena/forms/server";
 import { checkRateLimit, type RateLimitSettings } from "@/lib/forms/server";
 import { requirePremium } from "@/lib/utils/premium-check";
 import {
@@ -828,3 +828,4 @@ export async function GET(): Promise<Response> {
 		}
 	);
 }
+

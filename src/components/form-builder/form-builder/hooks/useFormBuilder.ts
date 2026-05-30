@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
 
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 
-import { formsDb } from "@/lib/database";
+import { formsDb } from "@/utils/athena/forms";
 import {
 	createDefaultFormSchema,
 	ensureDefaultRateLimitSettings,
@@ -268,3 +268,4 @@ export const useFormBuilder = (formId?: string) => {
 		lastManuallySavedSchemaRef,
 	};
 };
+

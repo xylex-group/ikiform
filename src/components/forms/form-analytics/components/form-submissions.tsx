@@ -28,7 +28,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
-import type { Form, FormSubmission } from "@/lib/database";
+import type { Form, FormSubmission } from "@/utils/athena/forms";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { SubmissionDetailsModal } from "./submission-details-modal";
 
@@ -404,3 +404,4 @@ export function FormSubmissions({ form, submissions }: FormSubmissionsProps) {
 		</div>
 	);
 }
+

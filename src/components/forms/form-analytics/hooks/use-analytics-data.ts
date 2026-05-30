@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import type { Form, FormSubmission } from "@/lib/database";
+import type { Form, FormSubmission } from "@/utils/athena/forms";
 import type { AnalyticsData } from "../types";
 
 import {
@@ -114,3 +114,4 @@ export const useAnalyticsData = (
 			quizAnalytics,
 		};
 	}, [form, submissions]);
+

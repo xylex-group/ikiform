@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SocialMediaIcons } from "@/components/ui/social-media-icons";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import {
 	getBorderRadiusValue,
 	getMarginValue,
@@ -403,3 +403,4 @@ export function ActualFormPreview({
 		</div>
 	);
 }
+

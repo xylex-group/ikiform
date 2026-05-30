@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { FormSubmissions } from "@/components/forms/form-analytics/components/form-submissions";
-import type { Form, FormSubmission } from "@/lib/database";
-import type { Database } from "@/lib/database/database.types";
+import type { Form, FormSubmission } from "@/utils/athena/forms";
+import type { Database } from "@/utils/athena/forms/types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createClient } from "@/utils/athena/server";
 
@@ -37,13 +37,13 @@ export default async function FormSubmissionsPage({
 	const [{ data: form, error: formError }, { data: submissions }] =
 		await Promise.all([
 			athena
-				.from<FormRow, FormInsert, FormUpdate>("forms.forms")
+				.from<FormRow>("forms.forms")
 				.select("*")
 				.eq("id", id)
 				.eq("user_id", user.id)
 				.single(),
 			athena
-				.from<FormSubmissionRow, FormSubmissionInsert, FormSubmissionUpdate>(
+				.from<FormSubmissionRow>(
 					"forms.form_submissions"
 				)
 				.select("*")
@@ -67,3 +67,5 @@ export default async function FormSubmissionsPage({
 		/>
 	);
 }
+
+

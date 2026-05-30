@@ -22,7 +22,7 @@ import {
 	Type,
 	Upload,
 } from "lucide-react";
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 export interface FieldTypeConfig {
 	canBeGrouped?: boolean;
@@ -333,3 +333,4 @@ export const FIELD_CATEGORIES = {
 	layout: "Layout Fields",
 	advanced: "Advanced Fields",
 } as const;
+

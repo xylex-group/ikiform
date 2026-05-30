@@ -9,7 +9,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import type { Form, FormSubmission } from "@/lib/database";
+import type { Form, FormSubmission } from "@/utils/athena/forms";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 
 function getDropoffCounts(form: Form, submissions: FormSubmission[]) {
@@ -178,3 +178,4 @@ export const DropoffAnalytics: React.FC<DropoffAnalyticsProps> = ({
 		</Card>
 	);
 };
+

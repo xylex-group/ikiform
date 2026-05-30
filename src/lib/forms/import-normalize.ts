@@ -1,4 +1,4 @@
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import { sanitizeString } from "@/lib/utils/sanitize";
 import { ensureDefaultFormSettings } from "./form-defaults";
 import type { DecryptedFormPayloadV1 } from "./secure-transfer";
@@ -138,3 +138,4 @@ export function applySensitiveImportPolicy(
 
 	return ensureDefaultFormSettings(nextSchema);
 }
+

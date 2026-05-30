@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import type { WebhookEventType } from "@/lib/database/database.types";
+import type { WebhookEventType } from "@/utils/athena/forms/types";
 import { deleteWebhook, updateWebhook } from "@/lib/webhooks/outbound";
 import { createClient } from "@/utils/athena/server";
 
@@ -85,3 +85,4 @@ export async function DELETE(
 		return NextResponse.json({ error: message }, { status: 400 });
 	}
 }
+

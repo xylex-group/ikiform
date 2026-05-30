@@ -1,5 +1,5 @@
 import { Label } from "@/components/ui/label";
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 import type { BaseFieldProps } from "../types";
 
@@ -125,3 +125,4 @@ export function FieldGroupField({
 		</div>
 	);
 }
+

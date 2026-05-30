@@ -1,4 +1,4 @@
-import type { Database } from "@/lib/database/database.types";
+import type { Database } from "@/utils/athena/forms/types";
 import { createAthenaAdminClient } from "@/utils/athena/admin";
 
 type InboundWebhookMappingRow =
@@ -142,3 +142,4 @@ export async function deleteInboundMapping(id: string): Promise<void> {
 		throw new Error(error);
 	}
 }
+

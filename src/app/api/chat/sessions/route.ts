@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import * as formsDbServer from "@/lib/database/database.server";
+import * as formsDbServer from "@/utils/athena/forms/server";
 import { requirePremium } from "@/lib/utils/premium-check";
 import { createClient } from "@/utils/athena/server";
 
@@ -108,3 +108,4 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 		);
 	}
 }
+

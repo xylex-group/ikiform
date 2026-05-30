@@ -1,10 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
-import type { Database } from "@/lib/database/database.types";
+import type { Database } from "@/utils/athena/forms/types";
 import { createAthenaServerClient } from "@/utils/athena/server";
 
 type FormTable = Database["forms"]["Tables"]["forms"];
 type FormRow = FormTable["Row"];
-type FormInsert = FormTable["Insert"];
 type FormUpdate = FormTable["Update"];
 
 interface ApiKeyResponse {
@@ -41,14 +40,15 @@ async function updateFormApiSetting(
 ): Promise<boolean> {
 	const athena = await createAthenaServerClient();
 	const { data: form, error } = await athena
-		.from<FormRow, FormInsert, FormUpdate>("forms.forms")
+		.from<FormRow>("forms.forms")
 		.update({
 			...updates,
 			updated_at: new Date().toISOString(),
 		})
 		.eq("id", formId)
 		.eq("user_id", userId)
-		.single("id");
+		.select("id")
+		.single();
 
 	if (error || !form) {
 		return false;
@@ -153,3 +153,5 @@ export async function DELETE(
 
 	return NextResponse.json<ApiKeyResponse>({ success: true });
 }
+
+

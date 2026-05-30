@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
-import type { Form, FormSubmission } from "@/lib/database";
+import type { Form, FormSubmission } from "@/utils/athena/forms";
 import type { AnalyticsData, ChatMessage } from "../types";
 
 import { generateSessionId } from "../utils/analytics";
@@ -219,3 +219,4 @@ export const useAnalyticsChat = (
 		handleStopGeneration,
 	};
 };
+

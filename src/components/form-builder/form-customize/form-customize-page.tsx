@@ -10,8 +10,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import type { FormSchema } from "@/lib/database";
-import { formsDb } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
+import { formsDb } from "@/utils/athena/forms";
 import { getInternalFormTitle } from "@/lib/utils/form-utils";
 
 import {
@@ -359,3 +359,4 @@ export function FormCustomizePage({ formId, schema }: FormCustomizePageProps) {
 		</div>
 	);
 }
+

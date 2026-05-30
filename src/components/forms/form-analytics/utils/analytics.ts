@@ -1,4 +1,4 @@
-import type { Form, FormSubmission } from "@/lib/database";
+import type { Form, FormSubmission } from "@/utils/athena/forms";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { calculateQuizScore } from "@/lib/quiz/scoring";
 import type {
@@ -450,3 +450,4 @@ export const calculateQuizAnalytics = (
 		questionAnalytics,
 	};
 };
+

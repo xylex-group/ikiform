@@ -1,4 +1,4 @@
-import type { FormBlock } from "@/lib/database";
+import type { FormBlock } from "@/utils/athena/forms";
 import type { DragEndResult } from "../types";
 
 export const handleBlockReorder = (
@@ -36,3 +36,4 @@ export const getBlockStats = (blocks: FormBlock[]) => {
 
 export const canDeleteBlock = (blocks: FormBlock[]): boolean =>
 	blocks.length > 1;
+

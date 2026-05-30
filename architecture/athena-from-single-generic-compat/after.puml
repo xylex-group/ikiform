@@ -1,0 +1,34 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultFontColor Black
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam packageBorderColor Black
+skinparam componentBorderColor Black
+skinparam componentFontColor Black
+skinparam componentBackgroundColor #E3F6E3
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor Black
+
+title Athena client call shape after fix
+
+package "App routes/services" {
+  component "Auth callback" as AUTH
+  component "User API" as USER
+  component "Webhook/Form services" as SRV
+}
+
+component "Athena SDK" as ATHENA #EAF6FF
+
+AUTH --> ATHENA : from<Row>(...)
+USER --> ATHENA : upsert(...).select("...").single()
+SRV --> ATHENA : from<Row>(...)
+
+note right of ATHENA
+Compatibility aligned:
+- single generic from<Row>(...)
+- explicit select(...).single() on mutations
+- consistent Athena query-chain style
+end note
+
+@enduml

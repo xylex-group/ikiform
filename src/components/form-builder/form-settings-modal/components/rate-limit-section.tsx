@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import type { RateLimitSectionProps } from "../types";
 
 export function RateLimitSection({
@@ -446,3 +446,4 @@ function RateLimitField({
 		</div>
 	);
 }
+

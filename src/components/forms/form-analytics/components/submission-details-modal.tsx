@@ -8,7 +8,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import type { Form, FormSubmission } from "@/lib/database";
+import type { Form, FormSubmission } from "@/utils/athena/forms";
 import { formatDate, getFieldLabel } from "../utils";
 
 interface SubmissionDetailsModalProps {
@@ -97,3 +97,4 @@ export function SubmissionDetailsModal({
 		</Dialog>
 	);
 }
+

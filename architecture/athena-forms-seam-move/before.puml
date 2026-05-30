@@ -1,0 +1,36 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultFontColor Black
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam packageBorderColor Black
+skinparam componentBorderColor Black
+skinparam componentFontColor Black
+skinparam componentBackgroundColor #FFE9E9
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor Black
+
+title Before: legacy lib/database seam
+
+package "src/lib/database" {
+  component "database.ts" as DB
+  component "database.server.ts" as DBS
+  component "database.client.ts" as DBC
+  component "database.types.ts" as DBT
+  component "index.ts" as IDX
+}
+
+package "App modules" {
+  component "pages/routes/components" as APP
+}
+
+APP --> IDX : import "@/lib/database"
+APP --> DBS : import "@/lib/database/database.server"
+APP --> DBT : import "@/lib/database/database.types"
+
+note right of DBT
+Supabase-era naming and structure
+still visible at core imports.
+end note
+
+@enduml

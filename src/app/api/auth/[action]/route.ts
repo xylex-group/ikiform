@@ -51,8 +51,16 @@ const createAuthRouteClient = (request: NextRequest) => {
 	): Promise<Response> => {
 		const headers = new Headers(init?.headers as HeadersInit | undefined);
 		const incomingCookie = request.headers.get("cookie");
+		const incomingAuthorization = request.headers.get("authorization");
+		const incomingBearer = request.headers.get("x-athena-auth-bearer");
 		if (incomingCookie) {
 			headers.set("cookie", incomingCookie);
+		}
+		if (incomingAuthorization && !headers.has("authorization")) {
+			headers.set("authorization", incomingAuthorization);
+		}
+		if (incomingBearer && !headers.has("x-athena-auth-bearer")) {
+			headers.set("x-athena-auth-bearer", incomingBearer);
 		}
 		const response = await fetch(input, { ...init, headers });
 		authResponse = response;

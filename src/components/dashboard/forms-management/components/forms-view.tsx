@@ -1,5 +1,5 @@
 import { memo } from "react";
-import type { Form } from "@/lib/database";
+import type { Form } from "@/utils/athena/forms";
 import { FormsList } from "./forms-list";
 
 interface FormsViewProps {
@@ -38,3 +38,4 @@ export const FormsView = memo(function FormsView({
 		</section>
 	);
 });
+

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 interface FileFieldSettingsProps {
 	field: FormField;
@@ -405,3 +405,4 @@ export function FileFieldSettings({
 		</Card>
 	);
 }
+

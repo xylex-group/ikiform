@@ -27,7 +27,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Form } from "@/lib/database";
+import type { Form } from "@/utils/athena/forms";
 import { getInternalFormTitle, getPublicFormTitle } from "@/lib/utils/form-utils";
 import { formatDate } from "../utils";
 
@@ -385,3 +385,4 @@ export const FormsList = memo(function FormsList({
 		</>
 	);
 });
+

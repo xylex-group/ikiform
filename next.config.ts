@@ -2,6 +2,11 @@ import { withBotId } from "botid/next/config";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	// Prevent Turbopack from inferring a higher workspace root when multiple lockfiles exist.
+	turbopack: {
+		root: process.cwd(),
+	},
+
 	// Athena has server-only dependencies (pg, fs, etc.). This tells Next.js not to bundle them on the client.
 	serverExternalPackages: [
 		"@xylex-group/athena",

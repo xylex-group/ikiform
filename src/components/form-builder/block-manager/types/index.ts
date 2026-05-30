@@ -1,4 +1,4 @@
-import type { FormBlock, FormField } from "@/lib/database";
+import type { FormBlock, FormField } from "@/utils/athena/forms";
 
 export interface BlockManagerProps {
 	blocks: FormBlock[];
@@ -83,3 +83,4 @@ export interface DragEndResult {
 		index: number;
 	};
 }
+

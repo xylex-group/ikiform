@@ -1,5 +1,5 @@
 import type { RefObject } from "react";
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 export interface FormFieldRendererProps {
 	builderMode?: boolean;
@@ -34,3 +34,4 @@ export interface BaseFieldProps {
 export type FieldSize = "sm" | "lg" | "default";
 export type FieldVariant = "filled" | "ghost" | "underline" | "default";
 export type FieldWidth = "half" | "third" | "quarter" | "full";
+

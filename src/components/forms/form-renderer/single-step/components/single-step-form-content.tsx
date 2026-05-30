@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { SocialMediaIcons } from "@/components/ui/social-media-icons";
 import { useFormStyling } from "@/hooks/use-form-styling";
-import type { FormField, FormSchema } from "@/lib/database";
+import type { FormField, FormSchema } from "@/utils/athena/forms";
 import { getPublicFormTitle } from "@/lib/utils/form-utils";
 import { DuplicateSubmissionError } from "./duplicate-submission-error";
 
@@ -169,3 +169,4 @@ export const SingleStepFormContent: React.FC<SingleStepFormContentProps> = ({
 		</div>
 	);
 };
+

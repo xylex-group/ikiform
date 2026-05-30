@@ -1,5 +1,5 @@
 import type { AthenaSdkClientWithAuth } from "@xylex-group/athena";
-import type { Database, FormSchema } from "@/lib/database/database.types";
+import type { Database, FormSchema } from "@/utils/athena/forms/types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { db as athenaDb } from "@/utils/athena/client";
 
@@ -57,20 +57,20 @@ function setCache(key: string, data: unknown): void {
 const getAthenaClient = async (): Promise<AthenaSdkClientWithAuth> => db;
 
 const fromForms = (athena: AthenaSdkClientWithAuth) =>
-	athena.from<Form, FormInsert, FormUpdate>("forms.forms");
+	athena.from<Form>("forms.forms");
 
 const fromFormSubmissions = (athena: AthenaSdkClientWithAuth) =>
-	athena.from<FormSubmission, FormSubmissionInsert, FormSubmissionUpdate>(
+	athena.from<FormSubmission>(
 		"forms.form_submissions"
 	);
 
 const fromAIBuilderChat = (athena: AthenaSdkClientWithAuth) =>
-	athena.from<AIBuilderChatRow, AIBuilderChatInsert, AIBuilderChatUpdate>(
+	athena.from<AIBuilderChatRow>(
 		"forms.ai_builder_chat"
 	);
 
 const fromAIAnalyticsChat = (athena: AthenaSdkClientWithAuth) =>
-	athena.from<AIAnalyticsChatRow, AIAnalyticsChatInsert, AIAnalyticsChatUpdate>(
+	athena.from<AIAnalyticsChatRow>(
 		"forms.ai_analytics_chat"
 	);
 
@@ -795,3 +795,5 @@ export const formsDb = {
 		keysToDelete.forEach((key) => cache.delete(key));
 	},
 };
+
+

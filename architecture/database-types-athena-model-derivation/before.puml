@@ -1,0 +1,39 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultFontColor Black
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam packageBorderColor Black
+skinparam componentBorderColor Black
+skinparam componentFontColor Black
+skinparam componentBackgroundColor #FFF4D6
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor Black
+
+title database.types before refactor
+
+package "src/lib/database" {
+  component "database.types.ts" as DBT
+  component "public.Tables\n(handwritten Row/Insert/Update)" as PUBLIC #FFE6CC
+  component "forms.Tables\n(imported Athena model types)" as FORMS #E8F4FF
+  DBT --> PUBLIC
+  DBT --> FORMS
+}
+
+package "athena/models" {
+  component "forms/*" as AFORMS #E8F4FF
+  component "public/users.ts" as AUSER #E8F4FF
+}
+
+FORMS ..> AFORMS : uses
+PUBLIC ..> AUSER : partial use only
+PUBLIC ..> AFORMS : duplicated field logic
+
+note right of PUBLIC
+Manual typing drift risk:
+- duplicated shapes
+- mixed required/optional semantics
+- schema-specific drift over time
+end note
+
+@enduml

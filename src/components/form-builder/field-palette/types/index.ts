@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { FormField, FormSchema } from "@/lib/database";
+import type { FormField, FormSchema } from "@/utils/athena/forms";
 
 export interface FieldPaletteProps {
 	compact?: boolean;
@@ -29,3 +29,4 @@ export interface PaletteHeaderProps {
 	description: string;
 	title: string;
 }
+

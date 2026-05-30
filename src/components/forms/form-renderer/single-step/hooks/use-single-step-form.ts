@@ -3,7 +3,7 @@ import { useFormProgress } from "@/hooks/form-progress";
 import { usePrepopulation } from "@/hooks/prepopulation/usePrepopulation";
 import { toast } from "@/hooks/use-toast";
 
-import type { FormField, FormSchema } from "@/lib/database";
+import type { FormField, FormSchema } from "@/utils/athena/forms";
 import {
 	isRangeSliderMode,
 	normalizeRangeSliderValue,
@@ -327,3 +327,4 @@ export const useSingleStepForm = (
 		clearProgress,
 	};
 };
+

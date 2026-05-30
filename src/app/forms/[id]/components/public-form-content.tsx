@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { Suspense, useEffect } from "react";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import { CSSPropertiesProvider } from "./css-properties-provider";
 import { FormSkeleton } from "./form-skeletons";
 
@@ -127,3 +127,4 @@ export default function PublicFormContent({
 		</CSSPropertiesProvider>
 	);
 }
+

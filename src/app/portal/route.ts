@@ -1,6 +1,6 @@
 import { CustomerPortal } from "@polar-sh/nextjs";
 import type { NextRequest } from "next/server";
-import type { Database } from "@/lib/database/database.types";
+import type { Database } from "@/utils/athena/forms/types";
 import { createClient } from "@/utils/athena/server";
 
 type UserTable = Database["public"]["Tables"]["users"];
@@ -26,7 +26,7 @@ export const GET = CustomerPortal({
 			}
 
 			const { data, error } = await athena
-				.from<UserRow, UserInsert, UserUpdate>("public.users")
+				.from<UserRow>("public.users")
 				.select("polar_customer_id")
 				.eq("email", user.email)
 				.single();
@@ -43,3 +43,5 @@ export const GET = CustomerPortal({
 		}
 	},
 });
+
+

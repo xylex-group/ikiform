@@ -33,7 +33,7 @@ At that point we will:
 - Identify the 10–15 most frequent / expensive queries (forms list, submission pagination, webhook logs, AI chat history, admin stats).
 - Run gateway-compatible EXPLAIN-style analysis.
 - Apply the skill's patterns: eliminate N+1, add proper composite/partial/covering indexes on `user_id + created_at`, `form_id + submitted_at`, etc., replace OFFSET pagination with cursor where high volume, use `requireAffected` + count guards, etc.
-- Produce concrete DDL recommendations and updated query variants inside `src/lib/database/database.ts`.
+- Produce concrete DDL recommendations and updated query variants inside `src/utils/athena/forms/db.ts`.
 
 This ensures the migration not only preserves functionality but improves long-term performance and maintainability behind the Athena HTTP gateway.
 

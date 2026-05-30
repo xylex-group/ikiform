@@ -1,6 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 
-import type { Form, FormSubmission } from "@/lib/database";
+import type { Form, FormSubmission } from "@/utils/athena/forms";
 
 export const exportToJSON = (form: Form, submissions: FormSubmission[]) => {
 	const exportData = {
@@ -97,3 +97,4 @@ export const exportToCSV = (form: Form, submissions: FormSubmission[]) => {
 
 	toast.success("Data exported to CSV successfully!");
 };
+

@@ -40,14 +40,17 @@ export async function createAthenaServerClient() {
 		.getAll()
 		.map((c) => `${c.name}=${c.value}`)
 		.join("; ");
+
 	const authorizationHeader = headerStore.get("authorization");
 	const requestBearerToken = authorizationHeader?.startsWith("Bearer ")
 		? authorizationHeader.slice("Bearer ".length).trim()
 		: null;
 	const { baseUrl, bearerToken } = resolveAthenaAuthConfig();
+	console.log("baseUrl", baseUrl);
+	console.log("bearerToken", bearerToken);
 
 	const dbClient = createAthenaSdkClient(url, apiKey, {
-		client: process.env.ATHENA_CLIENT || "ikiform-server",
+		client: process.env.ATHENA_CLIENT || "the-ark-of-floris",
 		backend: { type: "athena" },
 		headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
 		auth: {

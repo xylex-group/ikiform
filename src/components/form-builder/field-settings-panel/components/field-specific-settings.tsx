@@ -1,5 +1,5 @@
 import type React from "react";
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 import { EmailValidationSettings } from "./email-validation-settings";
 import {
 	AddressFieldSettings,
@@ -74,3 +74,4 @@ export function FieldSpecificSettings({
 		/>
 	);
 }
+

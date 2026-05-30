@@ -1,4 +1,4 @@
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 import { FIELD_TYPES } from "../constants";
 
@@ -130,3 +130,4 @@ export const getPlaceholderText = (
 			return "";
 	}
 };
+

@@ -1,4 +1,4 @@
-import type { FormField, FormSchema } from "@/lib/database";
+import type { FormField, FormSchema } from "@/utils/athena/forms";
 
 import {
 	isRangeSliderMode,
@@ -184,3 +184,4 @@ export const submitSingleStepForm = async (
 		};
 	}
 };
+

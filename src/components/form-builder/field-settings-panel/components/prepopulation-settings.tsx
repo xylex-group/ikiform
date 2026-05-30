@@ -14,7 +14,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 
 type Prepopulation = NonNullable<FormField["prepopulation"]>;
 type PrepopulationConfig = Prepopulation["config"];
@@ -487,3 +487,4 @@ export function PrepopulationSettings({
 		</Card>
 	);
 }
+

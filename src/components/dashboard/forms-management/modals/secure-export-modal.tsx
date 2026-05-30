@@ -19,7 +19,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
-import type { Form } from "@/lib/database";
+import type { Form } from "@/utils/athena/forms";
 import { exportFormSecure } from "@/lib/forms/secure-transfer";
 import { getInternalFormTitle } from "@/lib/utils/form-utils";
 
@@ -323,3 +323,4 @@ export function SecureExportModal({
 		</Dialog>
 	);
 }
+

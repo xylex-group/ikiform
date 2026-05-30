@@ -1,3 +1,4 @@
+import "server-only";
 import { type AthenaAuthBindings, createClient } from "@xylex-group/athena";
 
 interface CreateAthenaAuthClientOptions {
@@ -12,16 +13,10 @@ interface CreateAthenaAuthClientOptions {
 export function createAthenaAuthClient(
 	options: CreateAthenaAuthClientOptions = {}
 ): AthenaAuthBindings {
-	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
-	const apiKey =
-		process.env.ATHENA_API_KEY || process.env.NEXT_PUBLIC_ATHENA_API_KEY;
-	const baseUrl =
-		process.env.ATHENA_AUTH_URL ||
-		process.env.NEXT_PUBLIC_ATHENA_AUTH_URL ||
-		process.env.ATHENA_AUTH_BASE_URL ||
-		process.env.NEXT_PUBLIC_ATHENA_AUTH_BASE_URL;
-	const bearerToken =
-		process.env.AUTH_BEARER_TOKEN || process.env.ATHENA_AUTH_BEARER_TOKEN;
+	const url = process.env.NEXT_PUBLIC_ATHENA_URL;
+	const apiKey = process.env.NEXT_PUBLIC_ATHENA_API_KEY;
+	const baseUrl = process.env.NEXT_PUBLIC_ATHENA_AUTH_URL;
+	const bearerToken = process.env.AUTH_BEARER_TOKEN;
 
 	if (!baseUrl) {
 		throw new Error(
@@ -36,7 +31,7 @@ export function createAthenaAuthClient(
 	}
 
 	return createClient(url, apiKey, {
-		client: process.env.ATHENA_CLIENT || "ikiform-auth",
+		client: process.env.ATHENA_CLIENT || "the-ark-of-floris",
 		backend: { type: "athena" },
 		...(options.headers ? { headers: options.headers } : {}),
 		auth: {

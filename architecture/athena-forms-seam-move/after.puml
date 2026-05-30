@@ -1,0 +1,36 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultFontColor Black
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam packageBorderColor Black
+skinparam componentBorderColor Black
+skinparam componentFontColor Black
+skinparam componentBackgroundColor #E6F7E6
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor Black
+
+title After: Athena-native forms seam
+
+package "src/utils/athena/forms" {
+  component "db.ts" as DB
+  component "server.ts" as DBS
+  component "client.ts" as DBC
+  component "types.ts" as DBT
+  component "index.ts" as IDX
+}
+
+package "App modules" {
+  component "pages/routes/components" as APP
+}
+
+APP --> IDX : import "@/utils/athena/forms"
+APP --> DBS : import "@/utils/athena/forms/server"
+APP --> DBT : import "@/utils/athena/forms/types"
+
+note right of DBT
+No legacy database module path.
+Athena naming is the only public seam.
+end note
+
+@enduml

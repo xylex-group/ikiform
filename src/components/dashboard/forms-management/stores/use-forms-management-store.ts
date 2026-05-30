@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Form } from "@/lib/database";
+import type { Form } from "@/utils/athena/forms";
 import { DEFAULT_DELETE_MODAL_STATE } from "../constants";
 import type { DeleteModalState } from "../types";
 
@@ -70,3 +70,4 @@ export const useFormsManagementStore = create<FormsManagementStore>((set) => ({
 	setSortBy: (sortBy) => set({ sortBy }),
 	setStatusFilter: (statusFilter) => set({ statusFilter }),
 }));
+

@@ -1,7 +1,7 @@
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import type { FormBlock } from "@/lib/database";
+import type { FormBlock } from "@/utils/athena/forms";
 
 import type { DragEndResult } from "../types";
 import { canDeleteBlock, handleBlockReorder } from "../utils";
@@ -96,3 +96,4 @@ export function BlocksList({
 		</ScrollArea>
 	);
 }
+

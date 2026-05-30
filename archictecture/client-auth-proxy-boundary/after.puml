@@ -1,0 +1,30 @@
+@startuml
+title Browser Auth Bundle Boundary (After)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #000000
+skinparam ArrowColor #000000
+skinparam componentStyle rectangle
+skinparam defaultFontName Consolas
+
+actor "Browser User" as User #DCEBFA
+component "Client Component\n(header/login/reset-password)" as Client #DCFCE7
+component "lib/auth/athena-browser-auth.ts\n(browser proxy)" as BrowserAuth #DCFCE7
+component "Route Handler\n/api/auth/[action]" as AuthApiRoute #DBEAFE
+component "utils/athena/auth-client.ts\nimport \"server-only\"" as ServerAuthFactory #E0E7FF
+component "@xylex-group/athena dist/index.js\n(server runtime only)" as AthenaSdk #E0E7FF
+component "Node-only deps\npg, fs/promises, net, tls, util/types" as NodeDeps #BFDBFE
+
+User --> Client : interacts with auth UI
+Client --> BrowserAuth : call auth methods
+BrowserAuth --> AuthApiRoute : POST /api/auth/{action}\ncredentials include
+AuthApiRoute --> ServerAuthFactory : createAthenaAuthClient({ fetch })
+ServerAuthFactory --> AthenaSdk : server-side import
+AthenaSdk --> NodeDeps : resolved on server only
+
+note right of BrowserAuth
+No direct import of @xylex-group/athena
+in the browser bundle.
+Session token remains client-managed
+and auth calls stay proxied through Next API.
+end note
+@enduml

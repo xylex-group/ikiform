@@ -1,4 +1,4 @@
-import type { FormSchema as DatabaseFormSchema } from "@/lib/database";
+import type { FormSchema as DatabaseFormSchema } from "@/utils/athena/forms";
 
 export const generateSessionId = () =>
 	`ai-builder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -54,3 +54,4 @@ export const initializeScrollbarStyles = () => {
 		document.head.appendChild(style);
 	}
 };
+

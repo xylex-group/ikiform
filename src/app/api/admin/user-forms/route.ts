@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import type { Database } from "@/lib/database/database.types";
+import type { Database } from "@/utils/athena/forms/types";
 import { createClient as createAdminClient } from "@/utils/athena/admin";
 import { createClient } from "@/utils/athena/server";
 
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 		const adminAthena = createAdminClient();
 
 		const { data: forms, error: formsError } = await adminAthena
-			.from<FormRow, FormInsert, FormUpdate>("forms.forms")
+			.from<FormRow>("forms.forms")
 			.select("*")
 			.eq("user_id", userId)
 			.order("created_at", { ascending: false });
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 
 		if (formIds.length > 0) {
 			const { data: submissions, error: submissionsError } = await adminAthena
-				.from<SubmissionRow, SubmissionInsert, SubmissionUpdate>(
+				.from<SubmissionRow>(
 					"forms.form_submissions"
 				)
 				.select("form_id")
@@ -88,3 +88,5 @@ export async function GET(request: NextRequest) {
 		);
 	}
 }
+
+

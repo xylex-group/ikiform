@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 
 const PublicFormContent = dynamic(
 	() => import("./components/public-form-content"),
@@ -27,3 +27,4 @@ export default function PublicFormClient({
 		</Suspense>
 	);
 }
+

@@ -1,4 +1,4 @@
-import type { Form } from "@/lib/database";
+import type { Form } from "@/utils/athena/forms";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 
 export function getTotalFields(form: Form): number {
@@ -33,3 +33,4 @@ export async function copyToClipboard(text: string): Promise<void> {
 	const { copyToClipboard: robustCopy } = await import("@/lib/utils/clipboard");
 	await robustCopy(text);
 }
+

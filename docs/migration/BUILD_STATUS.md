@@ -5,11 +5,11 @@
 The repository does **not** currently produce a completely clean production build due to bundling issues with `@xylex-group/athena`.
 
 ### Root Cause
-The `@xylex-group/athena` package (v1.9.0) has transitive dependencies on server-only modules (notably `pg` / Postgres driver). Next.js bundler attempts to include these in client bundles when Athena clients are imported from files that are used in both server and client contexts (e.g., `src/lib/database/database.ts` being imported by analytics components).
+The `@xylex-group/athena` package (v1.9.0) has transitive dependencies on server-only modules (notably `pg` / Postgres driver). Next.js bundler attempts to include these in client bundles when Athena clients are imported from files that are used in both server and client contexts (e.g., `src/utils/athena/forms/db.ts` being imported by analytics components).
 
 ### Workarounds Attempted
 - `serverExternalPackages: ["@xylex-group/athena"]` in next.config.ts
-- Athena client factories are now split under `src/lib/athena/*` and `src/utils/athena/*`
+- Athena client factories are now split under `src/utils/athena/*`, with form-domain DB seams under `src/utils/athena/forms/*`
 
 These reduced the error surface significantly but did not eliminate it completely in the current package version.
 

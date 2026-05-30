@@ -1,4 +1,4 @@
-import type { Form } from "@/lib/database";
+import type { Form } from "@/utils/athena/forms";
 
 export interface FormsManagementProps {
 	className?: string;
@@ -71,3 +71,4 @@ export interface AISuggestion {
 	summary: string;
 	title: string;
 }
+

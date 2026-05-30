@@ -1,4 +1,4 @@
-import type { FormBlock, FormField, FormSchema } from "@/lib/database";
+import type { FormBlock, FormField, FormSchema } from "@/utils/athena/forms";
 
 export interface FormPreviewProps {
 	onAddField?: (fieldType: FormField["type"]) => void;
@@ -69,3 +69,4 @@ export interface EditableFieldProps {
 	rows?: number;
 	value: string;
 }
+

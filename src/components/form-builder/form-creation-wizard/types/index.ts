@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 
 export interface FormCreationWizardProps {
 	isOpen: boolean;
@@ -41,3 +41,4 @@ export interface FormConfigurationStepProps {
 	configuration: FormConfiguration;
 	onConfigurationChange: (config: Partial<FormConfiguration>) => void;
 }
+

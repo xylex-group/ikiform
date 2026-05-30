@@ -1,4 +1,4 @@
-import type { FormField } from "@/lib/database";
+import type { FormField } from "@/utils/athena/forms";
 import type { FieldSize, FieldVariant, FieldWidth } from "../types";
 
 export const getWidthClass = (width?: FieldWidth) => {
@@ -58,3 +58,4 @@ export const getErrorRingClasses = (error?: string) =>
 
 export { applyBuilderMode, getBuilderMode } from "./builderMode";
 export { createFieldComponent } from "./fieldFactory";
+

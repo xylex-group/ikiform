@@ -40,7 +40,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
-import { type FormSubmission, formsDb } from "@/lib/database";
+import { type FormSubmission, formsDb } from "@/utils/athena/forms";
 
 import {
 	AnalyticsCards,
@@ -571,3 +571,4 @@ export function FormAnalytics({ form }: FormAnalyticsProps) {
 		</div>
 	);
 }
+

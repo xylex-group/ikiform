@@ -1,6 +1,6 @@
 import { useParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { FormSchema } from "@/lib/database";
+import type { FormSchema } from "@/utils/athena/forms";
 import { ApiSection } from "../sections/api-section";
 import type { FormSettingsSection, LocalSettings } from "../types";
 import { BasicInfoSection } from "./basic-info-section";
@@ -248,3 +248,4 @@ export function FormSettingsContent({
 			return null;
 	}
 }
+

@@ -43,6 +43,9 @@ import type {
 	FormsWebhooksRow,
 	FormsWebhooksUpdate,
 } from "../../../athena/models/forms/webhooks";
+import type {
+	PublicUsersRow,
+} from "../../../athena/models/public/users";
 
 export type Json =
 	| string
@@ -51,6 +54,181 @@ export type Json =
 	| null
 	| { [key: string]: Json | undefined }
 	| Json[];
+
+type TableRecord<Row, Insert, Update> = {
+	Row: Row;
+	Insert: Insert;
+	Update: Update;
+};
+
+type LegacyChatRole = "user" | "assistant" | "system";
+
+type PublicFormsRow = Omit<FormsFormsRow, "schema" | "api_enabled"> & {
+	api_enabled?: boolean;
+	schema: FormSchema;
+};
+type PublicFormsInsert = Partial<PublicFormsRow> &
+	Pick<PublicFormsRow, "schema" | "title" | "user_id">;
+type PublicFormsUpdate = Partial<PublicFormsRow>;
+
+type PublicFormSubmissionsInsert = Partial<FormsFormSubmissionsRow> &
+	Pick<FormsFormSubmissionsRow, "form_id" | "submission_data">;
+
+type PublicAiBuilderChatRow = Omit<FormsAiBuilderChatRow, "metadata" | "role"> & {
+	metadata: Record<string, unknown>;
+	role: LegacyChatRole;
+};
+type PublicAiBuilderChatInsert = Partial<PublicAiBuilderChatRow> &
+	Pick<PublicAiBuilderChatRow, "content" | "role" | "session_id" | "user_id">;
+
+type PublicAiAnalyticsChatRow = Omit<
+	FormsAiAnalyticsChatRow,
+	"metadata" | "role"
+> & {
+	metadata: Record<string, unknown>;
+	role: LegacyChatRole;
+};
+type PublicAiAnalyticsChatInsert = Partial<PublicAiAnalyticsChatRow> &
+	Pick<
+		PublicAiAnalyticsChatRow,
+		"content" | "form_id" | "role" | "session_id" | "user_id"
+	>;
+
+type PublicUsersLegacyRow = Pick<
+	PublicUsersRow,
+	| "created_at"
+	| "has_free_trial"
+	| "has_premium"
+	| "polar_customer_id"
+	| "uid"
+	| "updated_at"
+> & {
+	email: string;
+	name: string;
+};
+type PublicUsersLegacyInsert = Partial<PublicUsersLegacyRow> &
+	Pick<PublicUsersLegacyRow, "email" | "name" | "uid">;
+
+type PublicInboundWebhookMappingsRow = Omit<
+	FormsInboundWebhookMappingsRow,
+	"mapping_rules"
+> & {
+	mapping_rules: Json;
+};
+type PublicInboundWebhookMappingsInsert =
+	Partial<PublicInboundWebhookMappingsRow> &
+		Pick<PublicInboundWebhookMappingsRow, "endpoint" | "target_form_id">;
+
+type PublicRedemptionCodesRow = Omit<FormsRedemptionCodesRow, "metadata"> & {
+	metadata?: Json | null;
+};
+type PublicRedemptionCodesInsert = Partial<PublicRedemptionCodesRow> &
+	Pick<PublicRedemptionCodesRow, "code">;
+
+type PublicWebhookLogsRow = Omit<
+	FormsWebhookLogsRow,
+	"event" | "request_payload" | "status"
+> & {
+	event: WebhookEventType;
+	request_payload: unknown;
+	status: "failed" | "pending" | "success";
+};
+type PublicWebhookLogsInsert = Partial<PublicWebhookLogsRow> &
+	Pick<PublicWebhookLogsRow, "event" | "status">;
+
+type PublicWebhooksRow = Omit<
+	FormsWebhooksRow,
+	"headers" | "method" | "notify_on_failure" | "notify_on_success"
+> & {
+	headers: Json;
+	method: "POST" | "PUT";
+	notify_on_failure: boolean;
+	notify_on_success: boolean;
+};
+type PublicWebhooksInsert = Partial<PublicWebhooksRow> &
+	Pick<PublicWebhooksRow, "events" | "method" | "url">;
+
+type PublicSchemaTables = {
+	ai_analytics_chat: TableRecord<
+		PublicAiAnalyticsChatRow,
+		PublicAiAnalyticsChatInsert,
+		Partial<PublicAiAnalyticsChatRow>
+	>;
+	ai_builder_chat: TableRecord<
+		PublicAiBuilderChatRow,
+		PublicAiBuilderChatInsert,
+		Partial<PublicAiBuilderChatRow>
+	>;
+	form_submissions: TableRecord<
+		FormsFormSubmissionsRow,
+		PublicFormSubmissionsInsert,
+		FormsFormSubmissionsUpdate
+	>;
+	forms: TableRecord<PublicFormsRow, PublicFormsInsert, PublicFormsUpdate>;
+	inbound_webhook_mappings: TableRecord<
+		PublicInboundWebhookMappingsRow,
+		PublicInboundWebhookMappingsInsert,
+		Partial<PublicInboundWebhookMappingsRow>
+	> & {
+		Relationships: [
+			{
+				columns: ["target_form_id"];
+				foreignKeyName: "inbound_webhook_mappings_target_form_id_fkey";
+				isOneToOne: false;
+				referencedColumns: ["id"];
+				referencedRelation: "forms";
+			},
+		];
+	};
+	redemption_codes: TableRecord<
+		PublicRedemptionCodesRow,
+		PublicRedemptionCodesInsert,
+		Partial<PublicRedemptionCodesRow>
+	>;
+	users: TableRecord<
+		PublicUsersLegacyRow,
+		PublicUsersLegacyInsert,
+		Partial<PublicUsersLegacyRow>
+	>;
+	waitlist: TableRecord<FormsWaitlistRow, FormsWaitlistInsert, FormsWaitlistUpdate>;
+	webhook_logs: TableRecord<
+		PublicWebhookLogsRow,
+		PublicWebhookLogsInsert,
+		Partial<PublicWebhookLogsRow>
+	> & {
+		Relationships: [
+			{
+				columns: ["webhook_id"];
+				foreignKeyName: "webhook_logs_webhook_id_fkey";
+				isOneToOne: false;
+				referencedColumns: ["id"];
+				referencedRelation: "webhooks";
+			},
+		];
+	};
+	webhooks: TableRecord<
+		PublicWebhooksRow,
+		PublicWebhooksInsert,
+		Partial<PublicWebhooksRow>
+	> & {
+		Relationships: [
+			{
+				columns: ["account_id"];
+				foreignKeyName: "webhooks_account_id_fkey";
+				isOneToOne: false;
+				referencedColumns: ["uid"];
+				referencedRelation: "users";
+			},
+			{
+				columns: ["form_id"];
+				foreignKeyName: "webhooks_form_id_fkey";
+				isOneToOne: false;
+				referencedColumns: ["id"];
+				referencedRelation: "forms";
+			},
+		];
+	};
+};
 
 export interface Database {
 	__InternalAthena: {
@@ -138,395 +316,7 @@ export interface Database {
 		};
 	};
 	public: {
-		Tables: {
-			forms: {
-				Row: {
-					id: string;
-					user_id: string;
-					title: string;
-					description: string | null;
-					slug?: string | null;
-					schema: FormSchema;
-					is_published: boolean;
-					created_at: string;
-					updated_at: string;
-					api_key?: string | null;
-					api_enabled?: boolean;
-				};
-				Insert: {
-					id?: string;
-					user_id: string;
-					title: string;
-					description?: string | null;
-					slug?: string | null;
-					schema: FormSchema;
-					is_published?: boolean;
-					created_at?: string;
-					updated_at?: string;
-					api_key?: string | null;
-					api_enabled?: boolean;
-				};
-				Update: {
-					id?: string;
-					user_id?: string;
-					title?: string;
-					description?: string | null;
-					slug?: string | null;
-					schema?: FormSchema;
-					is_published?: boolean;
-					created_at?: string;
-					updated_at?: string;
-					api_key?: string | null;
-					api_enabled?: boolean;
-				};
-			};
-			form_submissions: {
-				Row: {
-					id: string;
-					form_id: string;
-					submission_data: Record<string, unknown>;
-					submitted_at: string;
-					ip_address: string | null;
-				};
-				Insert: {
-					id?: string;
-					form_id: string;
-					submission_data: Record<string, unknown>;
-					submitted_at?: string;
-					ip_address?: string | null;
-				};
-				Update: {
-					id?: string;
-					form_id?: string;
-					submission_data?: Record<string, unknown>;
-					submitted_at?: string;
-					ip_address?: string | null;
-				};
-			};
-			ai_builder_chat: {
-				Row: {
-					id: string;
-					user_id: string;
-					session_id: string;
-					role: "user" | "assistant" | "system";
-					content: string;
-					metadata: Record<string, unknown>;
-					created_at: string;
-					updated_at: string;
-				};
-				Insert: {
-					id?: string;
-					user_id: string;
-					session_id: string;
-					role: "user" | "assistant" | "system";
-					content: string;
-					metadata?: Record<string, unknown>;
-					created_at?: string;
-					updated_at?: string;
-				};
-				Update: {
-					id?: string;
-					user_id?: string;
-					session_id?: string;
-					role?: "user" | "assistant" | "system";
-					content?: string;
-					metadata?: Record<string, unknown>;
-					created_at?: string;
-					updated_at?: string;
-				};
-			};
-			ai_analytics_chat: {
-				Row: {
-					id: string;
-					user_id: string;
-					form_id: string;
-					session_id: string;
-					role: "user" | "assistant" | "system";
-					content: string;
-					metadata: Record<string, unknown>;
-					created_at: string;
-					updated_at: string;
-				};
-				Insert: {
-					id?: string;
-					user_id: string;
-					form_id: string;
-					session_id: string;
-					role: "user" | "assistant" | "system";
-					content: string;
-					metadata?: Record<string, unknown>;
-					created_at?: string;
-					updated_at?: string;
-				};
-				Update: {
-					id?: string;
-					user_id?: string;
-					form_id?: string;
-					session_id?: string;
-					role?: "user" | "assistant" | "system";
-					content?: string;
-					metadata?: Record<string, unknown>;
-					created_at?: string;
-					updated_at?: string;
-				};
-			};
-			users: {
-				Row: {
-					uid: string;
-					name: string;
-					email: string;
-					has_premium: boolean;
-					has_free_trial: boolean;
-					polar_customer_id: string | null;
-					created_at: string;
-					updated_at: string;
-				};
-				Insert: {
-					uid: string;
-					name: string;
-					email: string;
-					has_premium?: boolean;
-					has_free_trial?: boolean;
-					polar_customer_id?: string | null;
-					created_at?: string;
-					updated_at?: string;
-				};
-				Update: {
-					uid?: string;
-					name?: string;
-					email?: string;
-					has_premium?: boolean;
-					has_free_trial?: boolean;
-					polar_customer_id?: string | null;
-					created_at?: string;
-					updated_at?: string;
-				};
-			};
-			inbound_webhook_mappings: {
-				Row: {
-					created_at: string;
-					enabled: boolean;
-					endpoint: string;
-					id: string;
-					mapping_rules: Json;
-					secret: string | null;
-					target_form_id: string;
-					updated_at: string;
-				};
-				Insert: {
-					created_at?: string;
-					enabled?: boolean;
-					endpoint: string;
-					id?: string;
-					mapping_rules?: Json;
-					secret?: string | null;
-					target_form_id: string;
-					updated_at?: string;
-				};
-				Update: {
-					created_at?: string;
-					enabled?: boolean;
-					endpoint?: string;
-					id?: string;
-					mapping_rules?: Json;
-					secret?: string | null;
-					target_form_id?: string;
-					updated_at?: string;
-				};
-				Relationships: [
-					{
-						foreignKeyName: "inbound_webhook_mappings_target_form_id_fkey";
-						columns: ["target_form_id"];
-						isOneToOne: false;
-						referencedRelation: "forms";
-						referencedColumns: ["id"];
-					},
-				];
-			};
-			redemption_codes: {
-				Row: {
-					code: string;
-					created_at: string | null;
-					current_uses: number | null;
-					expires_at: string | null;
-					id: string;
-					is_active: boolean | null;
-					max_uses: number | null;
-					metadata: Json | null;
-					redeemed_at: string | null;
-					redeemer_email: string | null;
-					redeemer_user_id: string | null;
-					updated_at: string | null;
-				};
-				Insert: {
-					code: string;
-					created_at?: string | null;
-					current_uses?: number | null;
-					expires_at?: string | null;
-					id?: string;
-					is_active?: boolean | null;
-					max_uses?: number | null;
-					metadata?: Json | null;
-					redeemed_at?: string | null;
-					redeemer_email?: string | null;
-					redeemer_user_id?: string | null;
-					updated_at?: string | null;
-				};
-				Update: {
-					code?: string;
-					created_at?: string | null;
-					current_uses?: number | null;
-					expires_at?: string | null;
-					id?: string;
-					is_active?: boolean | null;
-					max_uses?: number | null;
-					metadata?: Json | null;
-					redeemed_at?: string | null;
-					redeemer_email?: string | null;
-					redeemer_user_id?: string | null;
-					updated_at?: string | null;
-				};
-			};
-			waitlist: {
-				Row: {
-					created_at: string;
-					email: string;
-					id: number;
-				};
-				Insert: {
-					created_at?: string;
-					email: string;
-					id?: number;
-				};
-				Update: {
-					created_at?: string;
-					email?: string;
-					id?: number;
-				};
-			};
-			webhook_logs: {
-				Row: {
-					attempt: number;
-					error: string | null;
-					event: string;
-					id: string;
-					request_payload: Json | null;
-					response_body: string | null;
-					response_status: number | null;
-					status: string;
-					timestamp: string;
-					webhook_id: string | null;
-				};
-				Insert: {
-					attempt?: number;
-					error?: string | null;
-					event: string;
-					id?: string;
-					request_payload?: Json | null;
-					response_body?: string | null;
-					response_status?: number | null;
-					status: string;
-					timestamp?: string;
-					webhook_id?: string | null;
-				};
-				Update: {
-					attempt?: number;
-					error?: string | null;
-					event?: string;
-					id?: string;
-					request_payload?: Json | null;
-					response_body?: string | null;
-					response_status?: number | null;
-					status?: string;
-					timestamp?: string;
-					webhook_id?: string | null;
-				};
-				Relationships: [
-					{
-						foreignKeyName: "webhook_logs_webhook_id_fkey";
-						columns: ["webhook_id"];
-						isOneToOne: false;
-						referencedRelation: "webhooks";
-						referencedColumns: ["id"];
-					},
-				];
-			};
-			webhooks: {
-				Row: {
-					account_id: string | null;
-					name: string | null;
-					description: string | null;
-					created_at: string;
-					enabled: boolean;
-					events: string[];
-					form_id: string | null;
-					headers: Json;
-					id: string;
-					method: string;
-					notification_email: string | null;
-					notify_on_failure: boolean;
-					notify_on_success: boolean;
-					payload_template: string | null;
-					secret: string | null;
-					updated_at: string;
-					url: string;
-				};
-				Insert: {
-					account_id?: string | null;
-					name?: string | null;
-					description?: string | null;
-					created_at?: string;
-					enabled?: boolean;
-					events: string[];
-					form_id?: string | null;
-					headers?: Json;
-					id?: string;
-					method: string;
-					notification_email?: string | null;
-					notify_on_failure?: boolean;
-					notify_on_success?: boolean;
-					payload_template?: string | null;
-					secret?: string | null;
-					updated_at?: string;
-					url: string;
-				};
-				Update: {
-					account_id?: string | null;
-					name?: string | null;
-					description?: string | null;
-					created_at?: string;
-					enabled?: boolean;
-					events?: string[];
-					form_id?: string | null;
-					headers?: Json;
-					id?: string;
-					method?: string;
-					notification_email?: string | null;
-					notify_on_failure?: boolean;
-					notify_on_success?: boolean;
-					payload_template?: string | null;
-					secret?: string | null;
-					updated_at?: string;
-					url?: string;
-				};
-				Relationships: [
-					{
-						foreignKeyName: "webhooks_account_id_fkey";
-						columns: ["account_id"];
-						isOneToOne: false;
-						referencedRelation: "users";
-						referencedColumns: ["uid"];
-					},
-					{
-						foreignKeyName: "webhooks_form_id_fkey";
-						columns: ["form_id"];
-						isOneToOne: false;
-						referencedRelation: "forms";
-						referencedColumns: ["id"];
-					},
-				];
-			};
-		};
+		Tables: PublicSchemaTables;
 		Views: {
 			[_ in never]: never;
 		};
@@ -942,3 +732,4 @@ export interface WebhookLog {
 	timestamp: string;
 	webhook_id: string;
 }
+
