@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
@@ -45,6 +45,8 @@ function useIsMobile() {
 
 export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const hasHandledSettingsQuery = useRef(false);
 	const {
 		state,
 		actions,
@@ -59,6 +61,21 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 	const isMobile = useIsMobile();
 	const [showFieldPalette, setShowFieldPalette] = useState(false);
 	const [showFieldSettings, setShowFieldSettings] = useState(false);
+
+	useEffect(() => {
+		const shouldOpenSettings =
+			formId &&
+			searchParams.get("settings") === "1" &&
+			!hasHandledSettingsQuery.current;
+
+		if (!shouldOpenSettings) {
+			return;
+		}
+
+		hasHandledSettingsQuery.current = true;
+		actions.setShowFormSettings(true);
+		router.replace(`/form-builder/${formId}`);
+	}, [actions, formId, router, searchParams]);
 
 	const handleFieldSelect = useCallback(
 		(fieldId: string | null) => {
@@ -237,6 +254,35 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 		} catch (error) {
 			console.error("Error saving form:", error);
 			toast.error("Failed to save form. Please try again.");
+		} finally {
+			actions.setSaving(false);
+		}
+	};
+
+	const openSettings = async () => {
+		if (formId) {
+			actions.setShowFormSettings(true);
+			return;
+		}
+
+		if (!user) {
+			toast.error("Please log in to save your form.");
+			return;
+		}
+
+		actions.setSaving(true);
+		try {
+			const newForm = await formsDb.createForm(
+				user.id,
+				state.formSchema.settings.title,
+				state.formSchema
+			);
+			removeDraftFromStorage(DRAFT_KEYS.getDraftKey(formId));
+			router.push(`/form-builder/${newForm.id}?settings=1`);
+			toast.success("Form created successfully!");
+		} catch (error) {
+			console.error("Error creating form for settings:", error);
+			toast.error("Failed to create form. Please try again.");
 		} finally {
 			actions.setSaving(false);
 		}
@@ -436,7 +482,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 						onModeToggle={handleModeToggle}
 						onPublish={togglePublish}
 						onSave={saveForm}
-						onSettings={() => actions.setShowFormSettings(true)}
+						onSettings={openSettings}
 						onShare={shareForm}
 						publishing={state.publishing}
 						saving={state.saving}
@@ -554,7 +600,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ formId }) => {
 				onModeToggle={handleModeToggle}
 				onPublish={togglePublish}
 				onSave={saveForm}
-				onSettings={() => actions.setShowFormSettings(true)}
+				onSettings={openSettings}
 				onShare={shareForm}
 				publishing={state.publishing}
 				saving={state.saving}

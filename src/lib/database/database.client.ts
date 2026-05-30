@@ -1,3 +1,4 @@
+import { getStoredSessionToken } from "@/lib/auth/session-token";
 import type { Form, FormSubmission, User } from "@/lib/database/database";
 import type { FormSchema } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
@@ -35,11 +36,18 @@ function setCache<T>(key: string, data: T): void {
 }
 
 async function callDb<T>(action: string, args: unknown[] = []): Promise<T> {
+	const sessionToken = getStoredSessionToken();
+	const requestHeaders: Record<string, string> = {
+		"Content-Type": "application/json",
+	};
+
+	if (sessionToken) {
+		requestHeaders.Authorization = `Bearer ${sessionToken}`;
+	}
+
 	const response = await fetch(API_PATH, {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
+		headers: requestHeaders,
 		body: JSON.stringify({ action, args }),
 		credentials: "same-origin",
 		cache: "no-store",

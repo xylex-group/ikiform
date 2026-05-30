@@ -110,7 +110,7 @@ export function FormSettingsModal({
 						</Button>
 					</DialogHeader>
 					<div className="mb-12 min-h-0 p-4 md:mb-0">
-						{formId || (onSchemaUpdate && onSchemaUpdate !== undefined) ? (
+						{formId ? (
 							<>
 								<FormSettingsDesktopLayout
 									activeSection={activeSection}

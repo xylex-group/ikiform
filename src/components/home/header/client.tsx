@@ -469,8 +469,8 @@ export function HeaderClient({ primaryLinks }: HeaderClientProps) {
 		const auth = athenaBrowserAuth;
 
 		const fetchUser = async () => {
-			const result = await auth.getSession();
-			const sessionUser = result.ok ? result.data?.session?.user : null;
+			const result = await auth.getUser();
+			const sessionUser = result.data.user;
 			dispatchAuth({
 				type: "set-auth",
 				user: sessionUser ?? null,

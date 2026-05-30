@@ -2,7 +2,6 @@ import {
 	type AthenaSdkClientWithAuth,
 	createClient as createAthenaSdkClient,
 } from "@xylex-group/athena";
-import { createAthenaAuthClient } from "./auth-client";
 
 const resolveAthenaDbConfig = () => {
 	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
@@ -19,12 +18,36 @@ const resolveAthenaDbConfig = () => {
 	return { apiKey, client, url };
 };
 
+const resolveAthenaAuthConfig = () => {
+	const baseUrl =
+		process.env.ATHENA_AUTH_URL ||
+		process.env.NEXT_PUBLIC_ATHENA_AUTH_URL ||
+		process.env.ATHENA_AUTH_BASE_URL ||
+		process.env.NEXT_PUBLIC_ATHENA_AUTH_BASE_URL;
+	const bearerToken =
+		process.env.AUTH_BEARER_TOKEN || process.env.ATHENA_AUTH_BEARER_TOKEN;
+
+	if (!baseUrl) {
+		throw new Error(
+			"Missing ATHENA_AUTH_URL. Set this to your Athena Auth server endpoint."
+		);
+	}
+
+	return { baseUrl, bearerToken };
+};
+
 const createAthenaDbClient = (): AthenaSdkClientWithAuth => {
 	const { apiKey, client, url } = resolveAthenaDbConfig();
+	const { baseUrl, bearerToken } = resolveAthenaAuthConfig();
 
 	return createAthenaSdkClient(url, apiKey, {
 		client,
 		backend: { type: "athena" },
+		auth: {
+			baseUrl,
+			credentials: "include",
+			...(bearerToken ? { bearerToken } : {}),
+		},
 	});
 };
 
@@ -34,8 +57,7 @@ const createAthenaDbClient = (): AthenaSdkClientWithAuth => {
  */
 export function createAthenaClient() {
 	const dbClient = createAthenaDbClient();
-
-	const authClient = createAthenaAuthClient();
+	const authClient = dbClient.auth;
 	type SignInEmailInput = Parameters<typeof authClient.signIn.email>[0];
 	type SignUpEmailInput = Parameters<typeof authClient.signUp.email>[0];
 	type SignInSocialInput = Parameters<typeof authClient.signIn.social>[0];

@@ -292,10 +292,23 @@ export default function LoginForm() {
 		setLastLoginMethod(provider);
 		toast(`Logging in with ${provider === "google" ? "Google" : "GitHub"}`);
 		const auth = await getAuthClient();
-		await auth.signIn.social({
+		const result = await auth.signIn.social({
 			provider,
 			redirectTo: `${window.location.origin}/auth/callback`,
 		});
+
+		if (!result.ok) {
+			toast.error(getAuthErrorMessage(result.error));
+			return;
+		}
+
+		const maybeRedirectData =
+			result.data && typeof result.data === "object"
+				? (result.data as { redirect?: boolean; url?: string | null })
+				: null;
+		if (maybeRedirectData?.redirect && maybeRedirectData.url) {
+			window.location.href = maybeRedirectData.url;
+		}
 	}, []);
 
 	const renderInput = useCallback(

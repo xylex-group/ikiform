@@ -1,6 +1,23 @@
 import { createClient as createAthenaSdkClient } from "@xylex-group/athena";
-import { cookies } from "next/headers";
-import { createAthenaAuthClient } from "./auth-client";
+import { cookies, headers } from "next/headers";
+
+const resolveAthenaAuthConfig = () => {
+	const baseUrl =
+		process.env.ATHENA_AUTH_URL ||
+		process.env.NEXT_PUBLIC_ATHENA_AUTH_URL ||
+		process.env.ATHENA_AUTH_BASE_URL ||
+		process.env.NEXT_PUBLIC_ATHENA_AUTH_BASE_URL;
+	const bearerToken =
+		process.env.AUTH_BEARER_TOKEN || process.env.ATHENA_AUTH_BEARER_TOKEN;
+
+	if (!baseUrl) {
+		throw new Error(
+			"Missing ATHENA_AUTH_URL. Set this to your Athena Auth server endpoint."
+		);
+	}
+
+	return { baseUrl, bearerToken };
+};
 
 /**
  * Server-side composite client with both DB and Auth surfaces.
@@ -8,6 +25,7 @@ import { createAthenaAuthClient } from "./auth-client";
  */
 export async function createAthenaServerClient() {
 	const cookieStore = await cookies();
+	const headerStore = await headers();
 
 	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
 	const apiKey = process.env.ATHENA_API_KEY;
@@ -22,16 +40,28 @@ export async function createAthenaServerClient() {
 		.getAll()
 		.map((c) => `${c.name}=${c.value}`)
 		.join("; ");
+	const authorizationHeader = headerStore.get("authorization");
+	const requestBearerToken = authorizationHeader?.startsWith("Bearer ")
+		? authorizationHeader.slice("Bearer ".length).trim()
+		: null;
+	const { baseUrl, bearerToken } = resolveAthenaAuthConfig();
 
 	const dbClient = createAthenaSdkClient(url, apiKey, {
 		client: process.env.ATHENA_CLIENT || "ikiform-server",
 		backend: { type: "athena" },
 		headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
+		auth: {
+			baseUrl,
+			credentials: "include",
+			...(cookieHeader ? { headers: { Cookie: cookieHeader } } : {}),
+			...(requestBearerToken
+				? { bearerToken: requestBearerToken }
+				: bearerToken
+					? { bearerToken }
+					: {}),
+		},
 	});
-
-	const authClient = createAthenaAuthClient({
-		...(cookieHeader ? { headers: { Cookie: cookieHeader } } : {}),
-	});
+	const authClient = dbClient.auth;
 
 	return {
 		from: dbClient.from.bind(dbClient),

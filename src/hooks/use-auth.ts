@@ -18,8 +18,8 @@ export function useAuth() {
 	useEffect(() => {
 		const fetchUser = async () => {
 			const auth = await getAuthClient();
-			const result = await auth.getSession();
-			const sessionUser = result.ok ? result.data?.session?.user : null;
+			const result = await auth.getUser();
+			const sessionUser = result.data.user;
 
 			setUser(
 				sessionUser

@@ -18,15 +18,60 @@ const toRecord = (value: unknown): Record<string, unknown> | null =>
 		? (value as Record<string, unknown>)
 		: null;
 
+const appendSetCookieHeaders = (
+	nextResponse: NextResponse,
+	setCookieHeaders: Set<string>
+) => {
+	for (const cookieHeader of setCookieHeaders) {
+		nextResponse.headers.append("set-cookie", cookieHeader);
+	}
+};
+
 export async function GET(request: NextRequest) {
 	const { searchParams, origin } = new URL(request.url);
 	const code = searchParams.get("code");
+	const state = searchParams.get("state");
+	const provider = searchParams.get("provider");
 	const next = searchParams.get("next") ?? "/dashboard";
+	const setCookieHeaders = new Set<string>();
+
+	const fetchWithCookieCapture: typeof fetch = async (
+		input: RequestInfo | URL,
+		init?: RequestInit
+	): Promise<Response> => {
+		const headers = new Headers(init?.headers as HeadersInit | undefined);
+		const incomingCookie = request.headers.get("cookie");
+
+		if (incomingCookie) {
+			headers.set("cookie", incomingCookie);
+		}
+
+		const response = await fetch(input, { ...init, headers });
+		for (const cookieHeader of response.headers.getSetCookie()) {
+			setCookieHeaders.add(cookieHeader);
+		}
+		return response;
+	};
 
 	if (code) {
-		const auth = createAthenaAuthClient();
-		// Athena Auth typically handles the OAuth callback on its side.
-		// We fetch the resulting session here.
+		const auth = createAthenaAuthClient({ fetch: fetchWithCookieCapture });
+
+		if (provider && state) {
+			const callbackResult = await auth.callback.provider({
+				provider,
+				code,
+				state,
+			});
+
+			if (!callbackResult.ok) {
+				const errorResponse = NextResponse.redirect(
+					`${origin}/auth/auth-code-error`
+				);
+				appendSetCookieHeaders(errorResponse, setCookieHeaders);
+				return errorResponse;
+			}
+		}
+
 		const sessionResult = await auth.getSession();
 
 		if (sessionResult.ok && sessionResult.data) {
@@ -107,9 +152,13 @@ export async function GET(request: NextRequest) {
 				}
 			}
 
-			return NextResponse.redirect(`${origin}${next}`);
+			const successResponse = NextResponse.redirect(`${origin}${next}`);
+			appendSetCookieHeaders(successResponse, setCookieHeaders);
+			return successResponse;
 		}
 	}
 
-	return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+	const errorResponse = NextResponse.redirect(`${origin}/auth/auth-code-error`);
+	appendSetCookieHeaders(errorResponse, setCookieHeaders);
+	return errorResponse;
 }
