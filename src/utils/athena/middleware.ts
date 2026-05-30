@@ -37,7 +37,8 @@ export async function updateAthenaSession(
 			request.nextUrl.pathname.startsWith("/legal") ||
 			request.nextUrl.pathname.startsWith("/auth") ||
 			request.nextUrl.pathname.startsWith("/f/") || // public form embeds
-			request.nextUrl.pathname.startsWith("/forms/");
+			request.nextUrl.pathname.startsWith("/forms/") ||
+			request.nextUrl.pathname.startsWith("/auth/sign-in");
 
 		if (!(user || isPublicPath)) {
 			const url = request.nextUrl.clone();

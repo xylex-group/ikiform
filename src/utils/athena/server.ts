@@ -2,13 +2,8 @@ import { createClient as createAthenaSdkClient } from "@xylex-group/athena";
 import { cookies, headers } from "next/headers";
 
 const resolveAthenaAuthConfig = () => {
-	const baseUrl =
-		process.env.ATHENA_AUTH_URL ||
-		process.env.NEXT_PUBLIC_ATHENA_AUTH_URL ||
-		process.env.ATHENA_AUTH_BASE_URL ||
-		process.env.NEXT_PUBLIC_ATHENA_AUTH_BASE_URL;
-	const bearerToken =
-		process.env.AUTH_BEARER_TOKEN || process.env.ATHENA_AUTH_BEARER_TOKEN;
+	const baseUrl = process.env.ATHENA_AUTH_URL;
+	const bearerToken = process.env.AUTH_BEARER_TOKEN;
 
 	if (!baseUrl) {
 		throw new Error(
@@ -27,12 +22,12 @@ export async function createAthenaServerClient() {
 	const cookieStore = await cookies();
 	const headerStore = await headers();
 
-	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
+	const url = process.env.ATHENA_URL;
 	const apiKey = process.env.ATHENA_API_KEY;
 
 	if (!(url && apiKey)) {
 		throw new Error(
-			"Missing Athena environment variables. Please check ATHENA_URL / NEXT_PUBLIC_ATHENA_URL and ATHENA_API_KEY."
+			"Missing Athena environment variables. Please check ATHENA_URL and ATHENA_API_KEY."
 		);
 	}
 
