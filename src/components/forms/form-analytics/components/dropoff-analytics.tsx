@@ -10,9 +10,11 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import type { Form, FormSubmission } from "@/lib/database";
+import { ensureDefaultFormSettings } from "@/lib/forms";
 
 function getDropoffCounts(form: Form, submissions: FormSubmission[]) {
-	const blocks = form.schema.blocks || [];
+	const schema = ensureDefaultFormSettings(form.schema);
+	const blocks = schema.blocks;
 	const blockIds = blocks.map((block) => block.id);
 	const dropoffCounts: Record<string, number> = {};
 	blockIds.forEach((id) => (dropoffCounts[id] = 0));
@@ -46,7 +48,8 @@ export const DropoffAnalytics: React.FC<DropoffAnalyticsProps> = ({
 	form,
 	submissions,
 }) => {
-	if (!form.schema?.blocks || form.schema.blocks.length === 0) {
+	const schema = ensureDefaultFormSettings(form.schema);
+	if (schema.blocks.length === 0) {
 		return (
 			<Card className="p-4 shadow-none md:p-6">
 				<CardHeader className="flex items-center gap-4 p-0">
@@ -95,7 +98,7 @@ export const DropoffAnalytics: React.FC<DropoffAnalyticsProps> = ({
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{form.schema.blocks.map((block, idx: number) => {
+						{schema.blocks.map((block, idx: number) => {
 							const reached = dropoffCounts[block.id] || 0;
 							const dropoff =
 								total > 0 ? 100 - Math.round((reached / total) * 100) : 0;

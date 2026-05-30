@@ -125,86 +125,116 @@ export const DEFAULT_TYPOGRAPHY_SETTINGS = {
 	letterSpacing: "normal" as const,
 };
 
-export function ensureDefaultFormSettings(schema: FormSchema): FormSchema {
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return value !== null && typeof value === "object";
+}
+
+function toFormSchema(schema: unknown): FormSchema {
+	if (!isRecord(schema)) {
+		return createDefaultFormSchema({});
+	}
+
+	const blocks = Array.isArray(schema.blocks)
+		? (schema.blocks as FormSchema["blocks"])
+		: [];
+	const fields = Array.isArray(schema.fields)
+		? (schema.fields as FormSchema["fields"])
+		: [];
+	const settings = isRecord(schema.settings)
+		? (schema.settings as FormSchema["settings"])
+		: ({} as FormSchema["settings"]);
+
 	return {
-		...schema,
+		...(schema as Partial<FormSchema>),
+		blocks,
+		fields,
+		settings,
+	} as FormSchema;
+}
+
+export function ensureDefaultFormSettings(schema: unknown): FormSchema {
+	const normalizedSchema = toFormSchema(schema);
+
+	return {
+		...normalizedSchema,
 		settings: {
-			title: schema.settings?.title || "Untitled Form",
-			publicTitle: schema.settings?.publicTitle || "",
-			description: schema.settings?.description || "",
-			submitText: schema.settings?.submitText || "Submit",
+			title: normalizedSchema.settings?.title || "Untitled Form",
+			publicTitle: normalizedSchema.settings?.publicTitle || "",
+			description: normalizedSchema.settings?.description || "",
+			submitText: normalizedSchema.settings?.submitText || "Submit",
 			successMessage:
-				schema.settings?.successMessage || "Thank you for your submission!",
-			redirectUrl: schema.settings?.redirectUrl || "",
-			multiStep: schema.settings?.multiStep,
-			showProgress: schema.settings?.showProgress !== false,
-			hideHeader: schema.settings?.hideHeader,
+				normalizedSchema.settings?.successMessage ||
+				"Thank you for your submission!",
+			redirectUrl: normalizedSchema.settings?.redirectUrl || "",
+			multiStep: normalizedSchema.settings?.multiStep,
+			showProgress: normalizedSchema.settings?.showProgress !== false,
+			hideHeader: normalizedSchema.settings?.hideHeader,
 			colors: {
 				...DEFAULT_COLOR_SETTINGS,
-				...schema.settings?.colors,
+				...normalizedSchema.settings?.colors,
 			},
 			typography: {
 				...DEFAULT_TYPOGRAPHY_SETTINGS,
-				...schema.settings?.typography,
+				...normalizedSchema.settings?.typography,
 			},
 			branding: {
-				...schema.settings?.branding,
+				...normalizedSchema.settings?.branding,
 				socialMedia: {
 					...DEFAULT_SOCIAL_MEDIA_SETTINGS,
-					...schema.settings?.branding?.socialMedia,
+					...normalizedSchema.settings?.branding?.socialMedia,
 				},
 			},
 			layout: {
 				...DEFAULT_LAYOUT_SETTINGS,
-				...schema.settings?.layout,
+				...normalizedSchema.settings?.layout,
 			},
 			behavior: {
 				...DEFAULT_BEHAVIOR_SETTINGS,
-				...schema.settings?.behavior,
+				...normalizedSchema.settings?.behavior,
 			},
 			rateLimit: {
 				...DEFAULT_RATE_LIMIT_SETTINGS,
-				...schema.settings?.rateLimit,
+				...normalizedSchema.settings?.rateLimit,
 			},
 			profanityFilter: {
 				...DEFAULT_PROFANITY_FILTER_SETTINGS,
-				...schema.settings?.profanityFilter,
+				...normalizedSchema.settings?.profanityFilter,
 			},
 			responseLimit: {
 				...DEFAULT_RESPONSE_LIMIT_SETTINGS,
-				...schema.settings?.responseLimit,
+				...normalizedSchema.settings?.responseLimit,
 			},
 			passwordProtection: {
 				...DEFAULT_PASSWORD_PROTECTION_SETTINGS,
-				...schema.settings?.passwordProtection,
+				...normalizedSchema.settings?.passwordProtection,
 			},
 			notifications: {
 				...DEFAULT_NOTIFICATION_SETTINGS,
-				...schema.settings?.notifications,
+				...normalizedSchema.settings?.notifications,
 			},
 			duplicatePrevention: {
 				...DEFAULT_DUPLICATE_PREVENTION_SETTINGS,
-				...schema.settings?.duplicatePrevention,
+				...normalizedSchema.settings?.duplicatePrevention,
 			},
 			botProtection: {
 				...DEFAULT_BOT_PROTECTION_SETTINGS,
-				...schema.settings?.botProtection,
+				...normalizedSchema.settings?.botProtection,
 			},
 			api: {
 				enabled: false,
 				apiKey: undefined,
 				allowExternalSubmissions: false,
-				...schema.settings?.api,
+				...normalizedSchema.settings?.api,
 			},
 			metadata: {
 				...DEFAULT_METADATA_SETTINGS,
-				...schema.settings?.metadata,
+				...normalizedSchema.settings?.metadata,
 			},
 		},
 	};
 }
 
-export function ensureDefaultRateLimitSettings(schema: FormSchema): FormSchema {
+export function ensureDefaultRateLimitSettings(schema: unknown): FormSchema {
 	return ensureDefaultFormSettings(schema);
 }
 

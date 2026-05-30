@@ -7,6 +7,7 @@ import type { AppAuthUser } from "@/lib/auth/types";
 import type { Form } from "@/lib/database";
 import { formsDb } from "@/lib/database";
 import type { NormalizedImportedFormData } from "@/lib/forms/import-normalize";
+import { getInternalFormTitle } from "@/lib/utils/form-utils";
 import { ConfirmationModal } from "../modals/form-delete-confirmation-modal";
 import { EmptyState, FormsHeader, FormsSearch, FormsView } from "./components";
 import { DEFAULT_DELETE_MODAL_STATE } from "./constants";
@@ -31,11 +32,7 @@ function filterAndSortForms(
 	if (searchQuery) {
 		const query = searchQuery.toLowerCase();
 		filtered = filtered.filter((form) => {
-			const title = (
-				form.schema?.settings?.title ||
-				form.title ||
-				""
-			).toLowerCase();
+			const title = getInternalFormTitle(form.schema).toLowerCase();
 			const description = (form.description || "").toLowerCase();
 			const id = form.id.toLowerCase();
 			return (
@@ -62,16 +59,8 @@ function filterAndSortForms(
 	sorted.sort((a, b) => {
 		switch (sortBy) {
 			case "title": {
-				const aTitle = (
-					a.schema?.settings?.title ||
-					a.title ||
-					""
-				).toLowerCase();
-				const bTitle = (
-					b.schema?.settings?.title ||
-					b.title ||
-					""
-				).toLowerCase();
+				const aTitle = getInternalFormTitle(a.schema).toLowerCase();
+				const bTitle = getInternalFormTitle(b.schema).toLowerCase();
 				return aTitle.localeCompare(bTitle);
 			}
 			case "created": {

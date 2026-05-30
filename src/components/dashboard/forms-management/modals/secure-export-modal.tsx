@@ -21,6 +21,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import type { Form } from "@/lib/database";
 import { exportFormSecure } from "@/lib/forms/secure-transfer";
+import { getInternalFormTitle } from "@/lib/utils/form-utils";
 
 interface SecureExportModalProps {
 	form: Form | null;
@@ -141,7 +142,7 @@ export function SecureExportModal({
 		if (!form) {
 			return "";
 		}
-		return form.schema?.settings?.title || form.title || "Untitled Form";
+		return getInternalFormTitle(form.schema);
 	}, [form]);
 
 	const canExport =

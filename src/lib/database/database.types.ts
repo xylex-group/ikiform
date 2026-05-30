@@ -743,6 +743,7 @@ export interface FormBlock {
 }
 
 export interface FormSchema {
+	[key: string]: unknown;
 	blocks: FormBlock[];
 	fields: FormField[];
 	settings: {

@@ -28,6 +28,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Form } from "@/lib/database";
+import { getInternalFormTitle, getPublicFormTitle } from "@/lib/utils/form-utils";
 import { formatDate } from "../utils";
 
 interface FormsListProps {
@@ -162,11 +163,9 @@ export const FormsList = memo(function FormsList({
 	const formCards = useMemo(
 		() =>
 			forms.map((form, idx) => {
-				const internalTitle =
-					form.schema?.settings?.title || form.title || "Untitled Form";
-				const hasPublicTitle =
-					form.schema?.settings?.publicTitle &&
-					form.schema.settings.publicTitle !== form.schema?.settings?.title;
+				const internalTitle = getInternalFormTitle(form.schema);
+				const publicTitle = getPublicFormTitle(form.schema);
+				const hasPublicTitle = publicTitle !== internalTitle;
 
 				let cardClass =
 					"group flex cursor-pointer flex-col gap-4 shadow-none p-6 hover:bg-accent/50 relative";
@@ -236,7 +235,7 @@ export const FormsList = memo(function FormsList({
 									</div>
 									{hasPublicTitle && (
 										<p className="truncate text-muted-foreground text-sm">
-											Public: "{form.schema?.settings?.publicTitle}"
+											Public: "{publicTitle}"
 										</p>
 									)}
 									{form.description && (

@@ -7,6 +7,7 @@ import {
 } from "@/lib";
 import * as formsDbServer from "@/lib/database/database.server";
 import type { FormField } from "@/lib/database/database.types";
+import { ensureDefaultFormSettings } from "@/lib/forms";
 import { validateFormApiAccess } from "@/lib/forms/api-keys";
 import {
 	checkDuplicateSubmission,
@@ -76,8 +77,9 @@ export async function POST(
 		}
 
 		const form = validationResult.form;
+		const formSchema = ensureDefaultFormSettings(form.schema);
 
-		const botProtection = form.schema.settings.botProtection;
+		const botProtection = formSchema.settings.botProtection;
 		if (botProtection?.enabled) {
 			const verification = await checkBotId();
 			if (verification.isBot) {
@@ -99,7 +101,7 @@ export async function POST(
 
 		const rateLimit = {
 			...DEFAULT_RATE_LIMIT_SETTINGS,
-			...form.schema.settings.rateLimit,
+			...formSchema.settings.rateLimit,
 		};
 
 		if (rateLimit.enabled) {
@@ -122,7 +124,7 @@ export async function POST(
 			}
 		}
 
-		const responseLimit = form.schema.settings.responseLimit;
+		const responseLimit = formSchema.settings.responseLimit;
 		if (responseLimit?.enabled) {
 			const count = await formsDbServer.countFormSubmissions(formId);
 			if (count >= (responseLimit.maxResponses || 100)) {
@@ -140,7 +142,7 @@ export async function POST(
 
 		const profanityFilter = {
 			...DEFAULT_PROFANITY_FILTER_SETTINGS,
-			...form.schema.settings.profanityFilter,
+			...formSchema.settings.profanityFilter,
 		};
 
 		if (profanityFilter.enabled) {
@@ -160,7 +162,7 @@ export async function POST(
 			}
 		}
 
-		const duplicatePrevention = form.schema.settings.duplicatePrevention;
+		const duplicatePrevention = formSchema.settings.duplicatePrevention;
 		if (duplicatePrevention?.enabled) {
 			const email = extractEmailFromSubmissionData(submissionDataRecord);
 			const identifier = generateIdentifier(
@@ -204,7 +206,7 @@ export async function POST(
 				{
 					success: true,
 					message:
-						form.schema.settings.successMessage ||
+						formSchema.settings.successMessage ||
 						"Form submitted successfully",
 					submissionId: submissionResult.id,
 					timestamp: new Date().toISOString(),
@@ -256,8 +258,9 @@ export async function GET(
 		}
 
 		const form = validationResult.form;
+		const formSchema = ensureDefaultFormSettings(form.schema);
 
-		const fields = form.schema.fields.map((field: FormField) => ({
+		const fields = formSchema.fields.map((field: FormField) => ({
 			id: field.id,
 			type: field.type,
 			label: field.label,
@@ -270,14 +273,14 @@ export async function GET(
 		return NextResponse.json(
 			{
 				formId: form.id,
-				title: form.schema.settings.title,
-				description: form.schema.settings.description,
+				title: formSchema.settings.title,
+				description: formSchema.settings.description,
 				fields,
 				settings: {
-					rateLimit: form.schema.settings.rateLimit,
-					responseLimit: form.schema.settings.responseLimit,
-					duplicatePrevention: form.schema.settings.duplicatePrevention,
-					profanityFilter: form.schema.settings.profanityFilter,
+					rateLimit: formSchema.settings.rateLimit,
+					responseLimit: formSchema.settings.responseLimit,
+					duplicatePrevention: formSchema.settings.duplicatePrevention,
+					profanityFilter: formSchema.settings.profanityFilter,
 				},
 				apiEndpoint: `/api/forms/${formId}/api-submit`,
 				documentation: {

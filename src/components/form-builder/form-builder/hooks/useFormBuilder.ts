@@ -208,12 +208,12 @@ export const useFormBuilder = (formId?: string) => {
 			actions.setIsPublished(form.is_published);
 			actions.setFormSlug(form.slug || null);
 			lastSavedSchemaRef.current = {
-				...form.schema,
-				fields: [...form.schema.fields],
+				...normalizedSchema,
+				fields: [...normalizedSchema.fields],
 			};
 			lastManuallySavedSchemaRef.current = {
-				...form.schema,
-				fields: [...form.schema.fields],
+				...normalizedSchema,
+				fields: [...normalizedSchema.fields],
 			};
 			isFormLoaded.current = true;
 

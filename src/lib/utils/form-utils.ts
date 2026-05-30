@@ -1,27 +1,21 @@
-import type { FormSchema } from "@/lib/database/database.types";
+import { ensureDefaultFormSettings } from "@/lib/forms";
 
 export function getFormTitle(
-	schema: FormSchema | null | undefined,
+	schema: unknown,
 	isPublic = false
 ): string {
-	if (!schema?.settings) {
-		return "Untitled Form";
-	}
+	const normalizedSchema = ensureDefaultFormSettings(schema);
 
-	if (isPublic && schema.settings.publicTitle) {
-		return schema.settings.publicTitle;
+	if (isPublic && normalizedSchema.settings.publicTitle) {
+		return normalizedSchema.settings.publicTitle;
 	}
-	return schema.settings.title || "Untitled Form";
+	return normalizedSchema.settings.title || "Untitled Form";
 }
 
-export function getPublicFormTitle(
-	schema: FormSchema | null | undefined
-): string {
+export function getPublicFormTitle(schema: unknown): string {
 	return getFormTitle(schema, true);
 }
 
-export function getInternalFormTitle(
-	schema: FormSchema | null | undefined
-): string {
+export function getInternalFormTitle(schema: unknown): string {
 	return getFormTitle(schema, false);
 }

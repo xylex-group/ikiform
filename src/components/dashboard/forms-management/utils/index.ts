@@ -1,9 +1,11 @@
 import type { Form } from "@/lib/database";
+import { ensureDefaultFormSettings } from "@/lib/forms";
 
 export function getTotalFields(form: Form): number {
-	const fieldsFromDirectArray = form.schema?.fields?.length || 0;
+	const normalizedSchema = ensureDefaultFormSettings(form.schema);
+	const fieldsFromDirectArray = normalizedSchema.fields.length || 0;
 	const fieldsFromBlocks =
-		form.schema?.blocks?.reduce(
+		normalizedSchema.blocks.reduce(
 			(total, block) => total + (block.fields?.length || 0),
 			0
 		) || 0;

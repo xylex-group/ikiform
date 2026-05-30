@@ -26,6 +26,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getInternalFormTitle, getPublicFormTitle } from "@/lib/utils/form-utils";
 import type { FormCardProps } from "../types";
 import { formatDate } from "../utils";
 
@@ -47,15 +48,15 @@ export const FormCard = memo(function FormCard({
 	);
 
 	const internalTitle = useMemo(
-		() => form.schema?.settings?.title || form.title || "Untitled Form",
-		[form.schema?.settings?.title, form.title]
+		() => getInternalFormTitle(form.schema),
+		[form.schema]
 	);
 
+	const publicTitle = useMemo(() => getPublicFormTitle(form.schema), [form.schema]);
+
 	const hasPublicTitle = useMemo(
-		() =>
-			form.schema?.settings?.publicTitle &&
-			form.schema.settings.publicTitle !== form.schema?.settings?.title,
-		[form.schema?.settings?.publicTitle, form.schema?.settings?.title]
+		() => publicTitle !== internalTitle,
+		[publicTitle, internalTitle]
 	);
 
 	const handleShare = useCallback(
@@ -174,7 +175,7 @@ export const FormCard = memo(function FormCard({
 						</h3>
 						{hasPublicTitle && (
 							<p className="line-clamp-1 text-muted-foreground text-sm">
-								Public: "{form.schema?.settings?.publicTitle}"
+								Public: "{publicTitle}"
 							</p>
 						)}
 						{form.description && (
