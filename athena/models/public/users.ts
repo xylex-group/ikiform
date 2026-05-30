@@ -51,5 +51,42 @@ export const publicUsersModel = defineModel<
 			updated_at: false,
 			last_sign_in_at: true,
 		},
+		relations: {
+			ai_analytics_chat: {
+				kind: "one-to-many",
+				sourceColumns: ["id"],
+				targetSchema: "forms",
+				targetModel: "ai_analytics_chat",
+				targetColumns: ["user_id"],
+			},
+			ai_builder_chat: {
+				kind: "one-to-many",
+				sourceColumns: ["id"],
+				targetSchema: "forms",
+				targetModel: "ai_builder_chat",
+				targetColumns: ["user_id"],
+			},
+			forms: {
+				kind: "one-to-many",
+				sourceColumns: ["id"],
+				targetSchema: "forms",
+				targetModel: "forms",
+				targetColumns: ["user_id"],
+			},
+			redemption_codes: {
+				kind: "one-to-many",
+				sourceColumns: ["id"],
+				targetSchema: "forms",
+				targetModel: "redemption_codes",
+				targetColumns: ["redeemer_user_id"],
+			},
+			webhooks: {
+				kind: "one-to-many",
+				sourceColumns: ["id"],
+				targetSchema: "forms",
+				targetModel: "webhooks",
+				targetColumns: ["account_id"],
+			},
+		},
 	},
 });

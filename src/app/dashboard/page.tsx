@@ -71,7 +71,7 @@ async function DashboardData() {
 	// Parallel fetch: forms and premium status at the same time
 	const [formsResult, premiumResult] = await Promise.all([
 		athena
-			.from<Form>("forms")
+			.from<Form>("forms.forms")
 			.select(
 				"id, title, description, is_published, created_at, updated_at, user_id, schema, slug"
 			)

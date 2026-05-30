@@ -8,12 +8,12 @@ import {
 import { createClient } from "@/utils/athena/server";
 
 type InboundMappingTable =
-	Database["public"]["Tables"]["inbound_webhook_mappings"];
+	Database["forms"]["Tables"]["inbound_webhook_mappings"];
 type InboundMappingRow = InboundMappingTable["Row"];
 type InboundMappingInsert = InboundMappingTable["Insert"];
 type InboundMappingUpdate = InboundMappingTable["Update"];
 
-type FormTable = Database["public"]["Tables"]["forms"];
+type FormTable = Database["forms"]["Tables"]["forms"];
 type FormRow = FormTable["Row"];
 type FormInsert = FormTable["Insert"];
 type FormUpdate = FormTable["Update"];
@@ -39,7 +39,7 @@ async function validateMappingAccess(
 	const athena = await createClient();
 	const { data: mapping, error: mappingError } = await athena
 		.from<InboundMappingRow, InboundMappingInsert, InboundMappingUpdate>(
-			"inbound_webhook_mappings"
+			"forms.inbound_webhook_mappings"
 		)
 		.select("id, target_form_id")
 		.eq("id", mappingId)
@@ -52,7 +52,7 @@ async function validateMappingAccess(
 	}
 
 	const { data: form, error: formError } = await athena
-		.from<FormRow, FormInsert, FormUpdate>("forms")
+		.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 		.select("id, user_id")
 		.eq("id", mapping.target_form_id)
 		.eq("user_id", userId)

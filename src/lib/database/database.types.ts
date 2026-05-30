@@ -1,3 +1,49 @@
+import type {
+	FormsAiAnalyticsChatInsert,
+	FormsAiAnalyticsChatRow,
+	FormsAiAnalyticsChatUpdate,
+} from "../../../athena/models/forms/ai-analytics-chat";
+import type {
+	FormsAiBuilderChatInsert,
+	FormsAiBuilderChatRow,
+	FormsAiBuilderChatUpdate,
+} from "../../../athena/models/forms/ai-builder-chat";
+import type {
+	FormsFormSubmissionsInsert,
+	FormsFormSubmissionsRow,
+	FormsFormSubmissionsUpdate,
+} from "../../../athena/models/forms/form-submissions";
+import type {
+	FormsFormsInsert,
+	FormsFormsRow,
+	FormsFormsUpdate,
+} from "../../../athena/models/forms/forms";
+import type {
+	FormsInboundWebhookMappingsInsert,
+	FormsInboundWebhookMappingsRow,
+	FormsInboundWebhookMappingsUpdate,
+} from "../../../athena/models/forms/inbound-webhook-mappings";
+import type {
+	FormsRedemptionCodesInsert,
+	FormsRedemptionCodesRow,
+	FormsRedemptionCodesUpdate,
+} from "../../../athena/models/forms/redemption-codes";
+import type {
+	FormsWaitlistInsert,
+	FormsWaitlistRow,
+	FormsWaitlistUpdate,
+} from "../../../athena/models/forms/waitlist";
+import type {
+	FormsWebhookLogsInsert,
+	FormsWebhookLogsRow,
+	FormsWebhookLogsUpdate,
+} from "../../../athena/models/forms/webhook-logs";
+import type {
+	FormsWebhooksInsert,
+	FormsWebhooksRow,
+	FormsWebhooksUpdate,
+} from "../../../athena/models/forms/webhooks";
+
 export type Json =
 	| string
 	| number
@@ -9,6 +55,67 @@ export type Json =
 export interface Database {
 	__InternalSupabase: {
 		PostgrestVersion: "12.2.3 (519615d)";
+	};
+	forms: {
+		Tables: {
+			forms: {
+				Row: FormsFormsRow;
+				Insert: FormsFormsInsert;
+				Update: FormsFormsUpdate;
+			};
+			form_submissions: {
+				Row: FormsFormSubmissionsRow;
+				Insert: FormsFormSubmissionsInsert;
+				Update: FormsFormSubmissionsUpdate;
+			};
+			ai_builder_chat: {
+				Row: FormsAiBuilderChatRow;
+				Insert: FormsAiBuilderChatInsert;
+				Update: FormsAiBuilderChatUpdate;
+			};
+			ai_analytics_chat: {
+				Row: FormsAiAnalyticsChatRow;
+				Insert: FormsAiAnalyticsChatInsert;
+				Update: FormsAiAnalyticsChatUpdate;
+			};
+			webhooks: {
+				Row: FormsWebhooksRow;
+				Insert: FormsWebhooksInsert;
+				Update: FormsWebhooksUpdate;
+			};
+			webhook_logs: {
+				Row: FormsWebhookLogsRow;
+				Insert: FormsWebhookLogsInsert;
+				Update: FormsWebhookLogsUpdate;
+			};
+			inbound_webhook_mappings: {
+				Row: FormsInboundWebhookMappingsRow;
+				Insert: FormsInboundWebhookMappingsInsert;
+				Update: FormsInboundWebhookMappingsUpdate;
+			};
+			redemption_codes: {
+				Row: FormsRedemptionCodesRow;
+				Insert: FormsRedemptionCodesInsert;
+				Update: FormsRedemptionCodesUpdate;
+			};
+			waitlist: {
+				Row: FormsWaitlistRow;
+				Insert: FormsWaitlistInsert;
+				Update: FormsWaitlistUpdate;
+			};
+		};
+		Views: {
+			[_ in never]: never;
+		};
+		Functions: {
+			cleanup_orphaned_files: Database["public"]["Functions"]["cleanup_orphaned_files"];
+			get_form_file_stats: Database["public"]["Functions"]["get_form_file_stats"];
+			is_admin_request: Database["public"]["Functions"]["is_admin_request"];
+			submit_form_bypass_rls: Database["public"]["Functions"]["submit_form_bypass_rls"];
+		};
+		Enums: {
+			[_ in never]: never;
+		};
 	};
 	public: {
 		Tables: {

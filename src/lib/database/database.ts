@@ -1,40 +1,29 @@
-import {
-	type AthenaSdkClientWithAuth,
-	createClient,
-} from "@xylex-group/athena";
+import type { AthenaSdkClientWithAuth } from "@xylex-group/athena";
 import type { Database, FormSchema } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
+import { db as athenaDb } from "@/utils/athena/client";
 
-const db = createClient(
-	"https://mirror4.athena-cluster.com",
-	"ath_4614c5f0ff3248a8.d77b3f974b974df1aac8a9a77e4264bb929bf3967f984717a4de4486a7e43f6d",
-	{
-		client: "the-ark-of-floris",
-		backend: { type: "athena" },
-	}
-);
+const db: AthenaSdkClientWithAuth = athenaDb;
 
 /**
- * Legacy type aliases (derived from old Supabase Database type).
- * These will be gradually replaced by generated types from the Athena registry
- * (RowOf<FormModel>, InsertOf<FormModel>, etc.).
+ * Table aliases derived from the Athena-backed Database mapping.
  */
-type FormTable = Database["public"]["Tables"]["forms"];
+type FormTable = Database["forms"]["Tables"]["forms"];
 type FormInsert = FormTable["Insert"];
 type FormUpdate = FormTable["Update"];
 export type Form = FormTable["Row"];
 
-type FormSubmissionTable = Database["public"]["Tables"]["form_submissions"];
+type FormSubmissionTable = Database["forms"]["Tables"]["form_submissions"];
 type FormSubmissionInsert = FormSubmissionTable["Insert"];
 type FormSubmissionUpdate = FormSubmissionTable["Update"];
 export type FormSubmission = FormSubmissionTable["Row"];
 
-type AIBuilderChatTable = Database["public"]["Tables"]["ai_builder_chat"];
+type AIBuilderChatTable = Database["forms"]["Tables"]["ai_builder_chat"];
 type AIBuilderChatInsert = AIBuilderChatTable["Insert"];
 type AIBuilderChatUpdate = AIBuilderChatTable["Update"];
 type AIBuilderChatRow = AIBuilderChatTable["Row"];
 
-type AIAnalyticsChatTable = Database["public"]["Tables"]["ai_analytics_chat"];
+type AIAnalyticsChatTable = Database["forms"]["Tables"]["ai_analytics_chat"];
 type AIAnalyticsChatInsert = AIAnalyticsChatTable["Insert"];
 type AIAnalyticsChatUpdate = AIAnalyticsChatTable["Update"];
 type AIAnalyticsChatRow = AIAnalyticsChatTable["Row"];
@@ -67,21 +56,21 @@ function setCache(key: string, data: unknown): void {
 const getAthenaClient = async (): Promise<AthenaSdkClientWithAuth> => db;
 
 const fromForms = (athena: AthenaSdkClientWithAuth) =>
-	athena.from<Form, FormInsert, FormUpdate>("forms");
+	athena.from<Form, FormInsert, FormUpdate>("forms.forms");
 
 const fromFormSubmissions = (athena: AthenaSdkClientWithAuth) =>
 	athena.from<FormSubmission, FormSubmissionInsert, FormSubmissionUpdate>(
-		"form_submissions"
+		"forms.form_submissions"
 	);
 
 const fromAIBuilderChat = (athena: AthenaSdkClientWithAuth) =>
 	athena.from<AIBuilderChatRow, AIBuilderChatInsert, AIBuilderChatUpdate>(
-		"ai_builder_chat"
+		"forms.ai_builder_chat"
 	);
 
 const fromAIAnalyticsChat = (athena: AthenaSdkClientWithAuth) =>
 	athena.from<AIAnalyticsChatRow, AIAnalyticsChatInsert, AIAnalyticsChatUpdate>(
-		"ai_analytics_chat"
+		"forms.ai_analytics_chat"
 	);
 
 export const formsDb = {

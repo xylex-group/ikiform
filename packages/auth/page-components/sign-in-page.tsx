@@ -9,8 +9,8 @@ import {
 	showToastInfo,
 	showToastSuccess,
 } from "../../../src/lib/toast";
-import { authClient } from "../better-auth/auth-client";
-import { authErrorMessage } from "../better-auth/auth-error-message";
+import { authClient } from "../athena-auth/auth-client";
+import { authErrorMessage } from "../athena-auth/auth-error-message";
 import { AuthShell } from "../components/auth-shell";
 import { createFreshSessionLookupUrl } from "../fresh-session";
 import {

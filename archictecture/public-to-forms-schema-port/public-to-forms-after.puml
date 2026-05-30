@@ -1,0 +1,58 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultTextColor Black
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam componentStyle rectangle
+
+title Forms Schema Layout (After)
+
+package "public schema" #E8F0FE {
+  entity "users\n(derived from athena.users)" as public_users #DDEBFF
+}
+
+package "forms schema" #E9FCEB {
+  entity "forms.forms" as forms_forms #EFFFF0
+  entity "forms.form_submissions" as forms_submissions #EFFFF0
+  entity "forms.ai_builder_chat" as forms_ai_builder #EFFFF0
+  entity "forms.ai_analytics_chat" as forms_ai_analytics #EFFFF0
+  entity "forms.webhooks" as forms_webhooks #EFFFF0
+  entity "forms.webhook_logs" as forms_webhook_logs #EFFFF0
+  entity "forms.inbound_webhook_mappings" as forms_inbound #EFFFF0
+  entity "forms.redemption_codes" as forms_redemption #EFFFF0
+  entity "forms.waitlist" as forms_waitlist #EFFFF0
+
+  component "forms.update_updated_at_column()" as forms_update_fn #FFF9DB
+  component "forms.get_form_file_stats()" as forms_file_stats #FFF9DB
+  component "forms.cleanup_orphaned_files()" as forms_cleanup #FFF9DB
+  component "forms.submit_form_bypass_rls()" as forms_submit_fn #FFF9DB
+}
+
+public_users ||--o{ forms_forms : user_id
+public_users ||--o{ forms_ai_builder : user_id
+public_users ||--o{ forms_ai_analytics : user_id
+public_users ||--o{ forms_webhooks : account_id
+public_users ||--o{ forms_redemption : redeemer_user_id
+
+forms_forms ||--o{ forms_submissions : form_id
+forms_forms ||--o{ forms_ai_analytics : form_id
+forms_forms ||--o{ forms_webhooks : form_id
+forms_forms ||--o{ forms_inbound : target_form_id
+forms_webhooks ||--o{ forms_webhook_logs : webhook_id
+
+forms_forms ..> forms_update_fn : updated_at trigger
+forms_ai_builder ..> forms_update_fn : updated_at trigger
+forms_ai_analytics ..> forms_update_fn : updated_at trigger
+forms_webhooks ..> forms_update_fn : updated_at trigger
+forms_inbound ..> forms_update_fn : updated_at trigger
+forms_redemption ..> forms_update_fn : updated_at trigger
+forms_submissions ..> forms_submit_fn : insert helper
+forms_forms ..> forms_file_stats : file stats helper
+forms_forms ..> forms_cleanup : orphan cleanup helper
+
+note bottom
+Form-domain tables are isolated in `forms.*`.
+User identity remains in `public.users`.
+Athena generator includes `forms` schema models and relations.
+end note
+@enduml

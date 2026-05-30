@@ -32,7 +32,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 		if (formId) {
 			const { data: form, error: formError } = await athena
-				.from("forms")
+				.from("forms.forms")
 				.select("id, user_id")
 				.eq("id", formId)
 				.eq("user_id", user.id)
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 		if (body.formId || body.form_id) {
 			const formId = body.formId || body.form_id;
 			const { data: form, error: formError } = await athena
-				.from("forms")
+				.from("forms.forms")
 				.select("id, user_id")
 				.eq("id", formId)
 				.eq("user_id", user.id)

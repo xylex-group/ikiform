@@ -2,11 +2,11 @@ import type { Database } from "@/lib/database/database.types";
 import { createAthenaAdminClient } from "@/utils/athena/admin";
 
 type InboundWebhookMappingRow =
-	Database["public"]["Tables"]["inbound_webhook_mappings"]["Row"];
+	Database["forms"]["Tables"]["inbound_webhook_mappings"]["Row"];
 type InboundWebhookMappingInsert =
-	Database["public"]["Tables"]["inbound_webhook_mappings"]["Insert"];
+	Database["forms"]["Tables"]["inbound_webhook_mappings"]["Insert"];
 type InboundWebhookMappingUpdate =
-	Database["public"]["Tables"]["inbound_webhook_mappings"]["Update"];
+	Database["forms"]["Tables"]["inbound_webhook_mappings"]["Update"];
 
 export interface InboundWebhookMapping {
 	createdAt: string;
@@ -64,7 +64,7 @@ export async function createInboundMapping(
 			InboundWebhookMappingRow,
 			InboundWebhookMappingInsert,
 			InboundWebhookMappingUpdate
-		>("inbound_webhook_mappings")
+		>("forms.inbound_webhook_mappings")
 		.insert(insertData)
 		.single();
 	if (error || !result) {
@@ -84,7 +84,7 @@ export async function getInboundMappings({
 			InboundWebhookMappingRow,
 			InboundWebhookMappingInsert,
 			InboundWebhookMappingUpdate
-		>("inbound_webhook_mappings")
+		>("forms.inbound_webhook_mappings")
 		.select("*");
 	if (targetFormId) {
 		query = query.eq("target_form_id", targetFormId);
@@ -118,7 +118,7 @@ export async function updateInboundMapping(
 			InboundWebhookMappingRow,
 			InboundWebhookMappingInsert,
 			InboundWebhookMappingUpdate
-		>("inbound_webhook_mappings")
+		>("forms.inbound_webhook_mappings")
 		.update(updateData)
 		.eq("id", id)
 		.single();
@@ -135,7 +135,7 @@ export async function deleteInboundMapping(id: string): Promise<void> {
 			InboundWebhookMappingRow,
 			InboundWebhookMappingInsert,
 			InboundWebhookMappingUpdate
-		>("inbound_webhook_mappings")
+		>("forms.inbound_webhook_mappings")
 		.eq("id", id)
 		.delete();
 	if (error) {

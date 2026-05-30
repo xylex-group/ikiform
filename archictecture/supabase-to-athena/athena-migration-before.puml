@@ -30,6 +30,7 @@ rectangle "Next.js App Layer" as Next {
   component "Route Handlers\n/src/app/*" as Routes
   component "Client Components\n(form-settings-modal)" as Client
   component "Legacy Import Chain\nClient -> src/lib/forms/api-keys.ts" as ClientCompat #FEE2E2
+  component "Auth UI\npackages/auth/better-auth/*" as LegacyAuth #FECACA
 }
 
 rectangle "Athena Adapters" as AthLayer {
@@ -48,6 +49,7 @@ Routes --> AthServer : createAthenaServerClient()
 U --> Client : click API key actions
 Client --> ClientCompat : direct helper import from form builder\n(settings page)
 ClientCompat --> AthClient : createAthenaClient()\n(auth + DB composite client)
+LegacyAuth --> AuthCompat : compatibility calls through legacy seam
 AthClient --> Gateway : reads/writes forms table
 AuthCompat --> AthenaAuth : signIn/signUp/signOut/password/verify
 AthServer --> Gateway : form reads + form submission validation
@@ -57,5 +59,10 @@ note right of ClientCompat
   Client bundle imports server-oriented DB helper,
   causing Athena SDK/Node-runtime artifacts and
   bundle-size / boundary issues.
+end note
+
+note bottom of AthClient
+  Runtime DB client creation used static gateway credentials
+  instead of env-driven config.
 end note
 @enduml

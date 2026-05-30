@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 
 		if (formId) {
 			const { data: form, error: formError } = await athena
-				.from("forms")
+				.from("forms.forms")
 				.select("id, user_id")
 				.eq("id", formId)
 				.eq("user_id", user.id)

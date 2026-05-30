@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { Database } from "@/lib/database/database.types";
 import { createAthenaServerClient } from "@/utils/athena/server";
 
-type FormTable = Database["public"]["Tables"]["forms"];
+type FormTable = Database["forms"]["Tables"]["forms"];
 type FormRow = FormTable["Row"];
 type FormInsert = FormTable["Insert"];
 type FormUpdate = FormTable["Update"];
@@ -41,7 +41,7 @@ async function updateFormApiSetting(
 ): Promise<boolean> {
 	const athena = await createAthenaServerClient();
 	const { data: form, error } = await athena
-		.from<FormRow, FormInsert, FormUpdate>("forms")
+		.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 		.update({
 			...updates,
 			updated_at: new Date().toISOString(),

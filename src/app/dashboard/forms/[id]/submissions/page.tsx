@@ -5,12 +5,12 @@ import type { Database } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createClient } from "@/utils/athena/server";
 
-type FormTable = Database["public"]["Tables"]["forms"];
+type FormTable = Database["forms"]["Tables"]["forms"];
 type FormRow = FormTable["Row"];
 type FormInsert = FormTable["Insert"];
 type FormUpdate = FormTable["Update"];
 
-type FormSubmissionTable = Database["public"]["Tables"]["form_submissions"];
+type FormSubmissionTable = Database["forms"]["Tables"]["form_submissions"];
 type FormSubmissionRow = FormSubmissionTable["Row"];
 type FormSubmissionInsert = FormSubmissionTable["Insert"];
 type FormSubmissionUpdate = FormSubmissionTable["Update"];
@@ -37,14 +37,14 @@ export default async function FormSubmissionsPage({
 	const [{ data: form, error: formError }, { data: submissions }] =
 		await Promise.all([
 			athena
-				.from<FormRow, FormInsert, FormUpdate>("forms")
+				.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 				.select("*")
 				.eq("id", id)
 				.eq("user_id", user.id)
 				.single(),
 			athena
 				.from<FormSubmissionRow, FormSubmissionInsert, FormSubmissionUpdate>(
-					"form_submissions"
+					"forms.form_submissions"
 				)
 				.select("*")
 				.eq("form_id", id)

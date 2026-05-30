@@ -4,29 +4,36 @@ import {
 } from "@xylex-group/athena";
 import { createAthenaAuthClient } from "./auth-client";
 
+const resolveAthenaDbConfig = () => {
+	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
+	const apiKey =
+		process.env.ATHENA_API_KEY || process.env.NEXT_PUBLIC_ATHENA_API_KEY;
+	const client = process.env.ATHENA_CLIENT || "ikiform-client";
+
+	if (!(url && apiKey)) {
+		throw new Error(
+			"Missing Athena environment variables. Please check ATHENA_URL / NEXT_PUBLIC_ATHENA_URL and ATHENA_API_KEY / NEXT_PUBLIC_ATHENA_API_KEY."
+		);
+	}
+
+	return { apiKey, client, url };
+};
+
+const createAthenaDbClient = (): AthenaSdkClientWithAuth => {
+	const { apiKey, client, url } = resolveAthenaDbConfig();
+
+	return createAthenaSdkClient(url, apiKey, {
+		client,
+		backend: { type: "athena" },
+	});
+};
+
 /**
  * Browser/client-side composite client.
  * Provides both DB access (Athena) and auth surface for existing app call patterns.
  */
 export function createAthenaClient() {
-	const url = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
-	const apiKey =
-		process.env.ATHENA_API_KEY || process.env.NEXT_PUBLIC_ATHENA_API_KEY;
-
-	if (!(url && apiKey)) {
-		throw new Error(
-			"Missing Athena environment variables. Please check ATHENA_URL and ATHENA_API_KEY."
-		);
-	}
-
-	const dbClient: AthenaSdkClientWithAuth = createAthenaSdkClient(
-		"https://mirror4.athena-cluster.com",
-		"ath_4614c5f0ff3248a8.d77b3f974b974df1aac8a9a77e4264bb929bf3967f984717a4de4486a7e43f6d",
-		{
-			client: "the-ark-of-floris",
-			backend: { type: "athena" },
-		}
-	);
+	const dbClient = createAthenaDbClient();
 
 	const authClient = createAthenaAuthClient();
 	type SignInEmailInput = Parameters<typeof authClient.signIn.email>[0];
@@ -89,11 +96,4 @@ export function createAthenaClient() {
 // Backward-compatible export used by legacy imports.
 export const createClient = createAthenaClient;
 
-export const db: AthenaSdkClientWithAuth = createAthenaSdkClient(
-	"https://mirror4.athena-cluster.com",
-	"ath_4614c5f0ff3248a8.d77b3f974b974df1aac8a9a77e4264bb929bf3967f984717a4de4486a7e43f6d",
-	{
-		client: "the-ark-of-floris",
-		backend: { type: "athena" },
-	}
-);
+export const db: AthenaSdkClientWithAuth = createAthenaDbClient();

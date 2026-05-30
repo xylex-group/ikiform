@@ -4,22 +4,22 @@ import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createAthenaAdminClient } from "@/utils/athena/admin";
 import { createAthenaServerClient } from "@/utils/athena/server";
 
-type FormTable = Database["public"]["Tables"]["forms"];
+type FormTable = Database["forms"]["Tables"]["forms"];
 type FormInsert = FormTable["Insert"];
 type FormUpdate = FormTable["Update"];
 type Form = FormTable["Row"];
 
-type FormSubmissionTable = Database["public"]["Tables"]["form_submissions"];
+type FormSubmissionTable = Database["forms"]["Tables"]["form_submissions"];
 type FormSubmissionInsert = FormSubmissionTable["Insert"];
 type FormSubmissionUpdate = FormSubmissionTable["Update"];
 type FormSubmission = FormSubmissionTable["Row"];
 
-type AIBuilderChatTable = Database["public"]["Tables"]["ai_builder_chat"];
+type AIBuilderChatTable = Database["forms"]["Tables"]["ai_builder_chat"];
 type AIBuilderChatInsert = AIBuilderChatTable["Insert"];
 type AIBuilderChatUpdate = AIBuilderChatTable["Update"];
 type AIBuilderChatRow = AIBuilderChatTable["Row"];
 
-type AIAnalyticsChatTable = Database["public"]["Tables"]["ai_analytics_chat"];
+type AIAnalyticsChatTable = Database["forms"]["Tables"]["ai_analytics_chat"];
 type AIAnalyticsChatInsert = AIAnalyticsChatTable["Insert"];
 type AIAnalyticsChatUpdate = AIAnalyticsChatTable["Update"];
 type AIAnalyticsChatRow = AIAnalyticsChatTable["Row"];
@@ -34,21 +34,21 @@ interface AthenaFromClient {
 }
 
 const fromForms = (athena: AthenaFromClient) =>
-	athena.from<Form, FormInsert, FormUpdate>("forms");
+	athena.from<Form, FormInsert, FormUpdate>("forms.forms");
 
 const fromFormSubmissions = (athena: AthenaFromClient) =>
 	athena.from<FormSubmission, FormSubmissionInsert, FormSubmissionUpdate>(
-		"form_submissions"
+		"forms.form_submissions"
 	);
 
 const fromAIBuilderChat = (athena: AthenaFromClient) =>
 	athena.from<AIBuilderChatRow, AIBuilderChatInsert, AIBuilderChatUpdate>(
-		"ai_builder_chat"
+		"forms.ai_builder_chat"
 	);
 
 const fromAIAnalyticsChat = (athena: AthenaFromClient) =>
 	athena.from<AIAnalyticsChatRow, AIAnalyticsChatInsert, AIAnalyticsChatUpdate>(
-		"ai_analytics_chat"
+		"forms.ai_analytics_chat"
 	);
 
 const fromUsers = (athena: AthenaFromClient) =>

@@ -4,7 +4,7 @@ import type { Database } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createClient } from "@/utils/athena/server";
 
-type FormTable = Database["public"]["Tables"]["forms"];
+type FormTable = Database["forms"]["Tables"]["forms"];
 type FormRow = FormTable["Row"];
 type FormInsert = FormTable["Insert"];
 type FormUpdate = FormTable["Update"];
@@ -29,7 +29,7 @@ export default async function CustomizeFormPage({
 	}
 
 	const { data: form, error } = await athena
-		.from<FormRow, FormInsert, FormUpdate>("forms")
+		.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 		.select("*")
 		.eq("id", id)
 		.eq("user_id", user.id)

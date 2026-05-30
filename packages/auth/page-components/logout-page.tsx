@@ -7,7 +7,7 @@ import {
 	showLoadingToast,
 	showToastSuccess,
 } from "../../../src/lib/toast";
-import { signOut } from "../better-auth/auth-client";
+import { signOut } from "../athena-auth/auth-client";
 import { AuthShell } from "../components/auth-shell";
 import { AUTH_PRIMARY_BUTTON_CLASS } from "./shared";
 

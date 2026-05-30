@@ -6,7 +6,7 @@ import {
 	type AuthSocialProvider,
 	authConfig,
 } from "@/athena/auth-config";
-import { authErrorMessage } from "../better-auth/auth-error-message";
+import { authErrorMessage } from "../athena-auth/auth-error-message";
 import {
 	AppleIcon,
 	GoogleIcon,

@@ -1,0 +1,39 @@
+@startuml
+skinparam backgroundColor White
+skinparam defaultTextColor Black
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam componentStyle rectangle
+
+title Public-Centric Form Data Layout (Before)
+
+package "public schema" #E8F0FE {
+  entity "users\n(auth-derived)" as public_users #DDEBFF
+  entity "forms" as public_forms #F0F7FF
+  entity "form_submissions" as public_submissions #F0F7FF
+  entity "ai_builder_chat" as public_ai_builder #F0F7FF
+  entity "ai_analytics_chat" as public_ai_analytics #F0F7FF
+  entity "webhooks" as public_webhooks #F0F7FF
+  entity "webhook_logs" as public_webhook_logs #F0F7FF
+  entity "inbound_webhook_mappings" as public_inbound #F0F7FF
+  entity "redemption_codes" as public_redemption #F0F7FF
+  entity "waitlist" as public_waitlist #F0F7FF
+}
+
+public_users ||--o{ public_forms : user_id
+public_users ||--o{ public_ai_builder : user_id
+public_users ||--o{ public_ai_analytics : user_id
+public_users ||--o{ public_webhooks : account_id
+public_users ||--o{ public_redemption : redeemer_user_id
+
+public_forms ||--o{ public_submissions : form_id
+public_forms ||--o{ public_ai_analytics : form_id
+public_forms ||--o{ public_webhooks : form_id
+public_forms ||--o{ public_inbound : target_form_id
+public_webhooks ||--o{ public_webhook_logs : webhook_id
+
+note bottom
+All app form-domain tables live in `public.*`.
+Auth user identity also lives in `public.users`.
+end note
+@enduml

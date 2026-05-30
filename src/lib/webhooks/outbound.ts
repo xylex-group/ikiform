@@ -9,15 +9,15 @@ import type {
 import { sendFormNotification } from "@/lib/services/notifications";
 import { createAthenaAdminClient } from "@/utils/athena/admin";
 
-type WebhookRow = Database["public"]["Tables"]["webhooks"]["Row"];
-type WebhookInsert = Database["public"]["Tables"]["webhooks"]["Insert"];
-type WebhookUpdate = Database["public"]["Tables"]["webhooks"]["Update"];
+type WebhookRow = Database["forms"]["Tables"]["webhooks"]["Row"];
+type WebhookInsert = Database["forms"]["Tables"]["webhooks"]["Insert"];
+type WebhookUpdate = Database["forms"]["Tables"]["webhooks"]["Update"];
 
-type WebhookLogRow = Database["public"]["Tables"]["webhook_logs"]["Row"];
-type WebhookLogInsert = Database["public"]["Tables"]["webhook_logs"]["Insert"];
-type FormRow = Database["public"]["Tables"]["forms"]["Row"];
-type FormInsert = Database["public"]["Tables"]["forms"]["Insert"];
-type FormUpdate = Database["public"]["Tables"]["forms"]["Update"];
+type WebhookLogRow = Database["forms"]["Tables"]["webhook_logs"]["Row"];
+type WebhookLogInsert = Database["forms"]["Tables"]["webhook_logs"]["Insert"];
+type FormRow = Database["forms"]["Tables"]["forms"]["Row"];
+type FormInsert = Database["forms"]["Tables"]["forms"]["Insert"];
+type FormUpdate = Database["forms"]["Tables"]["forms"]["Update"];
 
 type WebhookInput = Partial<WebhookConfig> & {
 	form_id?: string | null;
@@ -90,7 +90,7 @@ export async function getWebhooks({
 }): Promise<WebhookConfig[]> {
 	const athena = createAthenaAdminClient();
 	let query = athena
-		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 		.select("*");
 
 	const effectiveAccountId = userId || accountId;
@@ -114,7 +114,7 @@ export async function getWebhooks({
 
 				if (webhookRow.form_id) {
 					const { data: form } = await athena
-						.from<FormRow, FormInsert, FormUpdate>("forms")
+						.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 						.select("id, user_id")
 						.eq("id", webhookRow.form_id)
 						.eq("user_id", userId)
@@ -160,7 +160,7 @@ export async function createWebhook(
 			throw new Error("Form ID is required");
 		}
 		const { data: form, error: formError } = await athena
-			.from<FormRow, FormInsert, FormUpdate>("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 			.select("id, user_id")
 			.eq("id", formId)
 			.eq("user_id", userId)
@@ -199,7 +199,7 @@ export async function createWebhook(
 	};
 
 	const { data: result, error } = await athena
-		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 		.insert(insertData)
 		.single();
 
@@ -228,7 +228,7 @@ export async function updateWebhook(
 			throw new Error("Form ID is required");
 		}
 		const { data: form, error: formError } = await athena
-			.from<FormRow, FormInsert, FormUpdate>("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 			.select("id, user_id")
 			.eq("id", formId)
 			.eq("user_id", userId)
@@ -264,7 +264,7 @@ export async function updateWebhook(
 		updated_at: now,
 	};
 	const { data: result, error } = await athena
-		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 		.update(updateData)
 		.eq("id", id)
 		.single();
@@ -291,7 +291,7 @@ export async function deleteWebhook(
 
 	if (userId) {
 		const { data: webhook, error: fetchError } = await athena
-			.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+			.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 			.select("id, account_id, form_id")
 			.eq("id", id)
 			.single();
@@ -303,7 +303,7 @@ export async function deleteWebhook(
 		if (webhook.account_id !== userId) {
 			if (webhook.form_id) {
 				const { data: form } = await athena
-					.from<FormRow, FormInsert, FormUpdate>("forms")
+					.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 					.select("id, user_id")
 					.eq("id", webhook.form_id)
 					.eq("user_id", userId)
@@ -319,7 +319,7 @@ export async function deleteWebhook(
 	}
 
 	const { error } = await athena
-		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 		.eq("id", id)
 		.delete();
 	if (error) {
@@ -346,7 +346,7 @@ export async function getWebhookLogs({
 
 	if (webhookId && userId) {
 		const { data: webhook, error: webhookError } = await athena
-			.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+			.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 			.select("id, account_id, form_id")
 			.eq("id", webhookId)
 			.single();
@@ -358,7 +358,7 @@ export async function getWebhookLogs({
 		if (webhook.account_id !== userId) {
 			if (webhook.form_id) {
 				const { data: form } = await athena
-					.from<FormRow, FormInsert, FormUpdate>("forms")
+					.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 					.select("id, user_id")
 					.eq("id", webhook.form_id)
 					.eq("user_id", userId)
@@ -375,7 +375,7 @@ export async function getWebhookLogs({
 
 	if (formId && userId) {
 		const { data: form, error: formError } = await athena
-			.from<FormRow, FormInsert, FormUpdate>("forms")
+			.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 			.select("id, user_id")
 			.eq("id", formId)
 			.eq("user_id", userId)
@@ -386,7 +386,7 @@ export async function getWebhookLogs({
 		}
 	}
 
-	let query = athena.from("webhook_logs").select("*");
+	let query = athena.from("forms.webhook_logs").select("*");
 	if (webhookId) {
 		query = query.eq("webhook_id", webhookId);
 	}
@@ -410,7 +410,7 @@ export async function getWebhookLogs({
 				const logRow = log as WebhookLogRow;
 				if (logRow.webhook_id) {
 					const { data: webhook } = await athena
-						.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+						.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 						.select("id, account_id, form_id")
 						.eq("id", logRow.webhook_id)
 						.single();
@@ -425,7 +425,7 @@ export async function getWebhookLogs({
 
 					if (webhook.form_id) {
 						const { data: form } = await athena
-							.from<FormRow, FormInsert, FormUpdate>("forms")
+							.from<FormRow, FormInsert, FormUpdate>("forms.forms")
 							.select("id, user_id")
 							.eq("id", webhook.form_id)
 							.eq("user_id", userId)
@@ -457,7 +457,7 @@ export async function resendWebhookDelivery(
 	const athena = createAthenaAdminClient();
 
 	const { data: log, error: logError } = await athena
-		.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+		.from<WebhookLogRow, WebhookLogInsert>("forms.webhook_logs")
 		.select("*")
 		.eq("id", body.logId)
 		.single();
@@ -471,7 +471,7 @@ export async function resendWebhookDelivery(
 	}
 
 	const { data: webhook, error: webhookError } = await athena
-		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 		.select("*")
 		.eq("id", webhookIdFromLog)
 		.single();
@@ -539,7 +539,7 @@ export async function resendWebhookDelivery(
 	};
 
 	await athena
-		.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+		.from<WebhookLogRow, WebhookLogInsert>("forms.webhook_logs")
 		.insert(logInsert);
 	if (errorMsg) {
 		return { status, responseBody, error: errorMsg };
@@ -554,7 +554,7 @@ export async function testWebhook(
 	const athena = createAthenaAdminClient();
 
 	const { data: webhook, error } = await athena
-		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 		.select("*")
 		.eq("id", id)
 		.single();
@@ -617,7 +617,7 @@ export async function testWebhook(
 			attempt: 0,
 		};
 		await athena
-			.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+			.from<WebhookLogRow, WebhookLogInsert>("forms.webhook_logs")
 			.insert(logInsert);
 
 		try {
@@ -676,7 +676,7 @@ export async function testWebhook(
 	};
 
 	await athena
-		.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+		.from<WebhookLogRow, WebhookLogInsert>("forms.webhook_logs")
 		.insert(logInsert);
 
 	const notifyEmail = (webhook as WebhookRow).notification_email;
@@ -954,7 +954,7 @@ export async function triggerWebhooks(
 			: undefined;
 
 	const { data: webhooks, error } = await athena
-		.from<WebhookRow, WebhookInsert, WebhookUpdate>("webhooks")
+		.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
 		.select("*")
 		.contains("events", [event])
 		.eq("enabled", true)
@@ -1118,7 +1118,7 @@ export async function deliverWithRetry(
 			attempt,
 		};
 		await athena
-			.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+			.from<WebhookLogRow, WebhookLogInsert>("forms.webhook_logs")
 			.insert(successLog);
 
 		console.log(
@@ -1152,7 +1152,7 @@ export async function deliverWithRetry(
 			attempt,
 		};
 		await athena
-			.from<WebhookLogRow, WebhookLogInsert>("webhook_logs")
+			.from<WebhookLogRow, WebhookLogInsert>("forms.webhook_logs")
 			.insert(failureLog);
 
 		const isFinalAttempt = attempt + 1 >= 3;

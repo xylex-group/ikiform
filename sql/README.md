@@ -8,6 +8,8 @@ This folder contains the derived SQL schema for the Ikiform application, extract
 sql/
 ├── schema/           # Core table definitions + indexes
 │   ├── 01_tables.sql
+│   ├── forms/
+│   │   └── 01_forms_schema.sql   # public -> forms schema port
 │   └── tables/       # One file per table/domain for targeted review
 │       ├── users.sql
 │       ├── forms.sql
@@ -53,6 +55,8 @@ sql/
    \i sql/schema/tables/inbound_webhook_mappings.sql
    \i sql/schema/tables/redemption_codes.sql
    \i sql/schema/tables/waitlist.sql
+   -- forms schema port (keeps auth users in public.users)
+   \i sql/schema/forms/01_forms_schema.sql
    \i sql/rls/01_policies.sql
    \i sql/functions/01_helper_functions.sql
    ```

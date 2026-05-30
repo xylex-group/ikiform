@@ -30,6 +30,7 @@ rectangle "Next.js App Layer" as Next {
   component "Route Handlers\n/api/forms/[id]/api-key/*\n/api/forms/[id]/api-submit" as ApiRoutes #E0E7FF
   component "Route Handlers\n/src/app/*" as AppRoutes
   component "Form Settings UI\n(form-builder modal)" as Client
+  component "Auth UI\npackages/auth/athena-auth/*" as AuthUi #DBEAFE
 }
 
 rectangle "Athena Runtime" as AthLayer {
@@ -60,6 +61,7 @@ AthServer --> Gateway : forms table ownership+auth checks
 AthServer --> AthAuthFactory : auth bindings + session checks
 AuthRoute --> AthAuthFactory : createAthenaAuthClient(fetch cookie bridge)
 AthAuthFactory --> AthenaAuth : signIn/signUp/password/verify/session
+AuthUi --> AuthCompat : auth UI calls Athena auth seam
 AuthCompat --> AuthRoute : browser auth requests
 AthClient --> Gateway : client reads/updates form schema
 Gateway --> DB : SQL execution and auth checks
@@ -67,6 +69,11 @@ Gateway --> DB : SQL execution and auth checks
 note right of ApiRoutes
   API key writes are now executed via route\nactions with server auth context.
   Browser never imports DB helpers.
+end note
+
+note bottom of AthClient
+  DB runtime client is created from env variables
+  (ATHENA_URL / ATHENA_API_KEY / ATHENA_CLIENT).
 end note
 
 note left of AuthCompat

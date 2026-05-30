@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 		const adminAthena = createAdminClient();
 
 		const { data: form, error: formError } = await adminAthena
-			.from("forms")
+			.from("forms.forms")
 			.select("*")
 			.eq("id", formId)
 			.single();
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 		}
 
 		const { data: submissions, error: submissionsError } = await adminAthena
-			.from("form_submissions")
+			.from("forms.form_submissions")
 			.select("*")
 			.eq("form_id", formId)
 			.order("submitted_at", { ascending: false });

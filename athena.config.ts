@@ -4,6 +4,24 @@ import {
 	defineGeneratorConfig,
 } from "@xylex-group/athena";
 
+const athenaUrl = process.env.ATHENA_URL || process.env.NEXT_PUBLIC_ATHENA_URL;
+const athenaApiKey =
+	process.env.ATHENA_API_KEY || process.env.NEXT_PUBLIC_ATHENA_API_KEY;
+const generatorConnectionString =
+	process.env.DATABASE_URL || process.env.ATHENA_DATABASE_URL;
+
+if (!(athenaUrl && athenaApiKey)) {
+	throw new Error(
+		"Missing Athena environment variables. Please check ATHENA_URL / NEXT_PUBLIC_ATHENA_URL and ATHENA_API_KEY / NEXT_PUBLIC_ATHENA_API_KEY."
+	);
+}
+
+if (!generatorConnectionString) {
+	throw new Error(
+		"Missing DATABASE_URL (or ATHENA_DATABASE_URL) for Athena generator direct mode."
+	);
+}
+
 /**
  * Athena JS code generator configuration.
  * Run with: pnpm athena:generate (or npx athena-js generate)
@@ -14,11 +32,9 @@ export const generatorConfig = defineGeneratorConfig({
 	provider: {
 		kind: "postgres",
 		mode: "direct", // Use "direct" locally if you have a DATABASE_URL
-		connectionString:
-			process.env.DATABASE_URL ||
-			"postgresql://postgres:vZGVNgzTOrDwgXFIXRSuVcbonnqbPzFL@trolley.proxy.rlwy.net:40040/railway",
+		connectionString: generatorConnectionString,
 		database: process.env.ATHENA_DATABASE || "railway",
-		schemas: ["public", "athena", "payload"],
+		schemas: ["public", "athena", "payload", "forms"],
 		backend: "athena" as const satisfies BackendType,
 		client: process.env.ATHENA_CLIENT || "the-ark-of-floris",
 	},
@@ -50,9 +66,6 @@ export const generatorConfig = defineGeneratorConfig({
 	},
 });
 
-export const athena = createClient(
-	"https://mirror4.athena-cluster.com",
-	"ath_4614c5f0ff3248a8.d77b3f974b974df1aac8a9a77e4264bb929bf3967f984717a4de4486a7e43f6d"
-);
+export const athena = createClient(athenaUrl, athenaApiKey);
 
 export default generatorConfig;
