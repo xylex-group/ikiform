@@ -5,7 +5,7 @@ export async function GET() {
 	try {
 		const athena = createAdminClient();
 		const { count, error } = await athena
-			.from("users")
+			.from("public.users")
 			.select("*", { count: "exact", head: true });
 
 		if (error) {

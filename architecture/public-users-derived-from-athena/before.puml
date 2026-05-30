@@ -1,0 +1,38 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam shadowing false
+skinparam ArrowColor #111111
+skinparam PackageBorderColor #111111
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #111111
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam RectangleFontColor #111111
+skinparam NoteBackgroundColor #FFFFFF
+skinparam NoteBorderColor #111111
+skinparam NoteFontColor #111111
+
+title BEFORE: public.users Not Derived From athena.users
+
+package "Athena Auth Source" {
+  rectangle "athena.users\n193 rows\ncanonical auth identities" as ATHENA_USERS
+}
+
+package "App-Facing Schema" {
+  rectangle "public.users\n199 rows\nmanual drift + stale records" as PUBLIC_USERS
+}
+
+package "Ikiform App" {
+  rectangle "auth + business code\nreads/writes public.users" as APP_CODE
+}
+
+APP_CODE --> PUBLIC_USERS : runtime reads/writes
+ATHENA_USERS -[#111111,dashed]-> PUBLIC_USERS : one-time/manual copy only
+
+note right of PUBLIC_USERS
+  Problems:
+  - 6 orphan rows not in athena.users
+  - no automatic sync on update/delete
+  - timestamp/compat columns inconsistent over time
+end note
+@enduml

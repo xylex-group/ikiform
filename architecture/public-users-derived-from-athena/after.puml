@@ -1,0 +1,45 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment left
+skinparam shadowing false
+skinparam ArrowColor #111111
+skinparam PackageBorderColor #111111
+skinparam PackageBackgroundColor #FFFFFF
+skinparam RectangleBorderColor #111111
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam RectangleFontColor #111111
+skinparam NoteBackgroundColor #FFFFFF
+skinparam NoteBorderColor #111111
+skinparam NoteFontColor #111111
+
+title AFTER: public.users Derived From athena.users
+
+package "Athena Auth Source" {
+  rectangle "athena.users\n193 rows\ncanonical auth identities" as ATHENA_USERS
+}
+
+package "Sync Layer" {
+  rectangle "public.sync_public_users_from_athena()\ntrigger function" as SYNC_FN
+  rectangle "trigger:\nathena_users_sync_to_public\nAFTER INSERT/UPDATE/DELETE" as SYNC_TRIGGER
+}
+
+package "App-Facing Schema" {
+  rectangle "public.users\n193 rows\nuid + premium/trial + polar compatibility\nno orphan rows" as PUBLIC_USERS
+}
+
+package "Ikiform App" {
+  rectangle "auth + business code\nreads/writes public.users" as APP_CODE
+}
+
+ATHENA_USERS --> SYNC_TRIGGER : row mutation
+SYNC_TRIGGER --> SYNC_FN : invoke
+SYNC_FN --> PUBLIC_USERS : upsert / delete
+APP_CODE --> PUBLIC_USERS : runtime reads
+
+note right of SYNC_FN
+  Guarantees:
+  - update sync validated
+  - delete sync validated
+  - orphan cleanup enforced
+end note
+@enduml

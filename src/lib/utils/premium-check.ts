@@ -5,7 +5,7 @@ export async function checkPremiumStatus(userId: string): Promise<boolean> {
 	try {
 		const athena = await createAthenaServerClient();
 		const { data, error } = await athena
-			.from("users")
+			.from("public.users")
 			.select("has_premium")
 			.eq("uid", userId)
 			.single();

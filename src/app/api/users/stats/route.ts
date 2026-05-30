@@ -11,9 +11,9 @@ export async function GET() {
 		const athena = createAdminClient();
 
 		const [countResult, usersResult] = await Promise.all([
-			athena.from("users").select("*", { count: "exact", head: true }),
+			athena.from("public.users").select("*", { count: "exact", head: true }),
 			athena
-				.from<UserNameRow>("users")
+				.from<UserNameRow>("public.users")
 				.select("name")
 				.order("created_at", { ascending: false })
 				.limit(5),

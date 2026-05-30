@@ -8,13 +8,17 @@ export interface PublicUsersRow {
 	display_username?: string | null;
 	email?: string | null;
 	email_verified: boolean;
+	has_free_trial: boolean;
+	has_premium: boolean;
 	id: string;
 	image?: string | null;
 	last_sign_in_at?: string | null;
 	metadata: Record<string, unknown>;
 	name?: string | null;
+	polar_customer_id?: string | null;
 	role?: string | null;
 	two_factor_enabled: boolean;
+	uid: string;
 	updated_at: string;
 	username?: string | null;
 }
@@ -50,6 +54,10 @@ export const publicUsersModel = defineModel<
 			created_at: false,
 			updated_at: false,
 			last_sign_in_at: true,
+			uid: false,
+			has_premium: false,
+			has_free_trial: false,
+			polar_customer_id: true,
 		},
 		relations: {
 			ai_analytics_chat: {

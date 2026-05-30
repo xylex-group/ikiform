@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 						"";
 					const athena = await createAthenaServerClient();
 					const { data: existingUser } = await athena
-						.from<UserRow, UserInsert, UserUpdate>("users")
+						.from<UserRow, UserInsert, UserUpdate>("public.users")
 						.select("email, has_premium, has_free_trial, polar_customer_id")
 						.eq("email", email)
 						.single();
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
 					}
 
 					const { error: upsertError } = await athena
-						.from<UserRow, UserInsert, UserUpdate>("users")
+						.from<UserRow, UserInsert, UserUpdate>("public.users")
 						.upsert(upsertData, { onConflict: "email" });
 
 					if (!upsertError) {

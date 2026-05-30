@@ -20,7 +20,7 @@ export async function GET() {
 
 		const adminAthena = createAdminClient();
 		const { data, error } = await adminAthena
-			.from<UserEmailRow>("users")
+			.from<UserEmailRow>("public.users")
 			.select("email");
 		if (error) {
 			return NextResponse.json({ emails: [], error }, { status: 500 });

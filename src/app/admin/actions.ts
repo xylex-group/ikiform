@@ -24,7 +24,7 @@ export async function sendAnnouncementAction(
 	if (!toRaw) {
 		const admin = createAdminClient();
 		const { data, error } = await admin
-			.from<UserRow, UserInsert, UserUpdate>("users")
+			.from<UserRow, UserInsert, UserUpdate>("public.users")
 			.select("email");
 		if (error) {
 			return { ok: false, error };
@@ -78,7 +78,7 @@ export async function expireTrialsAction(): Promise<ExpireTrialsResult> {
 		);
 
 		const { data: debugUsers, error: debugError } = await athena
-			.from<UserRow, UserInsert, UserUpdate>("users")
+			.from<UserRow, UserInsert, UserUpdate>("public.users")
 			.select("uid, email, name, has_premium, has_free_trial, created_at")
 			.eq("has_premium", true)
 			.eq("has_free_trial", true);
@@ -124,7 +124,7 @@ export async function expireTrialsAction(): Promise<ExpireTrialsResult> {
 		}
 
 		const { data, error } = await athena
-			.from<UserRow, UserInsert, UserUpdate>("users")
+			.from<UserRow, UserInsert, UserUpdate>("public.users")
 			.update({
 				has_premium: false,
 				has_free_trial: false,

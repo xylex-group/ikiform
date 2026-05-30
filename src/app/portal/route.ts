@@ -26,7 +26,7 @@ export const GET = CustomerPortal({
 			}
 
 			const { data, error } = await athena
-				.from<UserRow, UserInsert, UserUpdate>("users")
+				.from<UserRow, UserInsert, UserUpdate>("public.users")
 				.select("polar_customer_id")
 				.eq("email", user.email)
 				.single();

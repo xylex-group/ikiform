@@ -78,7 +78,7 @@ async function DashboardData() {
 			.eq("user_id", user.id)
 			.order("updated_at", { ascending: false }),
 		athena
-			.from<UserPremiumRow>("users")
+			.from<UserPremiumRow>("public.users")
 			.select("has_premium, polar_customer_id")
 			.eq("uid", user.id)
 			.single(),

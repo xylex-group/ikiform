@@ -75,13 +75,13 @@ export async function POST(request: NextRequest) {
 		}
 
 		const { data: existingUser } = await athena
-			.from<UserRow, UserInsert, UserUpdate>("users")
+			.from<UserRow, UserInsert, UserUpdate>("public.users")
 			.select("has_premium, has_free_trial, polar_customer_id")
 			.eq("email", sanitizedEmail)
 			.single();
 
 		const { data: upsertedUser, error: upsertError } = await athena
-			.from<UserRow, UserInsert, UserUpdate>("users")
+			.from<UserRow, UserInsert, UserUpdate>("public.users")
 			.upsert(
 				{
 					uid,
@@ -169,7 +169,7 @@ export async function GET(_request: NextRequest) {
 		}
 
 		const { data, error } = await athena
-			.from<UserRow, UserInsert, UserUpdate>("users")
+			.from<UserRow, UserInsert, UserUpdate>("public.users")
 			.select(
 				"uid, email, name, has_premium, has_free_trial, polar_customer_id, created_at, updated_at"
 			)

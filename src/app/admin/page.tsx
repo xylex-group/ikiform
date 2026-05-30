@@ -26,7 +26,7 @@ async function getUsers(): Promise<User[]> {
 		const athena = createAdminClient();
 
 		const { data: users, error } = await athena
-			.from("users")
+			.from("public.users")
 			.select("*")
 			.order("created_at", { ascending: false });
 

@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 		const thresholdISO = fourteenDaysAgo.toISOString();
 
 		const { data: debugUsers } = await athena
-			.from("users")
+			.from("public.users")
 			.select("uid, email, name, has_premium, has_free_trial, created_at")
 			.eq("has_premium", true)
 			.eq("has_free_trial", true);
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 		console.log("14 days ago threshold:", thresholdISO);
 
 		const { data, error } = await athena
-			.from("users")
+			.from("public.users")
 			.update({
 				has_premium: false,
 				has_free_trial: false,

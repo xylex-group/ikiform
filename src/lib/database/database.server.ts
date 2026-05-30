@@ -52,7 +52,7 @@ const fromAIAnalyticsChat = (athena: AthenaFromClient) =>
 	);
 
 const fromUsers = (athena: AthenaFromClient) =>
-	athena.from<User, UserInsert, UserUpdate>("users");
+	athena.from<User, UserInsert, UserUpdate>("public.users");
 
 const formsDbServer = {
 	async getPublicForm(identifier: string) {

@@ -32,7 +32,7 @@ export async function GET(_request: NextRequest) {
 		}
 
 		const { data, error } = await athena
-			.from("users")
+			.from("public.users")
 			.select("has_premium, polar_customer_id")
 			.eq("email", email)
 			.single();
