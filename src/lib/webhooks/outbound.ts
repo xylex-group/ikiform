@@ -269,12 +269,7 @@ export async function updateWebhook(
 		.eq("id", id)
 		.single();
 	if (error || !result) {
-		console.error(
-			"Supabase error updating webhook:",
-			error,
-			"Data:",
-			updateData
-		);
+		console.error("Athena error updating webhook:", error, "Data:", updateData);
 		throw new Error(error || "Failed to update webhook");
 	}
 	const { secret, ...safeResult } = result as WebhookRow & {

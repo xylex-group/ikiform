@@ -53,7 +53,7 @@ export type Json =
 	| Json[];
 
 export interface Database {
-	__InternalSupabase: {
+	__InternalAthena: {
 		PostgrestVersion: "12.2.3 (519615d)";
 	};
 	forms: {
@@ -108,10 +108,30 @@ export interface Database {
 			[_ in never]: never;
 		};
 		Functions: {
-			cleanup_orphaned_files: Database["public"]["Functions"]["cleanup_orphaned_files"];
-			get_form_file_stats: Database["public"]["Functions"]["get_form_file_stats"];
-			is_admin_request: Database["public"]["Functions"]["is_admin_request"];
-			submit_form_bypass_rls: Database["public"]["Functions"]["submit_form_bypass_rls"];
+			cleanup_orphaned_files: {
+				Args: Record<PropertyKey, never>;
+				Returns: number;
+			};
+			get_form_file_stats: {
+				Args: { form_id_param: string };
+				Returns: {
+					file_types: string[];
+					total_files: number;
+					total_size_bytes: number;
+				}[];
+			};
+			is_admin_request: {
+				Args: Record<PropertyKey, never>;
+				Returns: boolean;
+			};
+			submit_form_bypass_rls: {
+				Args: {
+					p_form_id: string;
+					p_ip_address?: unknown;
+					p_submission_data: Json;
+				};
+				Returns: string;
+			};
 		};
 		Enums: {
 			[_ in never]: never;

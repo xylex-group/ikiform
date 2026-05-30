@@ -152,7 +152,6 @@ import { publicUserPreferencesModel } from "../models/public/user-preferences";
 import { publicUserSettingsModel } from "../models/public/user-settings";
 import { publicUsersModel } from "../models/public/users";
 import { publicUsersSessionsModel } from "../models/public/users-sessions";
-import { publicVerificationModel } from "../models/public/verification";
 import { publicVerificationsModel } from "../models/public/verifications";
 import { publicWorkflowAuditLogsModel } from "../models/public/workflow-audit-logs";
 import { publicWorkflowInstancesModel } from "../models/public/workflow-instances";
@@ -320,7 +319,6 @@ export const publicSchema = defineSchema({
 	user_settings: publicUserSettingsModel,
 	users: publicUsersModel,
 	users_sessions: publicUsersSessionsModel,
-	verification: publicVerificationModel,
 	verifications: publicVerificationsModel,
 	workflow_audit_logs: publicWorkflowAuditLogsModel,
 	workflow_instances: publicWorkflowInstancesModel,
