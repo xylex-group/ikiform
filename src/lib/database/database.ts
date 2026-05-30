@@ -9,9 +9,10 @@ const db: AthenaSdkClientWithAuth = athenaDb;
  * Table aliases derived from the Athena-backed Database mapping.
  */
 type FormTable = Database["forms"]["Tables"]["forms"];
-type FormInsert = FormTable["Insert"];
-type FormUpdate = FormTable["Update"];
-export type Form = FormTable["Row"];
+type FormRow = FormTable["Row"];
+type FormInsert = Omit<FormTable["Insert"], "schema"> & { schema: FormSchema };
+type FormUpdate = Omit<FormTable["Update"], "schema"> & { schema?: FormSchema };
+export type Form = Omit<FormRow, "schema"> & { schema: FormSchema };
 
 type FormSubmissionTable = Database["forms"]["Tables"]["form_submissions"];
 type FormSubmissionInsert = FormSubmissionTable["Insert"];

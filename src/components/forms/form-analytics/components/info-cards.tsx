@@ -2,14 +2,18 @@ import { BarChart3, Calendar, TrendingUp } from "lucide-react";
 import type React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ensureDefaultFormSettings } from "@/lib/forms";
 import type { InfoCardsProps } from "../types";
 
 export const InfoCards: React.FC<InfoCardsProps> = ({
 	form,
 	data,
 	formatDate,
-}) => (
-	<div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+}) => {
+	const schema = ensureDefaultFormSettings(form.schema);
+
+	return (
+		<div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
 		<Card className="grow gap-4 border-border bg-card p-4 shadow-none">
 			<CardHeader className="flex flex-row items-center gap-4 p-0">
 				<div aria-hidden="true" className="rounded-md bg-primary/10 p-3">
@@ -108,11 +112,12 @@ export const InfoCards: React.FC<InfoCardsProps> = ({
 					<div className="flex items-center justify-between">
 						<span className="text-muted-foreground text-sm">Form Type</span>
 						<Badge variant="outline">
-							{form.schema.settings?.multiStep ? "Multi-Step" : "Single Page"}
+							{schema.settings?.multiStep ? "Multi-Step" : "Single Page"}
 						</Badge>
 					</div>
 				</div>
 			</CardContent>
 		</Card>
-	</div>
-);
+		</div>
+	);
+};

@@ -1,13 +1,14 @@
 import type { AthenaSdkClientWithAuth } from "@xylex-group/athena";
-import type { Database } from "@/lib/database/database.types";
+import type { Database, FormSchema } from "@/lib/database/database.types";
 import { ensureDefaultFormSettings } from "@/lib/forms";
 import { createAthenaAdminClient } from "@/utils/athena/admin";
 import { createAthenaServerClient } from "@/utils/athena/server";
 
 type FormTable = Database["forms"]["Tables"]["forms"];
-type FormInsert = FormTable["Insert"];
-type FormUpdate = FormTable["Update"];
-type Form = FormTable["Row"];
+type FormRow = FormTable["Row"];
+type FormInsert = Omit<FormTable["Insert"], "schema"> & { schema: FormSchema };
+type FormUpdate = Omit<FormTable["Update"], "schema"> & { schema?: FormSchema };
+type Form = Omit<FormRow, "schema"> & { schema: FormSchema };
 
 type FormSubmissionTable = Database["forms"]["Tables"]["form_submissions"];
 type FormSubmissionInsert = FormSubmissionTable["Insert"];

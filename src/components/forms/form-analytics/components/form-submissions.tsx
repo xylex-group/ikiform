@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import type { Form, FormSubmission } from "@/lib/database";
+import { ensureDefaultFormSettings } from "@/lib/forms";
 import { SubmissionDetailsModal } from "./submission-details-modal";
 
 interface FormSubmissionsProps {
@@ -46,9 +47,10 @@ const formatDate = (dateString: string) =>
 	});
 
 const _getFieldLabel = (form: Form, fieldId: string) => {
+	const schema = ensureDefaultFormSettings(form.schema);
 	const allFields = [
-		...(form.schema.fields || []),
-		...(form.schema.blocks?.flatMap((block) => block.fields || []) || []),
+		...schema.fields,
+		...schema.blocks.flatMap((block) => block.fields || []),
 	];
 	const field = allFields.find((f) => f.id === fieldId);
 	return field?.label || fieldId;
@@ -60,9 +62,10 @@ const exportToCSV = (form: Form, submissions: FormSubmission[]) => {
 		return;
 	}
 
+	const schema = ensureDefaultFormSettings(form.schema);
 	const allFields = [
-		...(form.schema.fields || []),
-		...(form.schema.blocks?.flatMap((block) => block.fields || []) || []),
+		...schema.fields,
+		...schema.blocks.flatMap((block) => block.fields || []),
 	];
 
 	const headers = [
@@ -126,6 +129,7 @@ const ITEMS_PER_PAGE = 50;
 
 export function FormSubmissions({ form, submissions }: FormSubmissionsProps) {
 	const _router = useRouter();
+	const schema = ensureDefaultFormSettings(form.schema);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedSubmission, setSelectedSubmission] =
 		useState<FormSubmission | null>(null);
@@ -147,8 +151,8 @@ export function FormSubmissions({ form, submissions }: FormSubmissionsProps) {
 	});
 
 	const _allFields = [
-		...(form.schema.fields || []),
-		...(form.schema.blocks?.flatMap((block) => block.fields || []) || []),
+		...schema.fields,
+		...schema.blocks.flatMap((block) => block.fields || []),
 	];
 
 	const totalPages = Math.ceil(filteredSubmissions.length / ITEMS_PER_PAGE);

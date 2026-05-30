@@ -42,6 +42,18 @@ function toStringRecord(value: unknown): Record<string, string> | undefined {
 	return result;
 }
 
+function toPayloadRecord(value: unknown): Record<string, unknown> | null {
+	if (value === null || value === undefined) {
+		return null;
+	}
+
+	if (typeof value === "object" && !Array.isArray(value)) {
+		return value as Record<string, unknown>;
+	}
+
+	return { raw: String(value) };
+}
+
 function mapWebhookRow(row: Omit<WebhookRow, "secret">): WebhookConfig {
 	return {
 		id: row.id,
@@ -402,7 +414,7 @@ export async function getWebhookLogs({
 	if (userId) {
 		const filteredLogs = await Promise.all(
 			data.map(async (log) => {
-				const logRow = log as WebhookLogRow;
+				const logRow = log as unknown as WebhookLogRow;
 				if (logRow.webhook_id) {
 					const { data: webhook } = await athena
 						.from<WebhookRow, WebhookInsert, WebhookUpdate>("forms.webhooks")
@@ -439,10 +451,10 @@ export async function getWebhookLogs({
 
 		return filteredLogs
 			.filter((log) => log !== null)
-			.map((log) => mapWebhookLogRow(log as WebhookLogRow));
+			.map((log) => mapWebhookLogRow(log as unknown as WebhookLogRow));
 	}
 
-	return data.map((log) => mapWebhookLogRow(log as WebhookLogRow));
+	return data.map((log) => mapWebhookLogRow(log as unknown as WebhookLogRow));
 }
 
 export async function resendWebhookDelivery(
@@ -525,7 +537,7 @@ export async function resendWebhookDelivery(
 		webhook_id: (webhook as WebhookRow).id,
 		event: "resend",
 		status: errorMsg ? "failed" : "success",
-		request_payload: payload ?? null,
+		request_payload: toPayloadRecord(payload),
 		response_status: status,
 		response_body: responseBody,
 		error: errorMsg || null,
@@ -604,7 +616,7 @@ export async function testWebhook(
 			webhook_id: (webhook as WebhookRow).id,
 			event: "test",
 			status: simulate === "success" ? "success" : "failed",
-			request_payload: JSON.stringify({ simulate }),
+			request_payload: toPayloadRecord({ simulate }),
 			response_status: simulate === "success" ? 200 : 500,
 			response_body: simulate === "success" ? "SIMULATED_OK" : null,
 			error: simulate === "failure" ? "SIMULATED_FAILURE" : null,
@@ -662,7 +674,7 @@ export async function testWebhook(
 		webhook_id: (webhook as WebhookRow).id,
 		event: "test",
 		status: errorMsg ? "failed" : "success",
-		request_payload: body,
+		request_payload: toPayloadRecord(body),
 		response_status: status,
 		response_body: responseBody,
 		error: errorMsg || null,
@@ -1105,7 +1117,7 @@ export async function deliverWithRetry(
 			event: "triggered",
 			status: "success",
 			request_payload: methodsWithBody.includes(webhook.method)
-				? finalBody
+				? toPayloadRecord(finalBody)
 				: null,
 			response_status: res.status,
 			response_body: responseBody,
@@ -1141,7 +1153,9 @@ export async function deliverWithRetry(
 			webhook_id: webhook.id,
 			event: "triggered",
 			status: "failed",
-			request_payload: methodsWithBody.includes(webhook.method) ? body : null,
+			request_payload: methodsWithBody.includes(webhook.method)
+				? toPayloadRecord(body)
+				: null,
 			error: String(err),
 			timestamp: new Date().toISOString(),
 			attempt,

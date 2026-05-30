@@ -1,4 +1,5 @@
 import type { Form, FormSubmission } from "@/lib/database";
+import { ensureDefaultFormSettings } from "@/lib/forms";
 import { calculateQuizScore } from "@/lib/quiz/scoring";
 import type {
 	ConversionFunnelStep,
@@ -20,9 +21,10 @@ export const formatDate = (dateString: string) =>
 	});
 
 export const getFieldLabel = (form: Form, fieldId: string) => {
-	let field = form.schema.fields?.find((f) => f.id === fieldId);
-	if (!field && form.schema.blocks) {
-		for (const block of form.schema.blocks) {
+	const schema = ensureDefaultFormSettings(form.schema);
+	let field = schema.fields.find((f) => f.id === fieldId);
+	if (!field) {
+		for (const block of schema.blocks) {
 			field = block.fields?.find((f) => f.id === fieldId);
 			if (field) {
 				break;
@@ -33,9 +35,10 @@ export const getFieldLabel = (form: Form, fieldId: string) => {
 };
 
 export const getTotalFields = (form: Form) => {
-	const fieldsFromDirectArray = form.schema.fields?.length || 0;
+	const schema = ensureDefaultFormSettings(form.schema);
+	const fieldsFromDirectArray = schema.fields.length || 0;
 	const fieldsFromBlocks =
-		form.schema.blocks?.reduce(
+		schema.blocks.reduce(
 			(total, block) => total + (block.fields?.length || 0),
 			0
 		) || 0;
@@ -129,10 +132,11 @@ export const calculateFieldAnalytics = (
 	form: Form,
 	submissions: FormSubmission[]
 ): Record<string, FieldAnalytics> => {
+	const schema = ensureDefaultFormSettings(form.schema);
 	const analytics: Record<string, FieldAnalytics> = {};
 	const allPossibleFields = [
-		...(form.schema.fields || []),
-		...(form.schema.blocks?.flatMap((block) => block.fields || []) || []),
+		...schema.fields,
+		...schema.blocks.flatMap((block) => block.fields || []),
 	];
 
 	allPossibleFields.forEach((field) => {
@@ -276,11 +280,12 @@ export const calculateConversionFunnel = (
 	form: Form,
 	submissions: FormSubmission[]
 ): ConversionFunnelStep[] | null => {
-	if (!(form.schema.settings?.multiStep && form.schema.blocks)) {
+	const schema = ensureDefaultFormSettings(form.schema);
+	if (!(schema.settings?.multiStep && schema.blocks.length > 0)) {
 		return null;
 	}
 
-	const funnel = form.schema.blocks.map((block) => {
+	const funnel = schema.blocks.map((block) => {
 		const blockFieldIds = block.fields?.map((f) => f.id) || [];
 		const completedCount = submissions.filter((sub) =>
 			blockFieldIds.some((fieldId) => {
@@ -337,7 +342,8 @@ export const calculateQuizAnalytics = (
 	form: Form,
 	submissions: FormSubmission[]
 ): QuizAnalytics => {
-	const isQuizForm = form.schema.settings?.quiz?.enabled;
+	const schema = ensureDefaultFormSettings(form.schema);
+	const isQuizForm = schema.settings?.quiz?.enabled;
 
 	if (!isQuizForm) {
 		return {
@@ -352,8 +358,8 @@ export const calculateQuizAnalytics = (
 	}
 
 	const allFields = [
-		...(form.schema.fields || []),
-		...(form.schema.blocks?.flatMap((block) => block.fields || []) || []),
+		...schema.fields,
+		...schema.blocks.flatMap((block) => block.fields || []),
 	];
 	const quizFields = allFields.filter((field) => field.settings?.isQuizField);
 
@@ -372,7 +378,7 @@ export const calculateQuizAnalytics = (
 	const quizResults = submissions
 		.map((submission) => {
 			const result = calculateQuizScore(
-				form.schema,
+				schema,
 				submission.submission_data
 			);
 			return {
@@ -404,7 +410,7 @@ export const calculateQuizAnalytics = (
 		0
 	);
 	const passCount = quizResults.filter((item) => item.result.passed).length;
-	const _passingScore = form.schema.settings?.quiz?.passingScore || 70;
+	const _passingScore = schema.settings?.quiz?.passingScore || 70;
 
 	const questionAnalytics = quizFields.map((field) => {
 		const fieldResults = quizResults.flatMap((item) =>
